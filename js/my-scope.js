@@ -52,7 +52,11 @@ analyser.smoothingTimeConstant = 0.85;
 
     }
 function draw(){
+//50 ms
+//2.5s= 50x
+//1/50th of canvas size
 
+// Control Spectrogram onset/offset of notes, make ramps
 
 if(!isPaused){
   animate = window.requestAnimationFrame(draw);

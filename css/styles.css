@@ -2,9 +2,9 @@ html {
   background-color: #bec4ce;
 }
 #my-canvas {
-  height:75vh;
-  width: 75vw;
-  left: 12%;
+  height:50vh;
+  width: 50vw;
+  left: 25%;
   position: relative;
 }
 .header-text {
