@@ -15,3 +15,23 @@ html {
   bottom: 8%;
   left: 50%;
 }
+#XzoomIn {
+  position: absolute;
+  bottom: 8%;
+  left: 37%;
+}
+#XzoomOut {
+  position: absolute;
+  bottom: 8%;
+  left: 43%;
+}
+#YzoomIn {
+  position: absolute;
+  bottom: 4%;
+  left: 37%;
+}
+#YzoomOut {
+  position: absolute;
+  bottom: 4%;
+  left: 43%;
+}

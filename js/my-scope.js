@@ -2,12 +2,15 @@ var analyser;
 var animate;
 fftSize = 2048;
 var bufferLength = fftSize/2;
-// var dataArray = new Float32Array(fftSize);
+var dataArray = new Uint8Array(bufferLength);
 const SAMPLERATE = 44100;
 var canvas = document.getElementById('my-canvas');
 var canvasCtx = canvas.getContext('2d');
 var isPaused = false;
 var test1 = 0;
+var k=0;
+var Xzoom = 1;
+var Yzoom=1;
 
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
@@ -66,12 +69,19 @@ if(!isPaused){
   // animate = window.requestAnimationFrame(draw);
 
 
+  canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+  canvasCtx.fillStyle = 'rgb(0,0,0)';
+  canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  canvasCtx.lineWidth = 2;
+  canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
+  canvasCtx.beginPath();
 
 
-canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
 
-var dataArray = new Uint8Array(bufferLength);
+
+
       // let x = 0
       // let y = 10;
       // let width = WIDTH - x;
@@ -81,17 +91,15 @@ if(test1<300){
   // console.log(dataArray);
   test1++;
 }
+var sliceWidth = WIDTH * Xzoom / bufferLength;
+if(Xzoom<1){
+  var x = (k*WIDTH*0.333);
+  k=(k+1)%3;
 
-      canvasCtx.fillStyle = 'rgb(0,0,0)';
-      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+} else {
+var x = 0;
+}
 
-      canvasCtx.lineWidth = 2;
-      canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
-
-      canvasCtx.beginPath();
-
-var sliceWidth = WIDTH * 1.0 / bufferLength;
-      var x = 0;
       var paused = false;
       for(var i = 0; i < bufferLength; i++) {
 
@@ -103,7 +111,10 @@ var sliceWidth = WIDTH * 1.0 / bufferLength;
                 // paused = true;
                 // canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
               // }
+              v = (v-1)*Yzoom+1;
               var y = v * HEIGHT/2;
+
+
               // if(!paused){
               if(i === 0) {
                 canvasCtx.moveTo(x, y);
@@ -116,7 +127,7 @@ var sliceWidth = WIDTH * 1.0 / bufferLength;
             // }
           }
 
-            canvasCtx.lineTo(canvas.width, canvas.height/2);
+            // canvasCtx.lineTo(canvas.width, canvas.height/2);
       canvasCtx.stroke();
 
 
@@ -134,13 +145,35 @@ var sliceWidth = WIDTH * 1.0 / bufferLength;
 
 };
 
-//Button Pauses
-document.getElementById('button').onclick = function() {
-   if(!isPaused) {
-     isPaused = true;
-   }
-   else {
-     isPaused = false;
-     draw();
-   }
-};
+$( document ).ready(()=>{
+  //Button Pauses
+  $('#button').click (()=> {
+    if(!isPaused) {
+      isPaused = true;
+      console.log(dataArray);
+    }
+    else {
+      isPaused = false;
+      draw();
+    }
+  });
+
+  $('#XzoomIn').click(()=>{
+    Xzoom*=1.25;
+  });
+
+  $('#XzoomOut').click(()=>{
+    Xzoom/=1.25;
+
+  });
+
+  $('#YzoomIn').click(()=>{
+    Yzoom*=1.25;
+  });
+
+  $('#YzoomOut').click(()=>{
+    Yzoom/=1.25;
+
+  });
+
+});
