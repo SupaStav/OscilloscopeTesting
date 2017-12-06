@@ -1,12 +1,10 @@
 html {
   background-color: #bec4ce;
 }
-#my-canvas {
-  height:50vh;
-  width: 50vw;
-  left: 25%;
-  position: relative;
+canvas {
+
 }
+
 .header-text {
   text-align: center;
 }

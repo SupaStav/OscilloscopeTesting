@@ -1,10 +1,12 @@
+function createCanvas(name, size){
 var analyser;
 var animate;
 fftSize = 2048;
 var bufferLength = fftSize/2;
 var dataArray = new Uint8Array(bufferLength);
+var bufferArray = new Uint8Array(bufferLength*10);
 const SAMPLERATE = 44100;
-var canvas = document.getElementById('my-canvas');
+var canvas = document.getElementById(name);
 var canvasCtx = canvas.getContext('2d');
 var isPaused = false;
 var test1 = 0;
@@ -15,9 +17,10 @@ var Yzoom=1;
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 
-    window.onload =startRecord
-
+    // window.onload =startRecord
+    startRecord();
     function startRecord() {
+      console.log("created "+name);
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!window.AudioContext) {
         console.log("No window.AudioContext");
@@ -30,6 +33,7 @@ const HEIGHT = canvas.height;
       }
 
       let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
       let stream;
       // let inputStream = audioCtx.createScriptProcessor(1024, 1, 1);
       analyser = audioCtx.createAnalyser();
@@ -91,19 +95,37 @@ if(test1<300){
   // console.log(dataArray);
   test1++;
 }
-var sliceWidth = WIDTH * Xzoom / bufferLength;
-if(Xzoom<1){
-  var x = (k*WIDTH*0.333);
-  k=(k+1)%3;
 
-} else {
-var x = 0;
+if(name==="scope-1"){
+  for(var j=0; j<bufferLength; j++){
+    bufferArray[j+k*bufferLength] = dataArray[j];
+  }
+  var sliceWidth = WIDTH / bufferLength/(k+1);
+
+
+    var x = WIDTH/(k+1);
+
+  var l = bufferLength*10;
+
 }
 
-      var paused = false;
-      for(var i = 0; i < bufferLength; i++) {
+  else {
+    var sliceWidth = WIDTH / bufferLength;
+    var x=0;
+    var l = bufferLength;
+  }
 
-              var v = dataArray[i] / 128;
+
+      var paused = false;
+
+      for(var i = 0; i < l; i++) {
+
+              if(name==="scope-1"){
+                var v = bufferArray[i+k*bufferLength] / 128;
+              } else {
+                var v = dataArray[i] / 128;
+
+              }
               // if(v > 1.5){
                 // paused =false;
                 canvasCtx.strokeStyle = 'rgb(219, 4, 4)';
@@ -111,7 +133,7 @@ var x = 0;
                 // paused = true;
                 // canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
               // }
-              v = (v-1)*Yzoom+1;
+              // v = (v-1)*Yzoom+1;
               var y = v * HEIGHT/2;
 
 
@@ -126,6 +148,7 @@ var x = 0;
               x += sliceWidth;
             // }
           }
+          k=(k+1)%10;
 
             // canvasCtx.lineTo(canvas.width, canvas.height/2);
       canvasCtx.stroke();
@@ -177,3 +200,4 @@ $( document ).ready(()=>{
   });
 
 });
+}
