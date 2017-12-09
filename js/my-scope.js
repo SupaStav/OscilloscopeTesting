@@ -1,9 +1,15 @@
 var analyser;
 var animate;
 fftSize = 2048;
-var bufferLength = fftSize/2;
-var dataArray = new Uint8Array(bufferLength);
+var dataLength = fftSize/2;
+var dataArray = new Uint8Array(dataLength);
 const SAMPLERATE = 44100;
+const bufferSecs = 0.5;
+const bufferSize = bufferSecs * SAMPLERATE;
+var process_buffer = new Uint8Array(bufferSize);
+
+
+
 var canvas = document.getElementById('my-canvas');
 var canvasCtx = canvas.getContext('2d');
 var isPaused = false;
@@ -44,10 +50,11 @@ analyser.smoothingTimeConstant = 0.85;
       var microphone = audioCtx.createMediaStreamSource(stream);
       // inputStream.connect(analyser);
       microphone.connect(analyser);
-      bufferLength = analyser.frequencyBinCount;
+      dataLength = analyser.frequencyBinCount;
       // analyser.connect(audioCtx.destination);
       // analyser.getFloatTimeDomainData(dataArray);
-
+myOscilloscope = new WavyJones(audioCtx, 'oscilloscope');
+microphone.connect(myOscilloscope);
       }, (err)=>{
       console.log("ERROR");
       });
@@ -59,14 +66,12 @@ function draw(){
 //2.5s= 50x
 //1/50th of canvas size
 
-// Control Spectrogram onset/offset of notes, make ramps
-
+//While True
 if(!isPaused){
   animate = window.requestAnimationFrame(draw);
 
 }
 
-  // animate = window.requestAnimationFrame(draw);
 
 
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -87,23 +92,36 @@ if(!isPaused){
       // let width = WIDTH - x;
       // let height = HEIGHT - y;
       analyser.getByteTimeDomainData(dataArray);
-if(test1<300){
-  // console.log(dataArray);
-  test1++;
-}
-var sliceWidth = WIDTH * Xzoom / bufferLength;
-if(Xzoom<1){
-  var x = (k*WIDTH*0.333);
-  k=(k+1)%3;
+      var num_samples = dataArray.length;
+      //Shift
+      process_buffer = process_buffer.map((val, index, arr)=>{
+// Shift buffer and append values
+        return (index < (bufferSize - num_samples)) ? arr[index + num_samples] : dataArray[index - (bufferSize-num_samples)];
 
+      });
+
+
+
+
+
+
+if(test1==300||test1==301){
+  console.log(process_buffer);
+  test1++;
 } else {
-var x = 0;
+
+test1++;
 }
+
+// var sliceWidth = WIDTH  / dataLength;
+var sliceWidth = 10;
+
+var x = 0;
 
       var paused = false;
-      for(var i = 0; i < bufferLength; i++) {
+      for(var i = 0; i < bufferSize; i++) {
 
-              var v = dataArray[i] / 128;
+              var v = process_buffer[i] / 128;
               // if(v > 1.5){
                 // paused =false;
                 canvasCtx.strokeStyle = 'rgb(219, 4, 4)';
@@ -111,11 +129,10 @@ var x = 0;
                 // paused = true;
                 // canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
               // }
-              v = (v-1)*Yzoom+1;
+              // v = (v-1)*Yzoom+1;
               var y = v * HEIGHT/2;
 
 
-              // if(!paused){
               if(i === 0) {
                 canvasCtx.moveTo(x, y);
               } else {
@@ -124,25 +141,10 @@ var x = 0;
 
               }
               x += sliceWidth;
-            // }
           }
 
-            // canvasCtx.lineTo(canvas.width, canvas.height/2);
+      canvasCtx.lineTo(canvas.width, canvas.height/2);
       canvasCtx.stroke();
-
-
-  // var step = width / dataArray.length;
-  // canvasCtx.beginPath();
-  // // drawing loop (skipping every second record)
-  // for (var i = 0; i < dataArray.length; i++) {
-  //   var percent = [i] / dataArray.length;
-  //   var x1 = x + (i * step);
-  //   var y1 = y + (i * percent);
-  //   canvasCtx.lineTo(x1, y1);
-  // }
-  //
-  // canvasCtx.stroke();
-
 };
 
 $( document ).ready(()=>{
@@ -150,7 +152,7 @@ $( document ).ready(()=>{
   $('#button').click (()=> {
     if(!isPaused) {
       isPaused = true;
-      console.log(dataArray);
+      console.log(process_buffer);
     }
     else {
       isPaused = false;
