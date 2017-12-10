@@ -53,8 +53,8 @@ analyser.smoothingTimeConstant = 0.85;
       dataLength = analyser.frequencyBinCount;
       // analyser.connect(audioCtx.destination);
       // analyser.getFloatTimeDomainData(dataArray);
-myOscilloscope = new WavyJones(audioCtx, 'oscilloscope');
-microphone.connect(myOscilloscope);
+// myOscilloscope = new WavyJones(audioCtx, 'oscilloscope');
+// microphone.connect(myOscilloscope);
       }, (err)=>{
       console.log("ERROR");
       });
@@ -113,13 +113,12 @@ if(test1==300||test1==301){
 test1++;
 }
 
-// var sliceWidth = WIDTH  / dataLength;
-var sliceWidth = 10;
+var sliceWidth = WIDTH  / dataLength;
 
 var x = 0;
 
       var paused = false;
-      for(var i = 0; i < bufferSize; i++) {
+      for(var i = 0; i < bufferSize; i=i+10) {
 
               var v = process_buffer[i] / 128;
               // if(v > 1.5){
