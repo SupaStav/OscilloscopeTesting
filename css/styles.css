@@ -2,6 +2,16 @@ html {
   background-color: #bec4ce;
 }
 canvas {
+  width: 700px;
+  height: 300px;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  /*border: 2px solid red;*/
+  min-height: 40vh;
 
 }
 
@@ -9,9 +19,9 @@ canvas {
   text-align: center;
 }
 #button {
-  position: absolute;
+  /*position: absolute;
   bottom: 8%;
-  left: 50%;
+  left: 50%;*/
 }
 #XzoomIn {
   position: absolute;
@@ -32,4 +42,9 @@ canvas {
   position: absolute;
   bottom: 4%;
   left: 43%;
+}
+
+#oscilloscope {
+    width: 400px;
+    height: 200px;
 }

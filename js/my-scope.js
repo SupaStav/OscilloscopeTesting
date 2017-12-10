@@ -1,12 +1,17 @@
-function createCanvas(name, size){
+
 var analyser;
 var animate;
 fftSize = 2048;
-var bufferLength = fftSize/2;
-var dataArray = new Uint8Array(bufferLength);
-var bufferArray = new Uint8Array(bufferLength*10);
+var dataLength = fftSize/2;
+var dataArray = new Uint8Array(dataLength);
 const SAMPLERATE = 44100;
-var canvas = document.getElementById(name);
+const bufferSecs = 0.5;
+const bufferSize = bufferSecs * SAMPLERATE;
+var process_buffer = new Uint8Array(bufferSize);
+
+
+
+var canvas = document.getElementById('my-canvas');
 var canvasCtx = canvas.getContext('2d');
 var isPaused = false;
 var test1 = 0;
@@ -48,10 +53,11 @@ analyser.smoothingTimeConstant = 0.85;
       var microphone = audioCtx.createMediaStreamSource(stream);
       // inputStream.connect(analyser);
       microphone.connect(analyser);
-      bufferLength = analyser.frequencyBinCount;
+      dataLength = analyser.frequencyBinCount;
       // analyser.connect(audioCtx.destination);
       // analyser.getFloatTimeDomainData(dataArray);
-
+// myOscilloscope = new WavyJones(audioCtx, 'oscilloscope');
+// microphone.connect(myOscilloscope);
       }, (err)=>{
       console.log("ERROR");
       });
@@ -63,14 +69,12 @@ function draw(){
 //2.5s= 50x
 //1/50th of canvas size
 
-// Control Spectrogram onset/offset of notes, make ramps
-
+//While True
 if(!isPaused){
   animate = window.requestAnimationFrame(draw);
 
 }
 
-  // animate = window.requestAnimationFrame(draw);
 
 
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -81,51 +85,32 @@ if(!isPaused){
   canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
   canvasCtx.beginPath();
 
-
-
-
-
-
       // let x = 0
       // let y = 10;
       // let width = WIDTH - x;
       // let height = HEIGHT - y;
       analyser.getByteTimeDomainData(dataArray);
-if(test1<300){
-  // console.log(dataArray);
+      var num_samples = dataArray.length;
+      //Shift
+      process_buffer = process_buffer.map((val, index, arr)=>{
+// Shift buffer and append values
+        return (index < (bufferSize - num_samples)) ? arr[index + num_samples] : dataArray[index - (bufferSize-num_samples)];
+      });
+
+if(test1==300||test1==301){
   test1++;
+} else {
+test1++;
 }
 
-if(name==="scope-1"){
-  for(var j=0; j<bufferLength; j++){
-    bufferArray[j+k*bufferLength] = dataArray[j];
-  }
-  var sliceWidth = WIDTH / bufferLength/(k+1);
+var sliceWidth = WIDTH  / dataLength;
 
-
-    var x = WIDTH/(k+1);
-
-  var l = bufferLength*10;
-
-}
-
-  else {
-    var sliceWidth = WIDTH / bufferLength;
-    var x=0;
-    var l = bufferLength;
-  }
-
+var x = 0;
 
       var paused = false;
+      for(var i = 0; i < bufferSize; i=i+10) {
 
-      for(var i = 0; i < l; i++) {
-
-              if(name==="scope-1"){
-                var v = bufferArray[i+k*bufferLength] / 128;
-              } else {
-                var v = dataArray[i] / 128;
-
-              }
+              var v = process_buffer[i] / 128;
               // if(v > 1.5){
                 // paused =false;
                 canvasCtx.strokeStyle = 'rgb(219, 4, 4)';
@@ -137,7 +122,6 @@ if(name==="scope-1"){
               var y = v * HEIGHT/2;
 
 
-              // if(!paused){
               if(i === 0) {
                 canvasCtx.moveTo(x, y);
               } else {
@@ -146,26 +130,9 @@ if(name==="scope-1"){
 
               }
               x += sliceWidth;
-            // }
           }
-          k=(k+1)%10;
-
-            // canvasCtx.lineTo(canvas.width, canvas.height/2);
+      canvasCtx.lineTo(canvas.width, canvas.height/2);
       canvasCtx.stroke();
-
-
-  // var step = width / dataArray.length;
-  // canvasCtx.beginPath();
-  // // drawing loop (skipping every second record)
-  // for (var i = 0; i < dataArray.length; i++) {
-  //   var percent = [i] / dataArray.length;
-  //   var x1 = x + (i * step);
-  //   var y1 = y + (i * percent);
-  //   canvasCtx.lineTo(x1, y1);
-  // }
-  //
-  // canvasCtx.stroke();
-
 };
 
 $( document ).ready(()=>{
@@ -173,7 +140,7 @@ $( document ).ready(()=>{
   $('#button').click (()=> {
     if(!isPaused) {
       isPaused = true;
-      console.log(dataArray);
+      console.log(process_buffer);
     }
     else {
       isPaused = false;
@@ -200,4 +167,3 @@ $( document ).ready(()=>{
   });
 
 });
-}
