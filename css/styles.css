@@ -2,8 +2,9 @@ html {
   background-color: #bec4ce;
 }
 canvas {
-  width: 700px;
-  height: 300px;
+  width: 500px;
+  height: 130px;
+  margin: 10px;
 }
 .container {
   display: flex;

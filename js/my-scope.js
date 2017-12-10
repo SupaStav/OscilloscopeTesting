@@ -1,26 +1,35 @@
-
+function createCanvas(ctx, length){
 var analyser;
 var animate;
 fftSize = 2048;
 var dataLength = fftSize/2;
 var dataArray = new Uint8Array(dataLength);
+
 const SAMPLERATE = 44100;
-const bufferSecs = 0.5;
-const bufferSize = bufferSecs * SAMPLERATE;
-var process_buffer = new Uint8Array(bufferSize);
-
-
-
-var canvas = document.getElementById('my-canvas');
-var canvasCtx = canvas.getContext('2d');
+var bufferSecs;
+var bufferSize;
+var process_buffer;
+// var canvas = document.getElementById('scope-1');
+var canvasCtx;
 var isPaused = false;
 var test1 = 0;
-var k=0;
-var Xzoom = 1;
-var Yzoom=1;
+var sampling;
+var WIDTH;
+var HEIGHT;
 
-const WIDTH = canvas.width;
-const HEIGHT = canvas.height;
+  canvas = document.getElementById(ctx);
+  HEIGHT = canvas.height;
+  WIDTH = canvas.width;
+  bufferSecs = length;
+  bufferSize = bufferSecs * SAMPLERATE;
+  process_buffer = new Uint8Array(bufferSize);
+  canvasCtx = canvas.getContext('2d');
+  console.log(canvasCtx.canvas.id);
+  sampling = 20 * length;
+
+
+
+
 
     // window.onload =startRecord
     startRecord();
@@ -71,12 +80,13 @@ function draw(){
 
 //While True
 if(!isPaused){
-  animate = window.requestAnimationFrame(draw);
+  // animate =
 
 }
 
-
-
+if(canvasCtx.canvas.id ==("scope-2")){
+  // console.log("HI");
+}
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
   canvasCtx.fillStyle = 'rgb(0,0,0)';
   canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -108,7 +118,7 @@ var sliceWidth = WIDTH  / dataLength;
 var x = 0;
 
       var paused = false;
-      for(var i = 0; i < bufferSize; i=i+10) {
+      for(var i = 0; i < bufferSize; i=i+sampling) {
 
               var v = process_buffer[i] / 128;
               // if(v > 1.5){
@@ -133,6 +143,9 @@ var x = 0;
           }
       canvasCtx.lineTo(canvas.width, canvas.height/2);
       canvasCtx.stroke();
+      // if(canvasCtx.canvas.id==="scope-3"){
+        animate = window.requestAnimationFrame(draw);
+      // }
 };
 
 $( document ).ready(()=>{
@@ -167,3 +180,4 @@ $( document ).ready(()=>{
   });
 
 });
+}
