@@ -1,35 +1,35 @@
-function createCanvas(ctx, length){
 var analyser;
-var animate;
-fftSize = 2048;
+var fftSize = 2048;
 var dataLength = fftSize/2;
 var dataArray = new Uint8Array(dataLength);
-
+var ctxArray = [];
 const SAMPLERATE = 44100;
-var bufferSecs;
-var bufferSize;
-var process_buffer;
 // var canvas = document.getElementById('scope-1');
-var canvasCtx;
 var isPaused = false;
 var test1 = 0;
-var sampling;
 var WIDTH;
 var HEIGHT;
 
-  canvas = document.getElementById(ctx);
+function createCanvas(name, length, num){
+  var canvas = document.getElementById(name);
   HEIGHT = canvas.height;
   WIDTH = canvas.width;
-  bufferSecs = length;
-  bufferSize = bufferSecs * SAMPLERATE;
-  process_buffer = new Uint8Array(bufferSize);
-  canvasCtx = canvas.getContext('2d');
-  console.log(canvasCtx.canvas.id);
-  sampling = 20 * length;
+  var bufferSecs = length;
+  var bufferSize = bufferSecs * SAMPLERATE;
+  var process_buffer = new Uint8Array(bufferSize);
+  var canvasCtx = canvas.getContext('2d');
+  // console.log(canvasCtx.canvas.id);
+  var sampling = 20 * length;
+ctxArray.push({
+    id:num,
+    ctx: canvasCtx,
+    sampling: sampling,
+    process_buffer: process_buffer,
+    bufferSize: bufferSize
 
+  });
 
-
-
+};
 
     // window.onload =startRecord
     startRecord();
@@ -67,26 +67,30 @@ analyser.smoothingTimeConstant = 0.85;
       // analyser.getFloatTimeDomainData(dataArray);
 // myOscilloscope = new WavyJones(audioCtx, 'oscilloscope');
 // microphone.connect(myOscilloscope);
+      getData();
       }, (err)=>{
       console.log("ERROR");
       });
-      draw();
+      // draw();
 
     }
-function draw(){
+
+function getData(){
+  analyser.getByteTimeDomainData(dataArray);
+  var elem = ctxArray[0];
+  // ctxArray.forEach((elem, index)=>{
+    draw(elem.ctx, elem.sampling, elem.process_buffer, elem.bufferSize);
+  // });
+  window.requestAnimationFrame(getData);
+}
+
+
+function draw(canvasCtx, sampling, process_buffer, bufferSize){
 //50 ms
 //2.5s= 50x
 //1/50th of canvas size
 
 //While True
-if(!isPaused){
-  // animate =
-
-}
-
-if(canvasCtx.canvas.id ==("scope-2")){
-  // console.log("HI");
-}
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
   canvasCtx.fillStyle = 'rgb(0,0,0)';
   canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -95,19 +99,28 @@ if(canvasCtx.canvas.id ==("scope-2")){
   canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
   canvasCtx.beginPath();
 
-      // let x = 0
-      // let y = 10;
-      // let width = WIDTH - x;
-      // let height = HEIGHT - y;
-      analyser.getByteTimeDomainData(dataArray);
       var num_samples = dataArray.length;
+      var shiftIndex = (bufferSize-num_samples);
       //Shift
       process_buffer = process_buffer.map((val, index, arr)=>{
-// Shift buffer and append values
-        return (index < (bufferSize - num_samples)) ? arr[index + num_samples] : dataArray[index - (bufferSize-num_samples)];
+        // if(index > 109226){
+        //   return dataArray[index - shiftIndex]
+        // }
+        // else {
+        //   return arr[index + num_samples]
+        // }
+        // Shift buffer and append values
+        // return Math.random()*15+120
+        if(index > shiftIndex ){
+          return dataArray[index - shiftIndex])
+        }
+
+        // return (index < shiftIndex) ? arr[index + num_samples] : dataArray[index - shiftIndex];
       });
 
-if(test1==300||test1==301){
+
+if(test1==302||test1==305){
+  console.log(process_buffer);
   test1++;
 } else {
 test1++;
@@ -117,9 +130,7 @@ var sliceWidth = WIDTH  / dataLength;
 
 var x = 0;
 
-      var paused = false;
       for(var i = 0; i < bufferSize; i=i+sampling) {
-
               var v = process_buffer[i] / 128;
               // if(v > 1.5){
                 // paused =false;
@@ -141,11 +152,8 @@ var x = 0;
               }
               x += sliceWidth;
           }
-      canvasCtx.lineTo(canvas.width, canvas.height/2);
+      canvasCtx.lineTo(WIDTH, HEIGHT/2);
       canvasCtx.stroke();
-      // if(canvasCtx.canvas.id==="scope-3"){
-        animate = window.requestAnimationFrame(draw);
-      // }
 };
 
 $( document ).ready(()=>{
@@ -180,4 +188,3 @@ $( document ).ready(()=>{
   });
 
 });
-}
