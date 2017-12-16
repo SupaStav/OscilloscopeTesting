@@ -1,5 +1,5 @@
 var analyser;
-var fftSize = 2048;
+var fftSize = 8192;
 var dataLength = fftSize/2;
 var dataArray = new Uint8Array(dataLength);
 var ctxArray = [];
@@ -9,32 +9,41 @@ var isPaused = false;
 var test1 = 0;
 var WIDTH;
 var HEIGHT;
+var process_buffer;
+var bufferSize;
+var start;
 
-function createCanvas(name, length, num){
-  var canvas = document.getElementById(name);
-  HEIGHT = canvas.height;
-  WIDTH = canvas.width;
-  var bufferSecs = length;
-  var bufferSize = bufferSecs * SAMPLERATE;
-  var process_buffer = new Uint8Array(bufferSize);
-  var canvasCtx = canvas.getContext('2d');
+var canvas1 = document.getElementById('scope-1');
+var canvas2 = document.getElementById('scope-2');
+var canvas3 = document.getElementById('scope-3');
+  HEIGHT = canvas1.height;
+  WIDTH = canvas1.width;
+  var canvasCtx1 = canvas1.getContext('2d');
+  var canvasCtx2 = canvas2.getContext('2d');
+  var canvasCtx3 = canvas3.getContext('2d');
+
   // console.log(canvasCtx.canvas.id);
-  var sampling = 20 * length;
-ctxArray.push({
-    id:num,
-    ctx: canvasCtx,
-    sampling: sampling,
-    process_buffer: process_buffer,
-    bufferSize: bufferSize
+  var bufferSecs = 50;
+  var sampling = 20 * bufferSecs;
+  bufferSize = bufferSecs * dataLength;
+  // bufferSize = dataLength*5;
+  process_buffer = new Uint8Array(bufferSize);
 
-  });
+// ctxArray.push({
+//     id:num,
+//     ctx: canvasCtx,
+//     sampling: sampling,
+//     process_buffer: process_buffer,
+//     bufferSize: bufferSize
+//
+//   });
 
-};
+// };
 
-    // window.onload =startRecord
-    startRecord();
+    window.onload =startRecord
+    // startRecord();
     function startRecord() {
-      console.log("created "+name);
+      console.log("created ");
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!window.AudioContext) {
         console.log("No window.AudioContext");
@@ -67,7 +76,9 @@ analyser.smoothingTimeConstant = 0.85;
       // analyser.getFloatTimeDomainData(dataArray);
 // myOscilloscope = new WavyJones(audioCtx, 'oscilloscope');
 // microphone.connect(myOscilloscope);
-      getData();
+start = new Date().getTime();
+getData();
+
       }, (err)=>{
       console.log("ERROR");
       });
@@ -75,21 +86,66 @@ analyser.smoothingTimeConstant = 0.85;
 
     }
 
+
 function getData(){
+if(!isPaused){
   analyser.getByteTimeDomainData(dataArray);
-  var elem = ctxArray[0];
-  // ctxArray.forEach((elem, index)=>{
-    draw(elem.ctx, elem.sampling, elem.process_buffer, elem.bufferSize);
-  // });
-  window.requestAnimationFrame(getData);
+
+  var end = new Date().getTime();
+  var time = end - start;
+  // start = end;
+  console.log(time);
+
+  // var elem = ctxArray[0];
+
+        var num_samples = dataArray.length;
+        var shiftIndex = bufferSize-num_samples;
+        //Shift
+        process_buffer = process_buffer.map((val, index, arr)=>{
+
+
+          // return Math.random()*15+120
+
+          // Shift buffer and append values
+
+          if(index <= shiftIndex ){
+            return arr[index + num_samples];
+          } else {//if(index > shiftIndex) {
+            return dataArray[index - shiftIndex];
+          }// else {
+          //   return arr[index+num_samples-1];
+          // }
+
+          // return (index < shiftIndex) ? arr[index + num_samples] : dataArray[index - shiftIndex];
+        });
+
+        if(test1==302||test1==305){
+          console.log(process_buffer);
+          process_buffer.forEach((val, index)=>{
+            if(val==0)console.log(index);
+          });
+          test1++;
+        } else {
+        test1++;
+        }
+
+  draw(canvasCtx1, 50);
+  draw(canvasCtx2, 2.5);
+  draw(canvasCtx3, 0.5);
+
+    window.requestAnimationFrame(getData);
+  }
+
 }
 
 
-function draw(canvasCtx, sampling, process_buffer, bufferSize){
+function draw(canvasCtx, length){
+
+    // window.requestAnimationFrame(draw.bind(canvasCtx, sampling, process_buffer, bufferSize));
 //50 ms
 //2.5s= 50x
 //1/50th of canvas size
-
+  // analyser.getByteTimeDomainData(dataArray);
 //While True
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
   canvasCtx.fillStyle = 'rgb(0,0,0)';
@@ -99,39 +155,16 @@ function draw(canvasCtx, sampling, process_buffer, bufferSize){
   canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
   canvasCtx.beginPath();
 
-      var num_samples = dataArray.length;
-      var shiftIndex = (bufferSize-num_samples);
-      //Shift
-      process_buffer = process_buffer.map((val, index, arr)=>{
-        // if(index > 109226){
-        //   return dataArray[index - shiftIndex]
-        // }
-        // else {
-        //   return arr[index + num_samples]
-        // }
-        // Shift buffer and append values
-        // return Math.random()*15+120
-        if(index > shiftIndex ){
-          return dataArray[index - shiftIndex])
-        }
+var cutLength = bufferSecs-length;
+var startPos = cutLength * dataLength;
 
-        // return (index < shiftIndex) ? arr[index + num_samples] : dataArray[index - shiftIndex];
-      });
-
-
-if(test1==302||test1==305){
-  console.log(process_buffer);
-  test1++;
-} else {
-test1++;
-}
-
-var sliceWidth = WIDTH  / dataLength;
+var sliceWidth = WIDTH  / (bufferSize/(1/(length/bufferSecs)));
+// sampling = 20 * length;
 
 var x = 0;
+      for(var i = 0; i < bufferSize-startPos; i++) {
+              var v = process_buffer[i+startPos] / 128;
 
-      for(var i = 0; i < bufferSize; i=i+sampling) {
-              var v = process_buffer[i] / 128;
               // if(v > 1.5){
                 // paused =false;
                 canvasCtx.strokeStyle = 'rgb(219, 4, 4)';
@@ -144,7 +177,7 @@ var x = 0;
 
 
               if(i === 0) {
-                canvasCtx.moveTo(x, y);
+                // canvasCtx.moveTo(x, y);
               } else {
 
                 canvasCtx.lineTo(x, y);
@@ -152,6 +185,8 @@ var x = 0;
               }
               x += sliceWidth;
           }
+          // canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
+
       canvasCtx.lineTo(WIDTH, HEIGHT/2);
       canvasCtx.stroke();
 };
@@ -165,7 +200,7 @@ $( document ).ready(()=>{
     }
     else {
       isPaused = false;
-      draw();
+      getData();
     }
   });
 
