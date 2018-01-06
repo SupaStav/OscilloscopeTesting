@@ -84,3 +84,7 @@ canvas {
 #pause-button {
 /* align-self: flex-end; */
 }
+.controls-title {
+  font-size: 20px;
+  align-self: center;
+}
