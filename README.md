@@ -1,3 +1,3 @@
 # Oscilloscope
 
-[Demo]("https://listeningtowaves.github.io/Oscilloscope/")
+[Demo](https://listeningtowaves.github.io/Oscilloscope/)
