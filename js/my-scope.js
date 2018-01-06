@@ -13,6 +13,7 @@ var process_buffer;
 var bufferSize;
 var start;
 
+
 var canvas1 = document.getElementById('scope-1');
 var canvas2 = document.getElementById('scope-2');
 var canvas3 = document.getElementById('scope-3');
@@ -21,7 +22,7 @@ var canvas3 = document.getElementById('scope-3');
   var canvasCtx1 = canvas1.getContext('2d');
   var canvasCtx2 = canvas2.getContext('2d');
   var canvasCtx3 = canvas3.getContext('2d');
-
+var midPoint = {x: WIDTH/2, y: HEIGHT/2};
   // console.log(canvasCtx.canvas.id);
   var bufferSecs = 50;
   var sampling = 20 * bufferSecs;
@@ -94,7 +95,7 @@ if(!isPaused){
   var end = new Date().getTime();
   var time = end - start;
   // start = end;
-  console.log(time);
+  // console.log(time);
 
   // var elem = ctxArray[0];
 
@@ -122,7 +123,7 @@ if(!isPaused){
         if(test1==302||test1==305){
           console.log(process_buffer);
           process_buffer.forEach((val, index)=>{
-            if(val==0)console.log(index);
+            // if(val==0)console.log(index);
           });
           test1++;
         } else {
@@ -137,22 +138,90 @@ if(!isPaused){
   }
 
 }
+function createGrid(ctx){
+    ctx.beginPath();
+    ctx.moveTo(0, midPoint.y);
+    ctx.lineTo(WIDTH, midPoint.y);
+    ctx.moveTo(midPoint.x, 0);
+    ctx.lineTo(midPoint.x, HEIGHT);
+    ctx.strokeStyle = "#196156";
+    ctx.lineWidth = '2';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    gridLineX = midPoint.x - 100;
+    ctx.lineWidth = '2';
+  //   while (gridLineX >= 0){
+  //     ctx.moveTo(gridLineX, 0);
+  //     ctx.lineTo(gridLineX, HEIGHT);
+  //     gridLineX -= 100;
+  // }
+  // gridLineX = midPoint.x + 100;
+  //   while (gridLineX <= WIDTH){
+  //     ctx.moveTo(gridLineX, 0);
+  //     ctx.lineTo(gridLineX, HEIGHT);
+  //     gridLineX += 100;
+  // }
+  // gridLineY = midPoint.y - 100;
+  // while (gridLineY >= 0){
+  //     ctx.moveTo(0, gridLineY);
+  //     ctx.lineTo(WIDTH, gridLineY);
+  //
+  //     gridLineY -= 100;
+  // }
+  // gridLineY = midPoint.y + 100;
+  // while (gridLineY <= HEIGHT){
+  //     ctx.moveTo(0, gridLineY);
+  //     ctx.lineTo(WIDTH, gridLineY);
+  //     gridLineY += 100;
+  // }
+  dashesX = midPoint.x - 20;
+  while (dashesX >= 0){
+      ctx.moveTo(dashesX, midPoint.y-5);
+      ctx.lineTo(dashesX, midPoint.y+5);
+      dashesX -= 20;
+  }
+  while (dashesX <= WIDTH){
+      ctx.moveTo(dashesX, midPoint.y-5);
+      ctx.lineTo(dashesX, midPoint.y+5);
+      dashesX += 20;
+  }
+  dashesY = midPoint.y - 20;
+  while (dashesY >= 0){
+      ctx.moveTo(midPoint.x-5, dashesY);
+      ctx.lineTo(midPoint.x+5, dashesY);
+      dashesY -= 20;
+  }
+  dashesY = midPoint.y + 20;
+  while (dashesY <= HEIGHT){
+      ctx.moveTo(midPoint.x-5, dashesY);
+      ctx.lineTo(midPoint.x+5, dashesY);
+      dashesY += 20;
+  }
+
+  ctx.stroke();
+
+}
+
 
 
 function draw(canvasCtx, length){
+  canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
+createGrid(canvasCtx);
     // window.requestAnimationFrame(draw.bind(canvasCtx, sampling, process_buffer, bufferSize));
 //50 ms
 //2.5s= 50x
 //1/50th of canvas size
   // analyser.getByteTimeDomainData(dataArray);
 //While True
-  canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-  canvasCtx.fillStyle = 'rgb(0,0,0)';
-  canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+  canvasCtx.fillStyle = 'rgb(234, 240, 255)';
+  // canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
   canvasCtx.lineWidth = 2;
-  canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
+  canvasCtx.strokeStyle = 'rgb(32, 164, 247)';
   canvasCtx.beginPath();
 
 var cutLength = bufferSecs-length;
@@ -167,7 +236,7 @@ var x = 0;
 
               // if(v > 1.5){
                 // paused =false;
-                canvasCtx.strokeStyle = 'rgb(219, 4, 4)';
+                // canvasCtx.strokeStyle = 'rgb(219, 4, 4)';
               // } else {
                 // paused = true;
                 // canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
@@ -193,33 +262,35 @@ var x = 0;
 
 $( document ).ready(()=>{
   //Button Pauses
-  $('#button').click (()=> {
+  $('#pause-button').click ((e)=> {
     if(!isPaused) {
       isPaused = true;
       console.log(process_buffer);
+      $('#pause-button').html("Play");
     }
     else {
+      $('#pause-button').html("Pause");
       isPaused = false;
       getData();
     }
   });
 
-  $('#XzoomIn').click(()=>{
-    Xzoom*=1.25;
-  });
-
-  $('#XzoomOut').click(()=>{
-    Xzoom/=1.25;
-
-  });
-
-  $('#YzoomIn').click(()=>{
-    Yzoom*=1.25;
-  });
-
-  $('#YzoomOut').click(()=>{
-    Yzoom/=1.25;
-
-  });
+  // $('#XzoomIn').click(()=>{
+  //   Xzoom*=1.25;
+  // });
+  //
+  // $('#XzoomOut').click(()=>{
+  //   Xzoom/=1.25;
+  //
+  // });
+  //
+  // $('#YzoomIn').click(()=>{
+  //   Yzoom*=1.25;
+  // });
+  //
+  // $('#YzoomOut').click(()=>{
+  //   Yzoom/=1.25;
+  //
+  // });
 
 });

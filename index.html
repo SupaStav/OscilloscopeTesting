@@ -12,14 +12,11 @@
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
   <![endif]-->
+  <script src="./js/jim-knopf-master/dist/knob-min.js"></script>
 </head>
 
 <body>
-  <div>
-  <h1 class="header-text">
-    Oscilloscope
-  </h1>
-  </div>
+
   <!-- <div>
     <script src="./js/wavy-jones.js"></script>
     <div id="oscilloscope">
@@ -27,20 +24,56 @@
     </div>
   </div> -->
   <div class="container">
-  <canvas id="scope-1"></canvas>
-  <canvas id="scope-2"></canvas>
-  <canvas id="scope-3"></canvas>
+    <div class="scopes-container">
+      <h1 class="header-text">
+        Oscilloscopes
+      </h1>
+      <div class="scope-container">
+        <canvas id="scope-1" class="scope"></canvas>
+        <div class="units-container">5000ms</div>
+    </div>
+    <div class="scope-container">
+      <canvas id="scope-2" class="scope"></canvas>
+      <div class="units-container">50ms</div>
+    </div>
+    <div class="scope-container">
+      <canvas id="scope-3" class="scope"></canvas>
+      <div class="units-container">5ms</div>
+    </div>
+    </div>
+    <div class="controls-container">
+      <div>
+      </div>
+      <!-- <div>
+        <label for="drawing">Draw Mode</label>
+        <input type="checkbox" name="drawing">
+      </input>
+      </div>
+      <div>
+        <label for="demo">Output Gain</label>
+        <input class="demo" type="range" min="0" max="100">
+      </input>
+    </div>
+    <div>
+      <label for="headphone">Headphone Mode</label>
+      <input type="checkbox" name="headphone">
+    </input>
 
-  <button id="button">Pause</button>
+      </div> -->
+      <button id="pause-button" >Pause</button>
+
+    </div>
   </div>
   <!-- <button id="XzoomIn">X Zoom In</button>
   <button id="XzoomOut">X Zoom Out</button>
   <button id="YzoomIn">Y Zoom In </button>
   <button id="YzoomOut">Y Zoom Out </button> -->
   <script src="./js/my-scope.js"></script>
-  <script>
+  <!-- <script>
+  createCanvas('scope-1', 0.5);
+  createCanvas('scope-2', 1.5);
+  createCanvas('scope-3', 2.5);
 
-
-  </script>
+  </script> -->
 </body>
 </html>

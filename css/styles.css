@@ -1,51 +1,86 @@
 html {
-  background-color: #bec4ce;
+  background-color: black;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 canvas {
+  /* display: flex; */
+  /* flex: 1; */
+
   width: 800px;
-  height: 130px;
+  height: 150px;
   margin: 10px;
 }
 .container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: column;
-  /*border: 2px solid red;*/
-  min-height: 40vh;
-
+  justify-content: space-around;
+  /* align-items: center; */
+  /* flex-direction: column; */
+  /* margin: 20px 100px 10px 100px; */
+  flex: 1;
+  /* flex: 1; */
+  /* border: 2px solid red; */
+  /* min-height: 40vh; */
+  background-color: #FEFDC9;
+  border: 5px solid gray;
+  min-height: 80vh;
+  margin-top: 15px;
+  min-width: 90vw;
+}
+.scope {
+  border: 3px solid #646465;
+  border-radius: 25px;
 }
 
+.scopes-container {
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  margin: 2px;
+  position: relative;
+}
+.scope-container {
+  position: relative;
+
+}
+.units-container {
+  /* border: 2px solid red; */
+  flex: 0.1;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 10;
+  background-color: #8d98a3;
+  box-shadow: -6px 4px 4px #565e66;
+  padding: 4px;
+  font-size: 16px;
+}
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between;
+  flex: 2;
+  background-color: #c1c5c9;
+  margin: 10px 15px;
+}
 .header-text {
   text-align: center;
-}
-#button {
-  /*position: absolute;
-  bottom: 8%;
-  left: 50%;*/
-}
-#XzoomIn {
+  color: white;
+  /* margin: 2px; */
   position: absolute;
-  bottom: 8%;
-  left: 37%;
-}
-#XzoomOut {
-  position: absolute;
-  bottom: 8%;
-  left: 43%;
-}
-#YzoomIn {
-  position: absolute;
-  bottom: 4%;
-  left: 37%;
-}
-#YzoomOut {
-  position: absolute;
-  bottom: 4%;
-  left: 43%;
-}
+  z-index: 100;
+  left: 38%;
+  top: -50px;
+  background-color: black;
+  opacity: 0.8;
 
-#oscilloscope {
-    width: 400px;
-    height: 200px;
+  border: 5px solid  rgba(190, 199, 206, .5);
+  border-radius: 25px;
+  padding: 5px;
+}
+#pause-button {
+/* align-self: flex-end; */
 }
