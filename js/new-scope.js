@@ -206,12 +206,16 @@ $(document).ready(function () {
       draw();
     }
   });
-mySwiper1.on('touchMove', function () {
+mySwiper1.on('progress', function () {
     setVolume(mySwiper1.progress);
 });
-mySwiper2.on('touchMove', function () {
+
+mySwiper2.on('progress', function () {
     setFrequency(mySwiper2.progress);
 });
+// mySwiper2.on('touchEnd', function () {
+//     setVolume(mySwiper1.progress);
+// });
 $('.mute-button').click((e)=> {
   if(mute){
     setVolume(mySwiper1.progress);
@@ -229,15 +233,12 @@ $('.mute-button').click((e)=> {
 
 function setVolume(vol){
   var newVolume = logspace(0.001,0.1, vol, 2);
-  console.log(newVolume);
 
   gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.5);
 }
 
 function setFrequency(freq){
-  console.log(freq);
   var newFreq = logspace(50, 15000, freq,2);
-  console.log(newFreq);
   osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.5);
 
 }
