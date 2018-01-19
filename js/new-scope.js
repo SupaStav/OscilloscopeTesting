@@ -7,13 +7,13 @@ var osc =audioCtx.createOscillator();
 var gain = audioCtx.createGain();
 osc.connect(gain);
 // gain.connect(analyser);
-gain.gain.value= logspace(0.001,0.1, 0.5, 2);
+gain.gain.value= logspace(0.0001,0.01, 0.5, 2);
 osc.frequency.value = logspace(50, 15000, 0.3333,2);
 osc.type = 'square';
 osc.start();
 gain.connect(audioCtx.destination);
 graphGain = audioCtx.createGain();
-graphGain.gain.value = 20;
+graphGain.gain.value = 100;
 gain.connect(graphGain);
 graphGain.connect(analyser);
 
@@ -176,6 +176,9 @@ $(document).ready(function () {
      },
      initialSlide: 4,
      watchSlidesProgress: true,
+     mousewheel: {
+       invert: false,
+    },
 
   });
   var mySwiper2 = new Swiper ('.swiper2', {
@@ -193,6 +196,10 @@ $(document).ready(function () {
        slideShadows : true,
      },
      initialSlide: 3,
+     watchSlidesProgress: true,
+     mousewheel: {
+       invert: false,
+    },
 
   });
   $('#pause-button').click ((e)=> {
@@ -232,20 +239,17 @@ $('.mute-button').click((e)=> {
 });
 
 function setVolume(vol){
-  var newVolume = logspace(0.001,0.1, vol, 2);
+  var newVolume = logspace(0.0001,0.01, vol, 2);
 
-  gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.5);
+  gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
 }
 
 function setFrequency(freq){
   var newFreq = logspace(50, 15000, freq,2);
-  osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.5);
+  osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
 
 }
-function logScale(val, newFrom, newTo){
-    var exp = Math.log2(newTo+1-newFrom)*val/newTo;
-  return Math.pow(2, exp)-1+newFrom;
-}
+
 function logspace(start, stop, n, N){
     return start * Math.pow(stop/start, n/(N-1));
 }
