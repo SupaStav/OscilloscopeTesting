@@ -1,5 +1,5 @@
 var analyser;
-var fftSize = 8192;
+var fftSize = 1024;
 var dataLength = fftSize/2;
 var dataArray = new Uint8Array(dataLength);
 var ctxArray = [];
@@ -109,10 +109,12 @@ if(!isPaused){
 
           // Shift buffer and append values
 
-          if(index <= shiftIndex ){
+          if(index < shiftIndex ){
             return arr[index + num_samples];
-          } else {//if(index > shiftIndex) {
-            return dataArray[index - shiftIndex];
+          } else if(index >= shiftIndex) {
+
+              return dataArray[index - shiftIndex];
+
           }// else {
           //   return arr[index+num_samples-1];
           // }
@@ -145,7 +147,7 @@ function createGrid(ctx){
     ctx.moveTo(midPoint.x, 0);
     ctx.lineTo(midPoint.x, HEIGHT);
     ctx.strokeStyle = "#196156";
-    ctx.lineWidth = '2';
+    ctx.lineWidth = '1';
     ctx.globalCompositeOperation = 'source-over';
     ctx.stroke();
     ctx.closePath();
