@@ -4,16 +4,17 @@ var analyser = audioCtx.createAnalyser();
 // source = audioCtx.createMediaStreamSource(stream);
 // source.connect(analyser);
 var osc =audioCtx.createOscillator();
+var xxxxx=0;
 var gain = audioCtx.createGain();
 osc.connect(gain);
 // gain.connect(analyser);
-gain.gain.value= logspace(0.0001,0.01, 0.5, 2);
+gain.gain.value= logspace(0.01,0.1, 0.5, 2);
 osc.frequency.value = logspace(50, 15000, 0.3333,2);
-osc.type = 'square';
+osc.type = 'sine';
 osc.start();
 gain.connect(audioCtx.destination);
 graphGain = audioCtx.createGain();
-graphGain.gain.value = 100;
+graphGain.gain.value = 10;
 gain.connect(graphGain);
 graphGain.connect(analyser);
 
@@ -116,7 +117,7 @@ createGrid(canvasCtx1);
   canvasCtx1.fillStyle = 'rgb(234, 240, 255)';
   // canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-  canvasCtx1.lineWidth = 2;
+  canvasCtx1.lineWidth = 1.5;
   canvasCtx1.strokeStyle = 'rgb(66, 229, 244)';
   canvasCtx1.beginPath();
 
@@ -153,8 +154,13 @@ var x = 0;
           }
           // canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
 
-      canvasCtx1.lineTo(WIDTH, HEIGHT/2);
+      // canvasCtx1.lineTo(WIDTH, HEIGHT/2);
       canvasCtx1.stroke();
+      xxxxx++;
+      if(xxxxx==5){
+        xxxxx=0;
+        isPaused = true;
+      }
     }
 };
 
@@ -205,7 +211,7 @@ $(document).ready(function () {
   $('#pause-button').click ((e)=> {
     if(!isPaused) {
       isPaused = true;
-      $('#pause-button').html("Play");
+      $('#pause-button').html("<img src='./resources/play.svg' style='height: 25px; width: 30px'></img>");
     }
     else {
       $('#pause-button').html("Pause");
@@ -215,10 +221,16 @@ $(document).ready(function () {
   });
 mySwiper1.on('progress', function () {
     setVolume(mySwiper1.progress);
+    isPaused = false;
+    draw();
+
 });
 
 mySwiper2.on('progress', function () {
     setFrequency(mySwiper2.progress);
+    isPaused = false;
+    // console.log("HI");
+    // console.log($('.swiper-indicator').text());
 });
 // mySwiper2.on('touchEnd', function () {
 //     setVolume(mySwiper1.progress);
@@ -226,9 +238,11 @@ mySwiper2.on('progress', function () {
 $('.mute-button').click((e)=> {
   if(mute){
     setVolume(mySwiper1.progress);
-    $('.mute-button').html("Mute");
+    const muteHtml = `<img src='./resources/mute.svg' style='height: 25px; width: 30px'></img>`
+    $('.mute-button').html(muteHtml);
   } else {
-    $('.mute-button').html("Play");
+    const speakerHtml = `<img src='./resources/speaker.svg' style='height: 25px; width: 30px'></img>`
+    $('.mute-button').html(speakerHtml);
     gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
   }
   mute = !mute;
@@ -239,7 +253,7 @@ $('.mute-button').click((e)=> {
 });
 
 function setVolume(vol){
-  var newVolume = logspace(0.0001,0.01, vol, 2);
+  var newVolume = logspace(0.01,0.1, vol, 2);
 
   gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
 }
@@ -247,6 +261,7 @@ function setVolume(vol){
 function setFrequency(freq){
   var newFreq = logspace(50, 15000, freq,2);
   osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
+  $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
 
 }
 
