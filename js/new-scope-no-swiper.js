@@ -278,7 +278,7 @@ function setFrequency(freq){
   var newFreq = logspace(50, 15000, freq,2);
   osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
-  // console.log(newFreq);
+  console.log(newFreq);
 }
 
 function logspace(start, stop, n, N){
@@ -327,7 +327,7 @@ function renderAxesLabels() {
       // // var label = this.formatFreq(freq);
       // var units = this.formatUnits(freq);
 
-      drawCanvasCtx.font = '12px Inconsolata';
+      drawCanvasCtx.font = '12px Arial ';
       // Draw the value.
       drawCanvasCtx.textAlign = 'right';
       drawCanvasCtx.fillStyle = 'white';
@@ -343,6 +343,10 @@ function renderAxesLabels() {
 
       drawCanvasCtx.fillRect(x + 50, y, 10, 2);
     }
+    //0 mark
+    var x=DRAWWIDTH - 60;
+    drawCanvasCtx.fillText(54, x+40, DRAWHEIGHT);
+    drawCanvasCtx.fillRect(x + 50, DRAWHEIGHT-2, 10, 2);
 
   }
 
