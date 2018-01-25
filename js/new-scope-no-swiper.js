@@ -25,7 +25,7 @@ var HEIGHT = canvas1.height;
 var WIDTH = canvas1.width;
 var midPoint = {x: WIDTH/2, y: HEIGHT/2};
 var mute = false;
-var isPaused = false;
+var isPaused = true;
 
 analyser.fftSize = 2048;
 var bufferLength = analyser.frequencyBinCount;
@@ -101,15 +101,17 @@ function createGrid(ctx){
 }
 
 // draw(canvasCtx1);
+createGrid(canvasCtx1);
+
 draw();
 
 function draw(){
   if(!isPaused){
-    requestAnimationFrame(draw);
+    // requestAnimationFrame(draw);
 
   canvasCtx1.clearRect(0, 0, WIDTH, HEIGHT);
+  createGrid(canvasCtx1);
 
-createGrid(canvasCtx1);
     // window.requestAnimationFrame(draw.bind(canvasCtx, sampling, process_buffer, bufferSize));
 //50 ms
 //2.5s= 50x
@@ -157,8 +159,8 @@ var x = 0;
 
       // canvasCtx1.lineTo(WIDTH, HEIGHT/2);
       canvasCtx1.stroke();
-      pauseCounter++;
-      // if(pauseCounter==40){
+      // pauseCounter++;
+      // if(pauseCounter==100){
       //   pauseCounter=0;
       //   isPaused = true;
       // }
@@ -277,17 +279,23 @@ function renderCanvas() {
 }
 
 function setVolume(vol){
+  isPaused = false;
   var newVolume = logspace(0.001,0.5, vol, 2);
+  setTimeout(()=>{
+    draw();
+  });
   if(!mute){
   gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
   }
 }
 
 function setFrequency(freq){
+  isPaused = false;
+  draw();
   var newFreq = logspace(50, 15000, freq,2);
   osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
-  console.log(newFreq);
+  // console.log(newFreq);
 }
 
 function logspace(start, stop, n, N){
@@ -312,7 +320,7 @@ function renderAxesLabels() {
       var freq = ((i)/(ticks))
       var tickFreq = Math.round(logspace(50, 14852, freq,2));
       var switchAmp=((freq/ticks-1)*-1);
-      var tickAmp = Math.round(logspace(0.001,0.5, switchAmp, 2)*100)/100;
+      var tickAmp = Math.round(logspace(0.001,0.5, switchAmp, 2)*100)/10*2;
       var percent  = i/(ticks);
       var y = (1-percent) * DRAWHEIGHT;
 
