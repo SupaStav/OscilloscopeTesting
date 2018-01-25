@@ -106,8 +106,9 @@ createGrid(canvasCtx1);
 draw();
 
 function draw(){
-    drawRequest = requestAnimationFrame(draw);
-
+  if(!isPaused){
+    // drawRequest = requestAnimationFrame(draw);
+// isPaused = true;
   canvasCtx1.clearRect(0, 0, WIDTH, HEIGHT);
   createGrid(canvasCtx1);
 
@@ -159,11 +160,10 @@ var x = 0;
       // canvasCtx1.lineTo(WIDTH, HEIGHT/2);
       canvasCtx1.stroke();
 
-    // }
 
-setTimeout(()=>{
-  cancelAnimationFrame(drawRequest);
-}, 300);
+    }
+
+
 
 };
 
@@ -194,7 +194,18 @@ drawCanvas.addEventListener("mousedown", function (e) {
 
   drawPoint();
   setVolume(mousePos.x/DRAWWIDTH);
-  setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
+ setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
+ // if(Math.abs(lastPos.y-mousePos.y) > 0){
+ // isPaused = false;
+ setTimeout(()=>{
+   draw();
+ }, 300);
+ // }
+//  var freq = ((mousePos.y/DRAWHEIGHT)-1)*-1;
+// var newFreq = logspace(50, 15000, freq,2);
+// osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
+
+
 }, false);
 drawCanvas.addEventListener("mouseup", function (e) {
   e.preventDefault();
@@ -264,6 +275,12 @@ function renderCanvas() {
       if(mouseDown){
         setVolume(mousePos.x/DRAWWIDTH);
         setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
+        // if(Math.abs(lastPos.y-mousePos.y) > 40){
+          setTimeout(()=>{
+            draw();
+          }, 300);
+        // }
+
     // drawCanvasCtx.fillStyle = '#ff3da7';
     var color = (mousePos.x/DRAWWIDTH) * 245;
     var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
@@ -287,20 +304,24 @@ function drawPoint(){
 }
 function setVolume(vol){
   var newVolume = logspace(0.001,0.5, vol, 2);
-
+  // draw();
   if(!mute){
   gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
   }
 }
 
 function setFrequency(freq){
-  isPaused = false;
   // pauseCounter=0;
-  draw();
+  // draw();
 
 
   var newFreq = logspace(50, 15000, freq,2);
+
+
+    // draw();
+
   osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
+
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
   // console.log(newFreq);
 }
