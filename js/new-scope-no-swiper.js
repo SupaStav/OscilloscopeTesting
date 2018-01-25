@@ -183,7 +183,7 @@ drawCanvas.addEventListener("mousedown", function (e) {
   var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
   drawCanvasCtx.fillStyle = colorVal;
   // drawCanvasCtx.fillStyle = '#ff3da7';
-  drawCanvasCtx.fillRect(mousePos.x,mousePos.y,5,5);
+  drawCanvasCtx.fillRect(mousePos.x,mousePos.y,3,3);
   setVolume(mousePos.x/DRAWWIDTH);
   setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
 }, false);
@@ -259,7 +259,16 @@ function renderCanvas() {
     var color = (mousePos.x/DRAWWIDTH) * 245;
     var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
     drawCanvasCtx.fillStyle = colorVal;
-    drawCanvasCtx.fillRect(mousePos.x,mousePos.y,5,5);
+    drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
+    renderAxesLabels();
+    drawCanvasCtx.fillStyle = '#ff3da7';
+    drawCanvasCtx.beginPath();
+    drawCanvasCtx.arc(mousePos.x,mousePos.y,4,0,2*Math.PI);
+    drawCanvasCtx.fillStyle = 'green';
+    drawCanvasCtx.fill();
+    // drawCanvasCtx.lineWidth = 2;
+    // drawCanvasCtx.strokeStyle = 'black';
+    // drawCanvasCtx.fillRect(mousePos.x,mousePos.y,5,5);
     drawCanvasCtx.stroke();
     lastPos = mousePos;
     requestAnimationFrame(renderCanvas);
@@ -294,8 +303,6 @@ function renderAxesLabels() {
     var width = window.innerWidth;
     var height = window.innerHeight;
     // Render the vertical frequency axis.
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
     for (var i = 0; i <= ticks; i++) {
       //Inital Vals = 100, 161, 403, 1366, 4967, 19000
       // var freq = startFreq + (step * (i+1));
@@ -304,13 +311,17 @@ function renderAxesLabels() {
 
       var freq = ((i)/(ticks))
       var tickFreq = Math.round(logspace(50, 14852, freq,2));
-
+      var switchAmp=((freq/ticks-1)*-1);
+      var tickAmp = Math.round(logspace(0.001,0.5, switchAmp, 2)*100)/100;
       var percent  = i/(ticks);
       var y = (1-percent) * DRAWHEIGHT;
 
       var x = DRAWWIDTH - 60;
       // Get the value for the current y coordinate.
       var label;
+
+      var ampX = (1-percent)*DRAWWIDTH+10;
+      var ampY = DRAWHEIGHT - 0;
       // var units;
       // if (this.log) {
 
@@ -334,13 +345,15 @@ function renderAxesLabels() {
       // if(y==0){
       //   y=2;
       // }
-      drawCanvasCtx.fillText(tickFreq, x+40, y + yLabelOffset);
+      drawCanvasCtx.fillText(tickFreq+' Hz', x+40, y + yLabelOffset);
+
+      drawCanvasCtx.fillText(tickAmp, ampX+15, ampY)
       // // Draw the units.
       // drawCanvasCtx.textAlign = 'left';
       // drawCanvasCtx.fillStyle = 'white';
       // drawCanvasCtx.fillText(units, x + 10, y + yLabelOffset);
       // Draw a tick mark.
-
+      drawCanvasCtx.fillRect(ampX+20, ampY-10, 3, 10);
       drawCanvasCtx.fillRect(x + 50, y, 10, 2);
     }
     //0 mark

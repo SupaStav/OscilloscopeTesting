@@ -164,6 +164,8 @@ button:focus {outline:0;}
 #draw-canvas {
   border-left: 2px solid black;
   border-top: 2px solid black;
+  border-bottom: 2px solid black;
+
 }
 .color-map {
         margin-top: 2px;
