@@ -25,7 +25,7 @@ var HEIGHT = canvas1.height;
 var WIDTH = canvas1.width;
 var midPoint = {x: WIDTH/2, y: HEIGHT/2};
 var mute = false;
-var isPaused = true;
+var isPaused = false;
 
 analyser.fftSize = 2048;
 var bufferLength = analyser.frequencyBinCount;
@@ -106,8 +106,7 @@ createGrid(canvasCtx1);
 draw();
 
 function draw(){
-  if(!isPaused){
-    // requestAnimationFrame(draw);
+    drawRequest = requestAnimationFrame(draw);
 
   canvasCtx1.clearRect(0, 0, WIDTH, HEIGHT);
   createGrid(canvasCtx1);
@@ -159,12 +158,13 @@ var x = 0;
 
       // canvasCtx1.lineTo(WIDTH, HEIGHT/2);
       canvasCtx1.stroke();
-      // pauseCounter++;
-      // if(pauseCounter==100){
-      //   pauseCounter=0;
-      //   isPaused = true;
-      // }
-    }
+
+    // }
+
+setTimeout(()=>{
+  cancelAnimationFrame(drawRequest);
+}, 300);
+
 };
 
 
@@ -179,13 +179,20 @@ const DRAWWIDTH = drawCanvas.width;
 drawCanvasCtx.beginPath();
 renderAxesLabels();
 drawCanvas.addEventListener("mousedown", function (e) {
+
   mouseDown = true;
   mousePos = getMousePos(drawCanvas, e);
+
+
+
+
   var color = (mousePos.x/DRAWWIDTH) * 245;
   var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
-  drawCanvasCtx.fillStyle = colorVal;
+  // drawCanvasCtx.fillStyle = colorVal;
   // drawCanvasCtx.fillStyle = '#ff3da7';
-  drawCanvasCtx.fillRect(mousePos.x,mousePos.y,3,3);
+  // drawCanvasCtx.fillRect(mousePos.x,mousePos.y,3,3);
+
+  drawPoint();
   setVolume(mousePos.x/DRAWWIDTH);
   setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
 }, false);
@@ -263,27 +270,24 @@ function renderCanvas() {
     drawCanvasCtx.fillStyle = colorVal;
     drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
     renderAxesLabels();
-    drawCanvasCtx.fillStyle = '#ff3da7';
-    drawCanvasCtx.beginPath();
-    drawCanvasCtx.arc(mousePos.x,mousePos.y,4,0,2*Math.PI);
-    drawCanvasCtx.fillStyle = 'green';
-    drawCanvasCtx.fill();
-    // drawCanvasCtx.lineWidth = 2;
-    // drawCanvasCtx.strokeStyle = 'black';
-    // drawCanvasCtx.fillRect(mousePos.x,mousePos.y,5,5);
-    drawCanvasCtx.stroke();
-    lastPos = mousePos;
+    drawPoint();
     requestAnimationFrame(renderCanvas);
   }
 
 }
+function drawPoint(){
+  // drawCanvasCtx.beginPath();
+  // drawCanvasCtx.arc(mousePos.x,mousePos.y,2,0,2*Math.PI);
+  drawCanvasCtx.fillStyle = 'black';
+  drawCanvasCtx.fillRect(mousePos.x, mousePos.y, 5, 5);
+  drawCanvasCtx.fillStyle = 'green';
+  // drawCanvasCtx.fill();
+  drawCanvasCtx.stroke();
 
+}
 function setVolume(vol){
-  isPaused = false;
   var newVolume = logspace(0.001,0.5, vol, 2);
-  setTimeout(()=>{
-    draw();
-  });
+
   if(!mute){
   gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
   }
@@ -291,7 +295,10 @@ function setVolume(vol){
 
 function setFrequency(freq){
   isPaused = false;
+  // pauseCounter=0;
   draw();
+
+
   var newFreq = logspace(50, 15000, freq,2);
   osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
@@ -361,7 +368,7 @@ function renderAxesLabels() {
       // drawCanvasCtx.fillStyle = 'white';
       // drawCanvasCtx.fillText(units, x + 10, y + yLabelOffset);
       // Draw a tick mark.
-      drawCanvasCtx.fillRect(ampX+20, ampY-10, 3, 10);
+      drawCanvasCtx.fillRect(ampX+20, ampY-5, 3, 7);
       drawCanvasCtx.fillRect(x + 50, y, 10, 2);
     }
     //0 mark
