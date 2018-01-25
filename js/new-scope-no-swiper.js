@@ -195,12 +195,14 @@ drawCanvas.addEventListener("mousedown", function (e) {
   drawPoint();
   setVolume(mousePos.x/DRAWWIDTH);
  setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
- // if(Math.abs(lastPos.y-mousePos.y) > 0){
+ if(Math.abs(lastPos.y-mousePos.y) > 5){
+   console.log("HI");
  // isPaused = false;
  setTimeout(()=>{
    draw();
  }, 300);
- // }
+ lastPos = mousePos;
+} 
 //  var freq = ((mousePos.y/DRAWHEIGHT)-1)*-1;
 // var newFreq = logspace(50, 15000, freq,2);
 // osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
@@ -276,9 +278,9 @@ function renderCanvas() {
         setVolume(mousePos.x/DRAWWIDTH);
         setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
         // if(Math.abs(lastPos.y-mousePos.y) > 40){
-          setTimeout(()=>{
-            draw();
-          }, 300);
+          // setTimeout(()=>{
+          //   draw();
+          // }, 300);
         // }
 
     // drawCanvasCtx.fillStyle = '#ff3da7';
