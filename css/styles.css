@@ -6,23 +6,25 @@ html {
   align-items: center;
   flex-direction: column;
 }
+
 .swiper-slide {
   color: white;
 }
+
 .swiper-container {
-    width: 60px;
-    height: 30px;
+  width: 60px;
+  height: 30px;
 }
+
 #scope-1 {
   /* display: flex; */
   /* flex: 1; */
   user-select: none;
   flex: 1;
-/* flex: 5; */
-
+  /* flex: 5; */
   /* margin-right: 15px; */
-
 }
+
 .container {
   display: flex;
   justify-content: space-around;
@@ -39,6 +41,7 @@ html {
   margin-top: 15px;
   min-width: 98vw;
 }
+
 .scope {
   border: 3px solid #646465;
   border-radius: 25px;
@@ -50,16 +53,16 @@ html {
   flex: 7 5;
   margin: 12px;
   position: relative;
-
 }
+
 .scope-container {
   position: relative;
   flex: 3;
   display: flex;
-  justify-content:center;
-  align-items:stretch;
-
+  justify-content: center;
+  align-items: stretch;
 }
+
 .units-container {
   /* border: 2px solid red; */
   flex: 0.1;
@@ -72,12 +75,11 @@ html {
   padding: 4px;
   font-size: 16px;
   user-select: none;
-
 }
-.header-text {
-text-align: center;
-  color: white;
 
+.header-text {
+  text-align: center;
+  color: white;
   /* margin: 2px; */
   position: absolute;
   z-index: 100;
@@ -86,13 +88,15 @@ text-align: center;
   background-color: black;
   opacity: 0.8;
   user-select: none;
-  border: 5px solid  rgba(190, 199, 206, .5);
+  border: 5px solid rgba(190, 199, 206, .5);
   border-radius: 25px;
   padding: 5px;
 }
+
 #pause-button {
   align-self: stretch;
 }
+
 .controls-container {
   display: flex;
   flex-direction: column;
@@ -104,6 +108,7 @@ text-align: center;
   /* margin: 10px 15px; */
   /* padding: 2px; */
 }
+
 .controls-title {
   /* border: 2px solid red; */
   margin-top: 2px;
@@ -111,26 +116,28 @@ text-align: center;
   /* flex: 1; */
   align-self: center;
 }
+
 .zoom-container {
   display: flex;
-  flex:0.25;
+  flex: 0.25;
   justify-content: space-around;
   margin-top: 5px;
   align-items: stretch;
+}
 
-}
 .zoom-button {
-padding: 2px 12px;
+  padding: 2px 12px;
 }
-.scroll-container{
+
+.scroll-container {
   /* border: 2px solid red; */
   flex: 4;
   flex-direction: column;
   /* align-items: center; */
   display: flex;
   position: relative;
-
 }
+
 .swiper-container {
   flex: 1;
   /* border: 2px solid black; */
@@ -143,57 +150,68 @@ padding: 2px 12px;
   align-items: center;
   font-size: 30px;
 }
+
 .swiper-indicator {
   position: absolute;
   top: 2%;
   right: 2%;
   font-size: 20px;
-
 }
+
 button {
-      border: none;
-      text-decoration: none;
+  border: none;
+  text-decoration: none;
 }
-button:hover {
-      color: white;
-      background-color: #8d98a3;
 
+button:hover {
+  color: white;
+  background-color: #8d98a3;
 }
-button:focus {outline:0;}
+
+button:focus {
+  outline: 0;
+}
 
 .canvas-container {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
+
 #draw-canvas {
   border-left: 2px solid black;
   border-top: 2px solid black;
   border-bottom: 2px solid black;
+  /* border-right: 2px solid white; */
+
   /* flex-basis: 200px; */
   flex: 1;
   /* flex-shrink: 80%; */
-
 }
+
 #x-axis-canvas {
-border: 2px solid red;
-/* flex-basis: 20%; */
-/* flex-shrink: 20%; */
-height: 20px;
-
-/* width: 100% */
-/* flex-basis: 20px; */
-/* flex: 0.5; */
-/* height: 10%; */
-
+  border: 2px solid red;
+  /* flex-basis: 20%; */
+  /* flex-shrink: 20%; */
+  height: 20px;
+  /* width: 100% */
+  /* flex-basis: 20px; */
+  /* flex: 0.5; */
+  /* height: 10%; */
 }
+
 .color-map {
-        margin-top: 2px;
-        height: 15px;
-        border: 2px solid gold;
-        background: linear-gradient(to right, hsl(241, 100%, 70%) 15%,hsl(188, 100%, 70%) 30%, hsl(132, 100%, 70%), hsl(58, 100%, 70%),red)
-      }
-      .color-map-labels {
-        display: none;
-        justify-content: space-between;
-      }
+  margin-top: 2px;
+  height: 15px;
+  border: 2px solid gold;
+  background: linear-gradient(to right, hsl(241, 100%, 70%) 15%, hsl(188, 100%, 70%) 30%, hsl(132, 100%, 70%), hsl(58, 100%, 70%), red)
+}
+
+.color-map-labels {
+  display: none;
+  justify-content: space-between;
+}
+
+.zoom-container {
+  user-select: none;
+}

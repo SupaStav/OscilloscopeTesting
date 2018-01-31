@@ -420,7 +420,7 @@ function renderAxesLabels() {
     //0 mark
     drawCanvasCtx.fillStyle = 'white';
     var x=DRAWWIDTH - 60;
-    drawCanvasCtx.fillText(54+'hz', x+60, DRAWHEIGHT-5);
+    drawCanvasCtx.fillText(54+' Hz', x+55, DRAWHEIGHT-5);
     drawCanvasCtx.fillStyle = 'black';
     drawCanvasCtx.fillRect(x + 50, DRAWHEIGHT-2, 10, 2);
 
