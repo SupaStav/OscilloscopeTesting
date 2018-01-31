@@ -297,11 +297,21 @@ function renderCanvas() {
 function drawPoint(){
   // drawCanvasCtx.beginPath();
   // drawCanvasCtx.arc(mousePos.x,mousePos.y,2,0,2*Math.PI);
-  drawCanvasCtx.fillStyle = 'black';
-  drawCanvasCtx.fillRect(mousePos.x, mousePos.y, 5, 5);
-  drawCanvasCtx.fillStyle = 'green';
-  // drawCanvasCtx.fill();
-  drawCanvasCtx.stroke();
+  // drawCanvasCtx.fillStyle = 'black';
+  drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
+  drawCanvasCtx.fillRect(mousePos.x, mousePos.y, 9,4 );
+  // drawCanvasCtx.strokeStyle = 'black';
+  // drawCanvasCtx.moveTo(mousePos.x, mousePos.y);
+  // drawCanvasCtx.lineTo(mousePos.x, mousePos.y+2);
+  // drawCanvasCtx.lineTo(mousePos.x+2, mousePos.y+2);
+  // drawCanvasCtx.lineTo(mousePos.x+2, mousePos.y);
+  // drawCanvasCtx.lineTo(mousePos.x, mousePos.y);
+  //
+  //
+  //
+  // // drawCanvasCtx.fillStyle = 'green';
+  // // drawCanvasCtx.fill();
+  // drawCanvasCtx.stroke();
 
 }
 function setVolume(vol){
