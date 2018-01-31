@@ -172,6 +172,8 @@ var x = 0;
 var mouseDown = false;
 var mousePos = { x:0, y:0 };
 var lastPos = mousePos;
+var oldFreq = -1;
+var oldVol = -1;
 var drawCanvas = document.getElementById('draw-canvas');
 var drawCanvasCtx = drawCanvas.getContext('2d');
 const DRAWHEIGHT = drawCanvas.height;
@@ -195,14 +197,12 @@ drawCanvas.addEventListener("mousedown", function (e) {
   drawPoint();
   setVolume(mousePos.x/DRAWWIDTH);
  setFrequency(((mousePos.y/DRAWHEIGHT)-1)*-1);
- if(Math.abs(lastPos.y-mousePos.y) > 5){
-   console.log("HI");
- // isPaused = false;
- setTimeout(()=>{
-   draw();
- }, 300);
- lastPos = mousePos;
-} 
+//  if(Math.abs(lastPos.y-mousePos.y) > 5){
+//    console.log("HI");
+//  // isPaused = false;
+//
+//  lastPos = mousePos;
+// }
 //  var freq = ((mousePos.y/DRAWHEIGHT)-1)*-1;
 // var newFreq = logspace(50, 15000, freq,2);
 // osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
@@ -306,6 +306,12 @@ function drawPoint(){
 }
 function setVolume(vol){
   var newVolume = logspace(0.001,0.5, vol, 2);
+  if(Math.abs(vol-oldVol) > 0.01){
+    setTimeout(()=>{
+      draw();
+    }, 201);
+  }
+  oldVol = vol;
   // draw();
   if(!mute){
   gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
@@ -316,14 +322,24 @@ function setFrequency(freq){
   // pauseCounter=0;
   // draw();
 
-
+// console.log(freq);
+// console.log(oldFreq);
+// console.log(freq-oldFreq);
+// console.log();
   var newFreq = logspace(50, 15000, freq,2);
 
+if(Math.abs(freq-oldFreq) > 0.01){
+  setTimeout(()=>{
+    draw();
+  }, 201);
+}
+  oldFreq = freq;
 
     // draw();
 
-  osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
 
+
+  osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
   // console.log(newFreq);
 }
