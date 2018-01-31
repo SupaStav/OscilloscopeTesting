@@ -399,20 +399,29 @@ function renderAxesLabels() {
       // if(y==0){
       //   y=2;
       // }
-      drawCanvasCtx.fillText(tickFreq+' Hz', x+40, y + yLabelOffset);
 
-      drawCanvasCtx.fillText(tickAmp, ampX+15, ampY)
+      //y-axis
+      drawCanvasCtx.fillText(tickFreq+' Hz', x+40, y + yLabelOffset);
+      drawCanvasCtx.fillStyle = 'black';
+      drawCanvasCtx.fillRect(x + 50, y, 10, 2);
+
       // // Draw the units.
       // drawCanvasCtx.textAlign = 'left';
       // drawCanvasCtx.fillStyle = 'white';
       // drawCanvasCtx.fillText(units, x + 10, y + yLabelOffset);
       // Draw a tick mark.
-      drawCanvasCtx.fillRect(ampX+20, ampY-5, 3, 7);
-      drawCanvasCtx.fillRect(x + 50, y, 10, 2);
+
+      //x-axis
+      drawCanvasCtx.fillStyle = 'white';
+      drawCanvasCtx.fillText(tickAmp, ampX+23, ampY)
+      drawCanvasCtx.fillStyle = 'black';
+      drawCanvasCtx.fillRect(ampX, ampY-5, 3, 7);
     }
     //0 mark
+    drawCanvasCtx.fillStyle = 'white';
     var x=DRAWWIDTH - 60;
-    drawCanvasCtx.fillText(54, x+40, DRAWHEIGHT);
+    drawCanvasCtx.fillText(54+'hz', x+60, DRAWHEIGHT-5);
+    drawCanvasCtx.fillStyle = 'black';
     drawCanvasCtx.fillRect(x + 50, DRAWHEIGHT-2, 10, 2);
 
   }

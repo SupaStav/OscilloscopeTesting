@@ -13,7 +13,7 @@ html {
     width: 60px;
     height: 30px;
 }
-canvas {
+#scope-1 {
   /* display: flex; */
   /* flex: 1; */
   user-select: none;
@@ -161,10 +161,30 @@ button:hover {
 }
 button:focus {outline:0;}
 
+.canvas-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 #draw-canvas {
   border-left: 2px solid black;
   border-top: 2px solid black;
   border-bottom: 2px solid black;
+  /* flex-basis: 200px; */
+  flex: 1;
+  /* flex-shrink: 80%; */
+
+}
+#x-axis-canvas {
+border: 2px solid red;
+/* flex-basis: 20%; */
+/* flex-shrink: 20%; */
+height: 20px;
+
+/* width: 100% */
+/* flex-basis: 20px; */
+/* flex: 0.5; */
+/* height: 10%; */
 
 }
 .color-map {
