@@ -215,6 +215,11 @@ drawCanvas.addEventListener("mouseup", function (e) {
   gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
   drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
   renderAxesLabels();
+  setTimeout(()=>{
+    canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
+    createGrid(canvasCtx1);
+
+  },205);
 // canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
 // createGrid(canvasCtx1);
 
