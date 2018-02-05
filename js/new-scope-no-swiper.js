@@ -356,7 +356,7 @@ if(Math.abs(freq-oldFreq) > 0.01){
 
 
 
-  osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
+  osc.frequency.exponentialRampToValueAtTime(newFreq, audioCtx.currentTime+0.2);
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
   // console.log(newFreq);
 }
