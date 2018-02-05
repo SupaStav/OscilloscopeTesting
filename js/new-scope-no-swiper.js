@@ -409,7 +409,7 @@ function renderAxesLabels() {
       // // var label = this.formatFreq(freq);
       // var units = this.formatUnits(freq);
 
-      drawCanvasCtx.font = '12px Arial ';
+      drawCanvasCtx.font = '12px Verdana ';
       // Draw the value.
       drawCanvasCtx.textAlign = 'right';
       drawCanvasCtx.fillStyle = 'white';
