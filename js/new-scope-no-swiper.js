@@ -101,7 +101,7 @@ function createGrid(ctx){
 }
 
 // draw(canvasCtx1);
-createGrid(canvasCtx1);
+// createGrid(canvasCtx1);
 
 draw();
 
@@ -181,7 +181,6 @@ const DRAWWIDTH = drawCanvas.width;
 drawCanvasCtx.beginPath();
 renderAxesLabels();
 drawCanvas.addEventListener("mousedown", function (e) {
-
   mouseDown = true;
   mousePos = getMousePos(drawCanvas, e);
 
@@ -210,11 +209,14 @@ drawCanvas.addEventListener("mousedown", function (e) {
 
 }, false);
 drawCanvas.addEventListener("mouseup", function (e) {
+
   e.preventDefault();
   mouseDown = false;
   gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
   drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
   renderAxesLabels();
+// canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
+// createGrid(canvasCtx1);
 
 
 }, false);
@@ -342,8 +344,8 @@ if(Math.abs(freq-oldFreq) > 0.01){
   setTimeout(()=>{
     draw();
   }, 201);
-}
   oldFreq = freq;
+}
 
     // draw();
 
@@ -495,6 +497,12 @@ $(document).mouseup(function(e){
       drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
       renderAxesLabels();
       gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+      setTimeout(()=>{
+        canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
+        createGrid(canvasCtx1);
+
+      },205);
+
 
     });
   });
