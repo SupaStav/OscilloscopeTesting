@@ -125,6 +125,7 @@ function draw(){
   canvasCtx1.strokeStyle = 'rgb(66, 229, 244)';
   canvasCtx1.beginPath();
 
+
 // var cutLength = bufferSecs-length;
 // var startPos = cutLength * dataLength;
 
@@ -204,7 +205,7 @@ drawCanvas.addEventListener("mousedown", function (e) {
 // }
 //  var freq = ((mousePos.y/DRAWHEIGHT)-1)*-1;
 // var newFreq = logspace(50, 15000, freq,2);
-// osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime, 0.2);
+// osc.frequency.setTargetAtTime(newFreq, audioCtx.currentTime,0.05);
 
 
 }, false);
@@ -215,11 +216,11 @@ drawCanvas.addEventListener("mouseup", function (e) {
   gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
   drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
   renderAxesLabels();
-  setTimeout(()=>{
+  //setTimeout(()=>{
     canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
     createGrid(canvasCtx1);
 
-  },205);
+  //},55);
 // canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
 // createGrid(canvasCtx1);
 
@@ -233,6 +234,7 @@ drawCanvas.addEventListener("mousemove", function (e) {
 }, false);
 
 drawCanvas.addEventListener("touchstart", function (e) {
+  e.preventDefault();
         mousePos = getTouchPos(drawCanvas, e);
   var touch = e.touches[0];
   var mouseEvent = new MouseEvent("mousedown", {
@@ -324,14 +326,14 @@ function drawPoint(){
 function setVolume(vol){
   var newVolume = logspace(0.001,0.5, vol, 2);
   if(Math.abs(vol-oldVol) > 0.01){
-    setTimeout(()=>{
+  //  setTimeout(()=>{
       draw();
-    }, 201);
+    //}, 55);
   }
   oldVol = vol;
   // draw();
   if(!mute){
-  gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.2);
+  gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime,0.05);
   }
 }
 
@@ -346,9 +348,9 @@ function setFrequency(freq){
   var newFreq = logspace(50, 15000, freq,2);
 
 if(Math.abs(freq-oldFreq) > 0.01){
-  setTimeout(()=>{
+//  setTimeout(()=>{
     draw();
-  }, 201);
+  //}, 55);
   oldFreq = freq;
 }
 
@@ -356,7 +358,7 @@ if(Math.abs(freq-oldFreq) > 0.01){
 
 
 
-  osc.frequency.exponentialRampToValueAtTime(newFreq, audioCtx.currentTime+0.2);
+  osc.frequency.value = newFreq//, audioCtx.currentTime+0.05);
   // $('.swiper-indicator').text(Math.round(newFreq)+'Hz');
   // console.log(newFreq);
 }
@@ -465,7 +467,7 @@ function renderAxesLabels() {
       } else {
         const speakerHtml = `<img src='./resources/speaker.svg' style='height: 25px; width: 30px'></img>`
         $('.mute-button').html(speakerHtml);
-        gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+        gain.gain.setTargetAtTime(0, audioCtx.currentTime,0.05);
       }
       mute = !mute;
 
@@ -502,11 +504,11 @@ $(document).mouseup(function(e){
       drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
       renderAxesLabels();
       gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-      setTimeout(()=>{
+      //setTimeout(()=>{
         canvasCtx1.clearRect(0,0,WIDTH, HEIGHT);
         createGrid(canvasCtx1);
 
-      },205);
+      //},55);
 
 
     });
