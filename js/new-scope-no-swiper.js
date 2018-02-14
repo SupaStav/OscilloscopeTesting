@@ -1,12 +1,14 @@
 var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
 var analyser = audioCtx.createAnalyser();
+analyser.fftSize = 2048;
 var osc = audioCtx.createOscillator();
 var pauseCounter = 0;
 var gain = audioCtx.createGain();
 osc.connect(gain);
 gain.gain.setValueAtTime(0, audioCtx.currentTime);
-osc.type = 'sine';
+var type = "sine"
+osc.type = type;
 osc.start();
 gain.connect(audioCtx.destination);
 graphGain = audioCtx.createGain();
@@ -14,11 +16,11 @@ graphGain.gain.setValueAtTime(10, audioCtx.currentTime);
 gain.connect(graphGain);
 graphGain.connect(analyser);
 
-var canvas1 = document.getElementById('scope-1');
-var canvasCtx1 = canvas1.getContext('2d');
+var scope = document.getElementById('scope-1');
+var scopeCtx = scope.getContext('2d');
 
-var HEIGHT = canvas1.height;
-var WIDTH = canvas1.width;
+var HEIGHT = scope.height;
+var WIDTH = scope.width;
 var midPoint = {
   x: WIDTH / 2,
   y: HEIGHT / 2
@@ -26,7 +28,6 @@ var midPoint = {
 var mute = false;
 var isPaused = false;
 
-analyser.fftSize = 2048;
 var bufferLength = analyser.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
 
@@ -82,17 +83,15 @@ function draw() {
   if (!isPaused) {
     // drawRequest = requestAnimationFrame(draw);
     // isPaused = true;
-    canvasCtx1.clearRect(0, 0, WIDTH, HEIGHT);
-    createGrid(canvasCtx1);
+    scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    createGrid(scopeCtx);
 
-    //50 ms
-    //2.5s= 50x
-    //1/50th of canvas size
+    //Draw Graph on Screen
 
-    canvasCtx1.fillStyle = 'rgb(234, 240, 255)';
-    canvasCtx1.lineWidth = 1.5;
-    canvasCtx1.strokeStyle = 'rgb(66, 229, 244)';
-    canvasCtx1.beginPath();
+    // scopeCtx.fillStyle = 'rgb(234, 240, 255)';
+    // scopeCtx.lineWidth = 1.5;
+    scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
+    scopeCtx.beginPath();
 
     var sliceWidth = WIDTH * 1.0 / dataArray.length;
     analyser.getByteTimeDomainData(dataArray);
@@ -103,20 +102,22 @@ function draw() {
       var y = v * HEIGHT / 2;
 
       if (i === 0) {
-        canvasCtx1.moveTo(x, y);
+        scopeCtx.moveTo(x, y);
       } else {
 
-        canvasCtx1.lineTo(x, y);
+        scopeCtx.lineTo(x, y);
 
       }
       x += sliceWidth;
     }
 
-    canvasCtx1.stroke();
+    scopeCtx.stroke();
   }
 
 };
 
+
+//Draw Canvas
 var mouseDown = false;
 var mousePos = {
   x: 0,
@@ -131,6 +132,7 @@ const DRAWHEIGHT = drawCanvas.height;
 const DRAWWIDTH = drawCanvas.width;
 drawCanvasCtx.beginPath();
 renderAxesLabels();
+
 drawCanvas.addEventListener("mousedown", function(e) {
   mouseDown = true;
   mousePos = getMousePos(drawCanvas, e);
@@ -139,9 +141,10 @@ drawCanvas.addEventListener("mousedown", function(e) {
   var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
 
   if(osc == null){
+    // console.log(type);
     osc = audioCtx.createOscillator();
     osc.connect(gain);
-    osc.type = 'sine';
+    osc.type = type;
     osc.start();
   }
   drawPoint();
@@ -157,11 +160,13 @@ drawCanvas.addEventListener("mouseup", function(e) {
   drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
   renderAxesLabels();
   //setTimeout(()=>{
-  canvasCtx1.clearRect(0, 0, WIDTH, HEIGHT);
-  createGrid(canvasCtx1);
-  
-  osc.stop(audioCtx.currentTime+0.1);
-  osc = null;
+  scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+  createGrid(scopeCtx);
+  if(osc){
+    osc.stop(audioCtx.currentTime+0.1);
+
+    osc = null;
+  }
 
   //},55);
 
@@ -218,6 +223,7 @@ function getMousePos(canvas, evt) {
   }
 }
 
+// Draw blue point where finger is, sets corresponding volume and frequency
 function renderCanvas() {
   if (mouseDown) {
     setVolume(mousePos.x / DRAWWIDTH);
@@ -242,9 +248,7 @@ function drawPoint() {
 function setVolume(vol) {
   var newVolume = logspace(0.001, 0.5, vol, 2);
   if (Math.abs(vol - oldVol) > 0.01) {
-    //  setTimeout(()=>{
     draw();
-    //}, 55);
   }
   oldVol = vol;
   if (!mute) {
@@ -259,7 +263,7 @@ function setFrequency(freq) {
     oldFreq = freq;
   }
   osc.frequency.value = newFreq;
-  //audioCtx.currentTime; //, audioCtx.currentTime+0.05);
+
 }
 
 function logspace(start, stop, n, N) {
@@ -296,10 +300,10 @@ function renderAxesLabels() {
     var ampX = (1 - percent) * DRAWWIDTH + 10;
     var ampY = DRAWHEIGHT - 0;
 
-    drawCanvasCtx.font = '12px Verdana ';
+    drawCanvasCtx.font = '10px Verdana ';
     // Draw the value.
     drawCanvasCtx.textAlign = 'right';
-    drawCanvasCtx.fillStyle = 'white';
+    drawCanvasCtx.fillStyle = 'black';
 
     //y-axis
     drawCanvasCtx.fillText(tickFreq + ' Hz', x + 40, y + yLabelOffset);
@@ -307,13 +311,13 @@ function renderAxesLabels() {
     drawCanvasCtx.fillRect(x + 50, y, 10, 2);
 
     //x-axis
-    drawCanvasCtx.fillStyle = 'white';
+    drawCanvasCtx.fillStyle = 'black';
     drawCanvasCtx.fillText(tickAmp, ampX + 23, ampY)
     drawCanvasCtx.fillStyle = 'black';
     drawCanvasCtx.fillRect(ampX, ampY - 5, 3, 7);
   }
   // 0 mark
-  drawCanvasCtx.fillStyle = 'white';
+  drawCanvasCtx.fillStyle = 'black';
   var x = DRAWWIDTH - 60;
   drawCanvasCtx.fillText(54 + ' Hz', x + 55, DRAWHEIGHT - 5);
   drawCanvasCtx.fillStyle = 'black';
@@ -349,23 +353,23 @@ $(document).ready(function() {
     timbre = (timbre + 1) % 4;
     switch (timbre) {
       case 0:
-        osc.type = 'sine';
+        type = 'sine';
         $('.timbre-button').html("<img src='./resources/sine.png' style='height: 25px; width: 30px'></img>");
         break;
       case 1:
-        osc.type = 'square';
+        type = 'square';
         $('.timbre-button').html("<img src='./resources/square.png' style='height: 25px; width: 30px'></img>");
         break;
       case 2:
-        osc.type = 'sawtooth';
+        type = 'sawtooth';
         $('.timbre-button').html("<img src='./resources/saw.png' style='height: 25px; width: 30px'></img>");
         break;
       case 3:
-        osc.type = 'triangle';
+        type = 'triangle';
         $('.timbre-button').html("<img src='./resources/triangle.png' style='height: 25px; width: 30px'></img>");
         break;
       default:
-        osc.type = 'sine';
+        type = 'sine';
 
     }
   });
@@ -375,11 +379,8 @@ $(document).ready(function() {
     drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
     renderAxesLabels();
     gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-    //setTimeout(()=>{
-    canvasCtx1.clearRect(0, 0, WIDTH, HEIGHT);
-    createGrid(canvasCtx1);
-
-    //},55);
+    scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    createGrid(scopeCtx);
 
   });
 });

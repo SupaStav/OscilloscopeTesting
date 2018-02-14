@@ -17,28 +17,17 @@ html {
 }
 
 #scope-1 {
-  /* display: flex; */
-  /* flex: 1; */
   user-select: none;
   flex: 1;
-  /* flex: 5; */
-  /* margin-right: 15px; */
 }
 
 .container {
   display: flex;
   justify-content: space-around;
-  /* align-items: center; */
-  /* flex-direction: column; */
-  /* margin: 20px 100px 10px 100px; */
   flex: 1;
-  /* flex: 1; */
-  /* border: 2px solid red; */
-  /* min-height: 40vh; */
   background-color: black;
   border: 8px outset #E4E3DF;
   min-height: 93vh;
-  /* margin-top: 15px; */
   min-width: 98vw;
 }
 
@@ -64,7 +53,6 @@ html {
 }
 
 .units-container {
-  /* border: 2px solid red; */
   flex: 0.1;
   position: absolute;
   right: 5px;
@@ -80,7 +68,6 @@ html {
 .header-text {
   text-align: center;
   color: white;
-  /* margin: 2px; */
   position: absolute;
   z-index: 100;
   left: 40%;
@@ -100,20 +87,13 @@ html {
 .controls-container {
   display: flex;
   flex-direction: column;
-  /* justify-content:space-between; */
-  /* justify-content: center; */
   flex: 2;
-  /* align-items: center; */
   background-color: #c1c5c9;
-  /* margin: 10px 15px; */
-  /* padding: 2px; */
 }
 
 .controls-title {
-  /* border: 2px solid red; */
   margin-top: 2px;
   font-size: 30px;
-  /* flex: 1; */
   align-self: center;
 }
 
@@ -130,17 +110,14 @@ html {
 }
 
 .scroll-container {
-  /* border: 2px solid red; */
   flex: 4;
   flex-direction: column;
-  /* align-items: center; */
   display: flex;
   position: relative;
 }
 
 .swiper-container {
   flex: 1;
-  /* border: 2px solid black; */
   width: 100%;
 }
 
@@ -182,22 +159,13 @@ button:focus {
   border-left: 2px solid black;
   border-top: 2px solid black;
   border-bottom: 2px solid black;
-  /* border-right: 2px solid white; */
-
-  /* flex-basis: 200px; */
   flex: 1;
-  /* flex-shrink: 80%; */
 }
 
 #x-axis-canvas {
   border: 2px solid red;
-  /* flex-basis: 20%; */
-  /* flex-shrink: 20%; */
   height: 20px;
-  /* width: 100% */
-  /* flex-basis: 20px; */
-  /* flex: 0.5; */
-  /* height: 10%; */
+
 }
 
 .color-map {
@@ -214,4 +182,16 @@ button:focus {
 
 .zoom-container {
   user-select: none;
+}
+
+.axes-container {
+position: relative;
+}
+
+#label1 {
+position: absolute;
+}
+
+#label2 {
+position: absolute;
 }
