@@ -7,19 +7,16 @@ html {
   flex-direction: column;
 }
 
-.swiper-slide {
+/*.swiper-slide {
   color: white;
 }
 
 .swiper-container {
   width: 60px;
   height: 30px;
-}
+}*/
 
-#scope-1 {
-  user-select: none;
-  flex: 1;
-}
+/* why all classes instead of id??*/
 
 .container {
   display: flex;
@@ -31,9 +28,21 @@ html {
   min-width: 98vw;
 }
 
-.scope {
-  border: 3px solid #646465;
-  border-radius: 25px;
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+}
+
+#draw-canvas {
+  border: 2px solid black;
+  flex: 1;
+  background-color: #c1c5c9;
+}
+
+.axes-container {
+  position: relative;
+  visibility: hidden;
 }
 
 .scopes-container {
@@ -52,6 +61,30 @@ html {
   align-items: stretch;
 }
 
+#scope-1 {
+  user-select: none;
+  flex: 1;
+}
+
+.scope {
+  border: 3px solid #646465;
+  border-radius: 25px;
+}
+
+.header-text {
+  text-align: center;
+  color: white;
+  position: absolute;
+  z-index: 100;
+  top: -50px;
+  background-color: black;
+  opacity: 0.8;
+  user-select: none;
+  border: 5px solid rgba(190, 199, 206, .5);
+  border-radius: 25px;
+  padding: 5px;
+}
+
 .units-container {
   flex: 0.1;
   position: absolute;
@@ -65,44 +98,38 @@ html {
   user-select: none;
 }
 
-.header-text {
-  text-align: center;
-  color: white;
-  position: absolute;
-  z-index: 100;
-  left: 40%;
-  top: -50px;
-  background-color: black;
-  opacity: 0.8;
-  user-select: none;
-  border: 5px solid rgba(190, 199, 206, .5);
-  border-radius: 25px;
-  padding: 5px;
-}
-
-#pause-button {
-  align-self: stretch;
-}
-
-.controls-container {
-  display: flex;
-  flex-direction: column;
-  flex: 2;
-  background-color: #c1c5c9;
-}
-
-.controls-title {
-  margin-top: 2px;
-  font-size: 30px;
-  align-self: center;
-}
-
 .zoom-container {
   display: flex;
   flex: 0.25;
   justify-content: space-around;
   margin-top: 5px;
   align-items: stretch;
+  user-select: none;
+}
+
+button {
+  border: none;
+  text-decoration: none;
+}
+
+button:hover {
+  color: white;
+  background-color: #8d98a3;
+}
+
+button:focus {
+  outline: 0;
+}
+
+/*#pause-button {
+  align-self: stretch;
+}*/
+
+/*
+.controls-title {
+  margin-top: 2px;
+  font-size: 30px;
+  align-self: center;
 }
 
 .zoom-button {
@@ -135,19 +162,7 @@ html {
   font-size: 20px;
 }
 
-button {
-  border: none;
-  text-decoration: none;
-}
 
-button:hover {
-  color: white;
-  background-color: #8d98a3;
-}
-
-button:focus {
-  outline: 0;
-}
 
 .canvas-container {
   display: flex;
@@ -155,17 +170,11 @@ button:focus {
   height: 100%;
 }
 
-#draw-canvas {
-  border-left: 2px solid black;
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
-  flex: 1;
-}
+
 
 #x-axis-canvas {
   border: 2px solid red;
   height: 20px;
-
 }
 
 .color-map {
@@ -180,13 +189,8 @@ button:focus {
   justify-content: space-between;
 }
 
-.zoom-container {
-  user-select: none;
-}
 
-.axes-container {
-position: relative;
-}
+
 
 #label1 {
 position: absolute;
@@ -194,4 +198,4 @@ position: absolute;
 
 #label2 {
 position: absolute;
-}
+}*/
