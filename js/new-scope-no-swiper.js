@@ -20,6 +20,7 @@
 */
 
 // Setting the audio API and connecting all of its components.
+
 var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 var analyser = audioCtx.createAnalyser();
 analyser.fftSize = 2048;
@@ -28,7 +29,7 @@ var pauseCounter = 0;
 var gain = audioCtx.createGain();
 osc.connect(gain);
 gain.gain.setValueAtTime(0, audioCtx.currentTime);
-var type = "sine"
+var type = "sine";
 osc.type = type;
 osc.start();
 gain.connect(audioCtx.destination);
@@ -247,6 +248,10 @@ function draw() {
 // Draw blue point where finger is, sets corresponding volume and frequency
 function renderCanvas() {
   if (mouseDown) {
+    if(graphGain.gain.value!=10){
+      graphGain.gain.value = 10;
+
+    }
     // We set the volume and the frequency
     let setV = setVolume(mousePos.x / DRAWWIDTH);
     let setF = setFrequency(((mousePos.y / DRAWHEIGHT) - 1) * -1);
@@ -254,7 +259,7 @@ function renderCanvas() {
       if(!mouseMove){
       setTimeout(()=>{
         draw();
-      },100);
+      },150);
       }
       else {
         draw();
@@ -304,7 +309,7 @@ function setVolume(vol) {
 
 // Function that sets the frequency to the value indicated as argument
 function setFrequency(freq) {
-  var newFreq = logspace(50, 15000, freq, 2);
+  var newFreq = logspace(20, 20000, freq, 2);
   var redraw = false;
   if (Math.abs(freq - oldFreq) > 0.01) {
     oldFreq = freq;
@@ -341,7 +346,7 @@ function renderAxesLabels() {
     // var index = this.freqToIndex(freq);
 
     var freq = ((i) / (ticks))
-    var tickFreq = Math.round(logspace(50, 14852, freq, 2));
+    var tickFreq = Math.round(logspace(20, 20000, freq, 2));
     var switchAmp = ((freq / ticks - 1) * -1);
     var tickAmp = Math.round(logspace(0.001, 0.5, switchAmp, 2) * 100) / 10 * 2;
     var percent = i / (ticks);
@@ -380,6 +385,7 @@ function renderAxesLabels() {
 
 // Whem the mouse is clicked, we will create a wave dependent on the mouse position
 drawCanvas.addEventListener("mousedown", function(e) {
+  gain.gain.cancelScheduledValues(0)
   mouseDown = true;
   mouseMove = false;
   mousePos = getMousePos(drawCanvas, e);
@@ -387,6 +393,7 @@ drawCanvas.addEventListener("mousedown", function(e) {
 //  var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
 
   if(osc == null){
+
     // console.log(type);
     osc = audioCtx.createOscillator();
     osc.type = type;
@@ -442,8 +449,9 @@ drawCanvas.addEventListener("touchstart", function(e) {
 
 // When the user stops touching the screen, we simulate a mouse unclick
 drawCanvas.addEventListener("touchend", function(e) {
-  var mouseEvent = new MouseEvent("mouseup", {});
-  drawCanvas.dispatchEvent(mouseEvent);
+  // var mouseEvent = new MouseEvent("mouseup", {});
+  // drawCanvas.dispatchEvent(mouseEvent);
+  setToZero();
 }, false);
 
 // When the user moves its fingers in the screen, we simulate a mouse move
@@ -485,7 +493,25 @@ function getMousePos(canvas, evt) {
     y: (evt.clientY - rect.top) // been adjusted to be relative to element
   }
 }
+function setToZero(){
+  if(mouseDown){
+  mouseDown = false;
+  mouseMove = false;
+  drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
+  renderAxesLabels();
+  gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime+0.2);
+  graphGain.gain.value = 0;
+  oldFreq = -1;
+  oldVol = -1;
+  setTimeout(()=>{
+    scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    createGrid(scopeCtx);
+    draw();
 
+  },100);
+}
+  //});
+  }
 //$(document).ready(function() {
 
 // Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
@@ -561,22 +587,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Alternative to jQuery mouseup function
   document.onmouseup = function(){
-    mouseDown = false;
-    mouseMove = false;
-    drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
-    renderAxesLabels();
-    gain.gain.setValueAtTime(0, audioCtx.currentTime+0.02);
-    oldFreq = -1;
-    oldVol = -1;
-    setTimeout(()=>{
-      scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
-      createGrid(scopeCtx);
-      draw();
+    setToZero();
+}
 
-    },80);
-
-
-  //});
-  }
 
 });
