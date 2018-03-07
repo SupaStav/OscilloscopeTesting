@@ -64,6 +64,7 @@ var midPoint = {
 
 // Boolean storing if the mouse is clicked or not
 var mouseDown;
+var mouseMove;
 // Variables to keep track of the mouse position
 var mousePos = {
   x: 0,
@@ -84,8 +85,6 @@ var timbre = 0;
 // Variables to store the data to make the wave
 var bufferLength = analyser.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
-
-
 // This function will set up the two canvas that we are using in the application
 function setCanvas() {
   // Function that calculates the pixel ratio of the device
@@ -200,6 +199,7 @@ function createGrid(ctx) {
 
 // Scope canvas drawing
 function draw() {
+
 //  if (!isPaused) {
     // drawRequest = requestAnimationFrame(draw);
     // isPaused = true;
@@ -248,8 +248,18 @@ function draw() {
 function renderCanvas() {
   if (mouseDown) {
     // We set the volume and the frequency
-    setVolume(mousePos.x / DRAWWIDTH);
-    setFrequency(((mousePos.y / DRAWHEIGHT) - 1) * -1);
+    let setV = setVolume(mousePos.x / DRAWWIDTH);
+    let setF = setFrequency(((mousePos.y / DRAWHEIGHT) - 1) * -1);
+    if(setV | setF){
+      if(!mouseMove){
+      setTimeout(()=>{
+        draw();
+      },100);
+      }
+      else {
+        draw();
+      }
+    }
 
     //var color = (mousePos.x / DRAWWIDTH) * 245;
     //var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
@@ -276,24 +286,36 @@ function drawPoint() {
 
 // Function that sets the volume to the value indicated as argument
 function setVolume(vol) {
+  var redraw = false;
   var newVolume = logspace(0.001, 0.5, vol, 2);
   if (Math.abs(vol - oldVol) > 0.01) {
-    draw();
+    redraw = true;
+    oldVol = vol;
   }
-  oldVol = vol;
   if (!mute) {
+
     gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
+    if(redraw){
+      return true;
+    }
+    return false;
   }
 }
 
 // Function that sets the frequency to the value indicated as argument
 function setFrequency(freq) {
   var newFreq = logspace(50, 15000, freq, 2);
+  var redraw = false;
   if (Math.abs(freq - oldFreq) > 0.01) {
-    draw();
     oldFreq = freq;
+    redraw = true;
   }
   osc.frequency.value = newFreq;
+  if(redraw){
+      return true;
+
+  }
+  return false;
 }
 
 
@@ -359,51 +381,55 @@ function renderAxesLabels() {
 // Whem the mouse is clicked, we will create a wave dependent on the mouse position
 drawCanvas.addEventListener("mousedown", function(e) {
   mouseDown = true;
+  mouseMove = false;
   mousePos = getMousePos(drawCanvas, e);
-
 //  var color = (mousePos.x / DRAWWIDTH) * 245;
 //  var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
 
   if(osc == null){
     // console.log(type);
     osc = audioCtx.createOscillator();
-    osc.connect(gain);
     osc.type = type;
     osc.start();
+    osc.connect(gain);
+
   }
-  drawPoint();
-  setVolume(mousePos.x / DRAWWIDTH);
-  setFrequency(((mousePos.y / DRAWHEIGHT) - 1) * -1);
+renderCanvas();
+  // drawPoint();
+  // setVolume(mousePos.x / DRAWWIDTH);
+  // setFrequency(((mousePos.y / DRAWHEIGHT) - 1) * -1);
 
 }, false);
 
 // When the mouse is unclicked, we delete the wave and return to the original canvas
-drawCanvas.addEventListener("mouseup", function(e) {
-  e.preventDefault();
-  mouseDown = false;
-  gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.01);
-  drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
-  renderAxesLabels();
-  //setTimeout(()=>{
-  scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
-  createGrid(scopeCtx);
-  if(osc){
-    osc.stop(audioCtx.currentTime+0.1);
-
-    osc = null;
-  }
-
-  //},55);
-}, false);
+// drawCanvas.addEventListener("mouseup", function(e) {
+//   e.preventDefault();
+//   mouseDown = false;
+//   mouseMove = false;
+//   drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
+//   renderAxesLabels();
+//   gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+//   oldFreq = -1;
+//   oldVol = -1;
+//   setTimeout(()=>{
+//     scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+//     createGrid(scopeCtx);
+//     draw();
+//
+//   },400);
+//
+// }, false);
 
 // When the mouse moves, we keep track of its position.
 drawCanvas.addEventListener("mousemove", function(e) {
+  mouseMove = true;
   mousePos = getMousePos(drawCanvas, e);
   renderCanvas();
 }, false);
 
 // When the user touches the screen, we simulate a mouse click
 drawCanvas.addEventListener("touchstart", function(e) {
+
   e.preventDefault();
   mousePos = getTouchPos(drawCanvas, e);
   var touch = e.touches[0];
@@ -536,11 +562,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Alternative to jQuery mouseup function
   document.onmouseup = function(){
     mouseDown = false;
+    mouseMove = false;
     drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
     renderAxesLabels();
-    gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-    scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
-    createGrid(scopeCtx);
+    gain.gain.setValueAtTime(0, audioCtx.currentTime+0.02);
+    oldFreq = -1;
+    oldVol = -1;
+    setTimeout(()=>{
+      scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+      createGrid(scopeCtx);
+      draw();
+
+    },80);
+
+
   //});
   }
 
