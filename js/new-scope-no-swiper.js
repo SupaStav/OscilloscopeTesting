@@ -13,6 +13,7 @@
 */
 
 // Setting the audio API and connecting all of its components.
+
 var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 var analyser = audioCtx.createAnalyser();
 analyser.fftSize = 2048;
@@ -516,6 +517,7 @@ drawCanvas.addEventListener("mousemove", function(e) {
 
 // When the user touches the screen, we simulate a mouse click
 drawCanvas.addEventListener("touchstart", function(e) {
+
   e.preventDefault();
   if (nFingers<MAXFINGERS){
     nFingers++;
@@ -593,7 +595,6 @@ function getMousePos(canvas, evt) {
     y: (evt.clientY - rect.top) // been adjusted to be relative to element
   }
 }
-
 function setToZero(){
   if(mouseDown){
     mouseDown = false;
