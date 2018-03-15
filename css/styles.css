@@ -7,17 +7,6 @@ html {
   flex-direction: column;
 }
 
-/*.swiper-slide {
-  color: white;
-}
-
-.swiper-container {
-  width: 60px;
-  height: 30px;
-}*/
-
-/* why all classes instead of id??*/
-
 .container {
   display: flex;
   justify-content: space-around;
@@ -101,11 +90,11 @@ html {
 .zoom-container {
   display: flex;
   flex: 0.25;
-  justify-content: space-around;
   margin-top: 5px;
   align-items: stretch;
   user-select: none;
 }
+
 
 button {
   border: none;
@@ -121,81 +110,103 @@ button:focus {
   outline: 0;
 }
 
-/*#pause-button {
-  align-self: stretch;
-}*/
-
-/*
-.controls-title {
-  margin-top: 2px;
-  font-size: 30px;
-  align-self: center;
-}
-
-.zoom-button {
-  padding: 2px 12px;
-}
-
-.scroll-container {
-  flex: 4;
-  flex-direction: column;
-  display: flex;
+/* This percentages can be even more precise with media queries */
+#timbre-button {
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
+  right: 7%;
 }
 
-.swiper-container {
-  flex: 1;
-  width: 100%;
+@media only screen and (max-width: 1450px) {
+    #timbre-button {
+        right: 7.5%;
+    }
 }
 
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
+@media only screen and (max-width: 1360px) {
+    #timbre-button {
+        right: 8.2%;
+    }
 }
 
-.swiper-indicator {
-  position: absolute;
-  top: 2%;
-  right: 2%;
-  font-size: 20px;
+@media only screen and (max-width: 1280px) {
+    #timbre-button {
+        right: 9%;
+    }
 }
 
-
-
-.canvas-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+@media only screen and (max-width: 1190px) {
+    #timbre-button {
+        right: 10%;
+    }
 }
 
-
-
-#x-axis-canvas {
-  border: 2px solid red;
-  height: 20px;
+@media only screen and (max-width: 1100px) {
+    #timbre-button {
+        right: 11.1%;
+    }
 }
 
-.color-map {
-  margin-top: 2px;
-  height: 15px;
-  border: 2px solid gold;
-  background: linear-gradient(to right, hsl(241, 100%, 70%) 15%, hsl(188, 100%, 70%) 30%, hsl(132, 100%, 70%), hsl(58, 100%, 70%), red)
+@media only screen and (max-width: 1040px) {
+    #timbre-button {
+        right: 12%;
+    }
 }
 
-.color-map-labels {
-  display: none;
-  justify-content: space-between;
+@media only screen and (max-width: 990px) {
+    #timbre-button {
+        right: 13%;
+    }
 }
 
-
-
-
-#label1 {
-position: absolute;
+@media only screen and (max-width: 940px) {
+    #timbre-button {
+        right: 13.8%;
+    }
 }
 
-#label2 {
-position: absolute;
-}*/
+@media only screen and (max-width: 890px) {
+    #timbre-button {
+        right: 15%;
+    }
+}
+
+@media only screen and (max-width: 840px) {
+    #timbre-button {
+        right: 16%;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    #timbre-button {
+        right: 17.6%;
+    }
+}
+
+@media only screen and (max-width: 770px) {
+    #timbre-button {
+        right: 18.6%;
+    }
+}
+
+@media only screen and (max-width: 744px) {
+    #timbre-button {
+        right: 20%;
+    }
+}
+
+@media only screen and (max-width: 715px) {
+    #timbre-button {
+        right: 0%;
+    }
+}
+
+#freq-info {
+  width: 165px;
+  background-color: #1e1e1e;
+  color: white;
+  font-weight: bold;
+  padding-left: 2px;
+  padding-right: 2px;
+}
