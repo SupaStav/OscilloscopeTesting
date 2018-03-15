@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Oscilloscope</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Matthew Rice">
+
+    <!--<link rel="stylesheet" href="Swiper-master/dist/css/swiper.min.css">-->
+
+    <link rel="stylesheet" href="css/styles.css?v=1.0">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+
+    <!--<script src="./js/jim-knopf-master/dist/knob-min.js"></script>-->
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="controls-container">
+        <canvas id="draw-canvas"></canvas>
+      </div>
+      <!--<div class="axes-container">
+          Hi
+      </div>-->
+      <div class="scopes-container">
+        <div class="scope-container">
+          <canvas id="scope-1" class="scope"></canvas>
+          <h1 class="header-text">
+            Oscilloscope
+          </h1>
+          <div class="units-container">25ms</div>
+        </div>
+        <div class="zoom-container">
+          <button id="freq-info"></button>
+          <button id="timbre-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
+          <!--<button id="mute-button"><img src='./resources/mute.svg' style='height: 25px; width: 30px'></img></button>-->
+        </div>
+      </div>
+    </div>
+    <script src="./js/new-scope-no-swiper.js"></script>
+  </body>
+</html>
