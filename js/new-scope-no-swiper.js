@@ -302,6 +302,7 @@ function draw() {
           // x moves the x-distance to the right
           x += sliceWidth;
         }
+        
 
         // numberPoints = 2048*16/nFingers;
         // for (j=0; j<nFingers; j++){
