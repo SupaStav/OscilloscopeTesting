@@ -281,57 +281,57 @@ function draw() {
         } else {
             scopeCtx.strokeStyle = 'rgb(2, 0, 185)';
         }
-        // var x = 0;
-        // // For each of the points that we have
-        // for (var i = 0; i < numberPoints; i++) {
-        //   var y=0;
-        //
-        //   for (j=0; j<nFingers; j++){
-        //     var wavelength = 60000 / frequency[j];
-        //     var v = wavelength/frequency[j];
-        //     var k = 2*Math.PI/wavelength;
-        //     y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
-        //   }
-        //   y+= HEIGHT/2;
-        //   // We draw the point in the canvas
-        //   if (i === 0) {
-        //     scopeCtx.moveTo(x, y);
-        //   } else {
-        //     scopeCtx.lineTo(x, y);
-        //   }
-        //   // x moves the x-distance to the right
-        //   x += sliceWidth;
-        // }
+        var x = 0;
+        // For each of the points that we have
+        for (var i = 0; i < numberPoints; i++) {
+          var y=0;
 
-        numberPoints = 2048*16/nFingers;
-        for (j=0; j<nFingers; j++){
-          // For each of the points that we have
-          var x = 0;
-
-          for (var i = 0; i < numberPoints; i++) {
-            // Why 128?
-            //var v = dataArray[i] / 128;
-            // We get the height of the point
-            //var y = v * HEIGHT / 2;
-            var y=0;
-
-
+          for (j=0; j<nFingers; j++){
             var wavelength = 60000 / frequency[j];
             var v = wavelength/frequency[j];
             var k = 2*Math.PI/wavelength;
             y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
-
-            y+= HEIGHT/2;
-            // We draw the point in the canvas
-            if (i === 0) {
-              scopeCtx.moveTo(x, y);
-            } else {
-              scopeCtx.lineTo(x, y);
-            }
-            // x moves the x-distance to the right
-            x += sliceWidth;
           }
+          y+= HEIGHT/2;
+          // We draw the point in the canvas
+          if (i === 0) {
+            scopeCtx.moveTo(x, y);
+          } else {
+            scopeCtx.lineTo(x, y);
+          }
+          // x moves the x-distance to the right
+          x += sliceWidth;
         }
+
+        // numberPoints = 2048*16/nFingers;
+        // for (j=0; j<nFingers; j++){
+        //   // For each of the points that we have
+        //   var x = 0;
+        //
+        //   for (var i = 0; i < numberPoints; i++) {
+        //     // Why 128?
+        //     //var v = dataArray[i] / 128;
+        //     // We get the height of the point
+        //     //var y = v * HEIGHT / 2;
+        //     var y=0;
+        //
+        //
+        //     var wavelength = 60000 / frequency[j];
+        //     var v = wavelength/frequency[j];
+        //     var k = 2*Math.PI/wavelength;
+        //     y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+        //
+        //     y+= HEIGHT/2;
+        //     // We draw the point in the canvas
+        //     if (i === 0) {
+        //       scopeCtx.moveTo(x, y);
+        //     } else {
+        //       scopeCtx.lineTo(x, y);
+        //     }
+        //     // x moves the x-distance to the right
+        //     x += sliceWidth;
+        //   }
+        // }
       }
     } else {
 
