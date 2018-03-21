@@ -3,21 +3,19 @@
     - Set a scale for drawing the axis in the right canvas, because now it prints more or less axes depending on the size of the page
     - When moving the cursor too fast outside the left canvas, the blue dot gets blocked
     - (Only a problem of the other types of waves) Sometimes, the wave obtained for two same positions of the blue dot is inconsistent
-*/
-
-/* To do:
-    - Think of a possible design for data representation. x-axis : time, y-axis: voltage sent to the speaker
-    - Plot the multiple waves thinner and the superposition wave in the back, thicker
-    - Calculate the volume correctly
-    - In the frequency representation. Dont put anything when no touching, try to find a nice way to represent all the finger frequencies
+    - Set up the constants in order to satisfy professor
+    - When going to the extreme, the sine wave is not perfect, but we should not increase the #points due to performance reasons
+    - t=0 or t++ effect?
+    - multiple fingers mode
+    - los volumenes no se superponen en el 2 fingers mode
 */
 
 // Setting the audio API and connecting all of its components.
-
 var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 var analyser = audioCtx.createAnalyser();
-analyser.fftSize = 2048*8;
+analyser.fftSize = 2048;
 var osc = audioCtx.createOscillator();
+//var pauseCounter = 0;
 var gain = audioCtx.createGain();
 osc.connect(gain);
 gain.gain.setValueAtTime(0, audioCtx.currentTime);
@@ -50,58 +48,45 @@ var PIXEL_RATIO;
 var scopeCtx, scopeId, scope;
 // Width and height of the scope canvas element
 var WIDTH, HEIGHT;
-// Mid point of the scope canvas (used to create the grid)
 var midPoint = {
   x: WIDTH / 2,
   y: HEIGHT / 2
 };
 
+var MAXFINGERS = 10;
+
 // Boolean storing if the mouse is clicked or not
 var mouseDown;
-// Boolean storing if the mouse is moving or not
 var mouseMove;
-
+// Variables to keep track of the mouse position
+var mousePos = [];
+//var lastPos = mousePos;
+// Variables to keep track of the frequency and volume
+var oldFreq = [];
+var oldVol = [];
 // Draw canvas context, id of the draw canvas, the element itself
 var drawCanvasCtx, drawCanvasId, drawCanvas;
 // Width and height of the draw canvas element
 var DRAWHEIGHT, DRAWWIDTH;
 
-// Type of wave we are displaying
+//var mute = false;
+//var isPaused = false;
 var timbre = 0;
 
 // Variables to store the data to make the wave
 var bufferLength = analyser.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
 
-// Minimum and maximum frequencies in the table
 var minFreq = 20;
 var maxFreq = 20000;
-// How sensitive is the program with the movement of the mouse/finger
-// If very sensitive, it will be updated at the minimum change. If not sensitive, it will take longer to update.
 var changeSensitivity = 0.015;
-
-// Number of points in the graph (only for sine version)
 var numberPoints = 2048*16;
-// Time variable (only for sine version)
 var t=0;
-
-// Variable to keep track of the mouse/finger position (array done for each of the possible fingers)
-var mousePos = [];
-// Variable to keep track of the old frequency and old volume (array done for each of the possible fingers)
-var oldFreq = [];
-var oldVol = [];
-// Variable to keep track of the frequency and volume (array done for each of the possible fingers)
 var frequency=[];
 var amplitude=[];
-// Variable to keep track of the fingers touching the screen (only in finger mode)
-var touch=[];
-// Number of fingers touching the screen
 var nFingers=0;
-// Maximum number of fingers allowed in the system - 1
-// If we put eleven fingers, an error is printed but the program does not crash
-var MAXFINGERS = 11;
-// Variable to traverse the fingers in different methods
 var finger;
+var touch=[];
 
 // This function will set up the two canvas that we are using in the application
 function setCanvas() {
@@ -118,26 +103,27 @@ function setCanvas() {
       return dpr / bsr;
   })();
 
-  //Create scope canvas with the device resolution and initialize the variables accordingly
+  //Create scope canvas with the device resolution.
+  //var scope = document.getElementById('scope-1');
   scopeId = document.getElementById('scope-1');
   HEIGHT = scopeId.clientHeight;
   WIDTH = scopeId.clientWidth;
   scope = createHiDPICanvas(WIDTH, HEIGHT, 'scope-1');
   scopeCtx = scope.getContext('2d');
+
   midPoint = {
     x: WIDTH / 2,
     y: HEIGHT / 2
   };
-  // Initialize the mouse clicked and moved
-  mouseDown = false;
-  mouseMove = false;
 
-  // Initialize our finger variables to their default values
+
+  mouseDown = false;
   for (j=0; j<MAXFINGERS; j++){
     mousePos[j] = {
       x: 0,
       y: 0
     };
+    //lastPos = mousePos;
     oldFreq[j] = -1;
     oldVol[j] = -1;
     frequency[j] = 1;
@@ -153,6 +139,7 @@ function setCanvas() {
   DRAWHEIGHT = drawCanvasId.clientHeight;
   DRAWWIDTH = drawCanvasId.clientWidth;
   drawCanvas = createHiDPICanvas(DRAWWIDTH, DRAWHEIGHT, 'draw-canvas');
+  //var drawCanvas = document.getElementById('draw-canvas');
   drawCanvasCtx = drawCanvas.getContext('2d');
   // Function to render the canvas
   renderAxesLabels();
@@ -178,6 +165,7 @@ function createGrid(ctx) {
 
   // Draw the white lines
   ctx.beginPath();
+  //gridLineX = midPoint.x - 100;
   ctx.strokeStyle = "rgb(255, 255, 255)";
   ctx.lineWidth = '5';
 
@@ -221,8 +209,12 @@ function createGrid(ctx) {
 
 // Scope canvas drawing
 function draw() {
+//  if (!isPaused) {
+    //drawRequest = requestAnimationFrame(draw);
+    // isPaused = true;
     var freqInfoMessage;
 
+    //console.log(touch);
     if (nFingers < 2){
       if (frequency[0]===1){
         freqInfoMessage="0 Hz (cycles/second)";
@@ -241,6 +233,9 @@ function draw() {
 
     //Draw Graph on Screen
 
+    // scopeCtx.fillStyle = 'rgb(234, 240, 255)';
+    // scopeCtx.lineWidth = 1.5;
+
     // We draw the blue wave line
     scopeCtx.beginPath();
     scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
@@ -249,13 +244,20 @@ function draw() {
 
     if (type==="sine"){
 
+      //var sliceWidth = WIDTH * 1.0 / dataArray.length;
       var sliceWidth = WIDTH / numberPoints;
+      //analyser.getByteTimeDomainData(dataArray);
       // x starts at 0 (first point is at 0)
       t++;
       if (nFingers===0){
         var x = 0;
         // For each of the points that we have
         for (var i = 0; i < numberPoints; i++) {
+          // Why 128?
+          //var v = dataArray[i] / 128;
+          // We get the height of the point
+          //var y = v * HEIGHT / 2;
+
           var wavelength = 60000 / frequency[0];
           var v = wavelength/frequency[0];
           var k = 2*Math.PI/wavelength;
@@ -271,7 +273,7 @@ function draw() {
           x += sliceWidth;
         }
       } else {
-
+        numberPoints = 2048*16/nFingers;
         if (nFingers===1){
             scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
         } else if (nFingers===2){
@@ -284,6 +286,10 @@ function draw() {
         var x = 0;
         // For each of the points that we have
         for (var i = 0; i < numberPoints; i++) {
+          // Why 128?
+          //var v = dataArray[i] / 128;
+          // We get the height of the point
+          //var y = v * HEIGHT / 2;
           var y=0;
 
           for (j=0; j<nFingers; j++){
@@ -304,7 +310,6 @@ function draw() {
         }
 
 
-        // numberPoints = 2048*16/nFingers;
         // for (j=0; j<nFingers; j++){
         //   // For each of the points that we have
         //   var x = 0;
@@ -342,6 +347,7 @@ function draw() {
       var x = 0;
       // For each of the points that we have
       for (var i = 0; i < numberPoints; i++) {
+        // Why 128?
         var v = dataArray[i] / 128;
         // We get the height of the point
         var y = v * HEIGHT / 2;
@@ -394,6 +400,10 @@ function renderCanvas() {
       }
     }
 
+    //var color = (mousePos.x / DRAWWIDTH) * 245;
+    //var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
+    //drawCanvasCtx.fillStyle = colorVal;
+
     // We clear the canvas to make sure we don't leave anything painted
     drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
     // We redraw the axes and the point
@@ -425,6 +435,10 @@ function setVolume(vol, index) {
   }
   amplitude[index] = vol;
   return redraw;
+/*  if (!mute) {
+    gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
+  }
+*/
 }
 
 // Function that sets the frequency to the value indicated as argument
@@ -448,10 +462,21 @@ function logspace(start, stop, n, N) {
 
 // Function that draws of the axes labels in the left canvas
 function renderAxesLabels() {
+  //var startFreq = 440;
+  //startFreq = 50;
+  //var endFreq = 15000;
   var ticks = 4;
+  //var step = (endFreq - startFreq) / ticks;
   var yLabelOffset = 13;
+  //var width = window.innerWidth;
+  //var height = window.innerHeight;
   // Render the vertical frequency axis.
   for (var i = 0; i <= ticks; i++) {
+    //Inital Vals = 100, 161, 403, 1366, 4967, 19000
+    // var freq = startFreq + (step * (i+1));
+    // Get the y coordinate from the current label.
+    // var index = this.freqToIndex(freq);
+
     var freq = ((i) / (ticks))
     var tickFreq = Math.round(logspace(minFreq, maxFreq, freq, 2));
     var switchAmp = ((freq / ticks - 1) * -1);
@@ -460,7 +485,9 @@ function renderAxesLabels() {
     var y = (1 - percent) * DRAWHEIGHT;
     var x = DRAWWIDTH;
     // Get the value for the current y coordinate.
+    //var label;
 
+    //var ampX = (1 - percent) * DRAWWIDTH + 10;
     var ampX = (1 - percent) * DRAWWIDTH;
     var ampY = DRAWHEIGHT - 0;
     drawCanvasCtx.beginPath();
@@ -497,13 +524,40 @@ drawCanvas.addEventListener("mousedown", function(e) {
     mousePos[finger] = getMousePos(drawCanvas, e);
   }
 
+//  var color = (mousePos.x / DRAWWIDTH) * 245;
+//  var colorVal = 'hsl(H, 100%, 70%)'.replace(/H/g, 255 - color);
+
   if(osc == null){
     osc = audioCtx.createOscillator();
     osc.type = type;
     osc.start();
     osc.connect(gain);
   }
+  //mousePos = getMousePos(drawCanvas, e);
+  //drawPoint();
+  //setVolume(mousePos.x / DRAWWIDTH);
+  //setFrequency(((mousePos.y / DRAWHEIGHT) - 1) * -1);
+
 }, false);
+
+// When the mouse is unclicked, we delete the wave and return to the original canvas
+// drawCanvas.addEventListener("mouseup", function(e) {
+//   e.preventDefault();
+//   mouseDown = false;
+//   mouseMove = false;
+//   drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
+//   renderAxesLabels();
+//   gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+//   oldFreq = -1;
+//   oldVol = -1;
+//   setTimeout(()=>{
+//     scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+//     createGrid(scopeCtx);
+//     draw();
+//
+//   },400);
+//
+// }, false);
 
 // When the mouse moves, we keep track of its position.
 drawCanvas.addEventListener("mousemove", function(e) {
@@ -518,26 +572,29 @@ drawCanvas.addEventListener("mousemove", function(e) {
 
 // When the user touches the screen, we simulate a mouse click
 drawCanvas.addEventListener("touchstart", function(e) {
-
   e.preventDefault();
+  //mousePos = getTouchPos(drawCanvas, e);
   if (nFingers<MAXFINGERS){
     nFingers++;
-    var mouseEvent;
-    touch = e.touches;
-    for (j=0; j<nFingers; j++){
-      finger = j;
-      mouseEvent = new MouseEvent("mousedown", {
-        clientX: touch[j].clientX,
-        clientY: touch[j].clientY
-      });
-      drawCanvas.dispatchEvent(mouseEvent);
-    }
-    renderCanvas();
   }
+  var mouseEvent;
+  touch = e.touches;
+  for (j=0; j<nFingers; j++){
+    finger = j;
+    //touch [j] = e.touches[j];
+    mouseEvent = new MouseEvent("mousedown", {
+      clientX: touch[j].clientX,
+      clientY: touch[j].clientY
+    });
+    drawCanvas.dispatchEvent(mouseEvent);
+  }
+  renderCanvas();
 }, false);
 
 // When the user stops touching the screen, we simulate a mouse unclick
 drawCanvas.addEventListener("touchend", function(e) {
+  //var mouseEvent = new MouseEvent("mouseup", {});
+  //drawCanvas.dispatchEvent(mouseEvent);
   var indexFingerUp;
 
   for (j=0; j<nFingers; j++){
@@ -547,7 +604,24 @@ drawCanvas.addEventListener("touchend", function(e) {
   }
 
   nFingers--;
+  // var newIndexTouch=0;
+  // var newTouch = [];
+  //
+  // for (j=0; j<nFingers; j++){
+  //   if (j !== indexFingerUp){
+  //     newTouch [newIndexTouch] = touch [j];
+  //     mousePos[newIndexTouch] = mousePos [j];
+  //     //lastPos = mousePos;
+  //     oldFreq[newIndexTouch] = oldFreq [j];
+  //     oldVol[newIndexTouch] = oldVol [j];
+  //     frequency[newIndexTouch] = frequency [j];
+  //     amplitude[newIndexTouch] = amplitude [j];
+  //     newIndexTouch++;
+  //   }
+  // }
+  // touch = newTouch;
 
+  //touch.splice(indexFingerUp, 1);
   mousePos.splice(indexFingerUp, 1);
   oldFreq.splice(indexFingerUp, 1);
   oldVol.splice(indexFingerUp, 1);
@@ -569,33 +643,53 @@ drawCanvas.addEventListener("touchend", function(e) {
 
 // When the user moves its fingers in the screen, we simulate a mouse move
 drawCanvas.addEventListener("touchmove", function(e) {
-  if (nFingers<= MAXFINGERS){
-    var mouseEvent;
-    touch = e.touches;
-    for (j=0; j<nFingers; j++){
-      finger = j;
-      mouseEvent = new MouseEvent("mousedown", {
-        clientX: touch[j].clientX,
-        clientY: touch[j].clientY
-      });
-      drawCanvas.dispatchEvent(mouseEvent);
-    }
-    renderCanvas();
+  var mouseEvent;
+  //touch = e.touches;
+  touch = e.touches;
+  for (j=0; j<nFingers; j++){
+    finger = j;
+    //touch [j] = e.touches[j];
+    mouseEvent = new MouseEvent("mousedown", {
+      clientX: touch[j].clientX,
+      clientY: touch[j].clientY
+    });
+    drawCanvas.dispatchEvent(mouseEvent);
   }
+  renderCanvas();
 }, false);
 
 // Resize function to resize the canvas correctly (not working)
-// window.addEventListener("resize", setCanvas);
+window.addEventListener("resize", setCanvas);
+
+// Get the position of a touch relative to the canvas
+function getTouchPos(canvas, evt) {
+  var rect = canvas.getBoundingClientRect(); // abs. size of element
+    //scaleX = canvas.width / rect.width, // relationship bitmap vs. element for X
+    //scaleY = canvas.height / rect.height; // relationship bitmap vs. element for Y
+
+  return {
+    //x: (evt.touches[0].clientX - rect.left) * scaleX, // scale mouse coordinates after they have
+    //y: (evt.touches[0].clientY - rect.top) * scaleY
+    x: (evt.touches[0].clientX - rect.left),
+    y: (evt.touches[0].clientY - rect.top)
+  };
+}
 
 
 // Get the position of the mouse relative to the canvas
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect(); // abs. size of element
+//  scaleX = canvas.width / rect.width; // relationship bitmap vs. element for X
+//  scaleY = canvas.height / rect.height; // relationship bitmap vs. element for Y
+
   return {
+  //  x: (evt.clientX - rect.left) * scaleX, // scale mouse coordinates after they have
+  //  y: (evt.clientY - rect.top) * scaleY // been adjusted to be relative to element
     x: (evt.clientX - rect.left), // scale mouse coordinates after they have
     y: (evt.clientY - rect.top) // been adjusted to be relative to element
   }
 }
+
 function setToZero(){
   if(mouseDown){
     mouseDown = false;
@@ -623,10 +717,44 @@ function setToZero(){
     }
 
   }
+  //});
 }
+
+//$(document).ready(function() {
 
 // Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
 document.addEventListener('DOMContentLoaded', function() {
+
+  /*$('#pause-button').click((e) => {
+    if (!isPaused) {
+      isPaused = true;
+      $('#pause-button').html("<img src='./resources/play.svg' style='height: 25px; width: 30px'></img>");
+    } else {
+      $('#pause-button').html("Pause");
+      isPaused = false;
+      draw();
+    }
+  });*/
+
+
+  //$('.mute-button').click((e) => {
+
+  // Alternative to jQuery click function
+/*  document.getElementById("mute-button").onclick = function () {
+    if (mute) {
+      const muteHtml = `<img src='./resources/mute.svg' style='height: 25px; width: 30px'></img>`
+      document.getElementById("mute-button").innerHTML=muteHtml;
+    } else {
+      const speakerHtml = `<img src='./resources/speaker.svg' style='height: 25px; width: 30px'></img>`
+      document.getElementById("mute-button").innerHTML=speakerHtml;
+      gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    }
+    mute = !mute;
+  //});
+  }
+*/
+
+  // $('.timbre-button').click((e) => {
 
   // Alternative to jQuery click function
   document.getElementById("timbre-button").onclick = function () {
@@ -660,11 +788,29 @@ document.addEventListener('DOMContentLoaded', function() {
     osc.connect(gain);
     osc.type = type;
     osc.start();
+  //});
   }
 
 
+  //$(document).mouseup(function(e) {
+
   // Alternative to jQuery mouseup function
   document.onmouseup = function(){
+    // mouseDown = false;
+    // mouseMove = false;
+    // drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
+    // renderAxesLabels();
+    // //setTimeout(()=>{
+    // gain.gain.setValueAtTime(0, audioCtx.currentTime+0.02);
+    // oldFreq = -1;
+    // oldVol = -1;
+    // setTimeout(()=>{
+    //   scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    //   createGrid(scopeCtx);
+    //   draw();
+    //
+    // },80);
     setToZero();
+  //});
   }
 });

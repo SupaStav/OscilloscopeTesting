@@ -7,6 +7,17 @@ html {
   flex-direction: column;
 }
 
+/*.swiper-slide {
+  color: white;
+}
+
+.swiper-container {
+  width: 60px;
+  height: 30px;
+}*/
+
+/* why all classes instead of id??*/
+
 .container {
   display: flex;
   justify-content: space-around;
@@ -202,6 +213,8 @@ button:focus {
     }
 }
 
+
+
 #freq-info {
   width: 165px;
   background-color: #1e1e1e;
@@ -210,3 +223,82 @@ button:focus {
   padding-left: 2px;
   padding-right: 2px;
 }
+
+/*#pause-button {
+  align-self: stretch;
+}*/
+
+/*
+.controls-title {
+  margin-top: 2px;
+  font-size: 30px;
+  align-self: center;
+}
+
+.zoom-button {
+  padding: 2px 12px;
+}
+
+.scroll-container {
+  flex: 4;
+  flex-direction: column;
+  display: flex;
+  position: relative;
+}
+
+.swiper-container {
+  flex: 1;
+  width: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+}
+
+.swiper-indicator {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  font-size: 20px;
+}
+
+
+
+.canvas-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+
+
+#x-axis-canvas {
+  border: 2px solid red;
+  height: 20px;
+}
+
+.color-map {
+  margin-top: 2px;
+  height: 15px;
+  border: 2px solid gold;
+  background: linear-gradient(to right, hsl(241, 100%, 70%) 15%, hsl(188, 100%, 70%) 30%, hsl(132, 100%, 70%), hsl(58, 100%, 70%), red)
+}
+
+.color-map-labels {
+  display: none;
+  justify-content: space-between;
+}
+
+
+
+
+#label1 {
+position: absolute;
+}
+
+#label2 {
+position: absolute;
+}*/
