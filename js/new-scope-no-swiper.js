@@ -6,10 +6,17 @@
 */
 
 /* To do:
-    - Think of a possible design for data representation. x-axis : time, y-axis: voltage sent to the speaker
-    - Plot the multiple waves thinner and the superposition wave in the back, thicker
+    - (semidone) Think of a possible design for data representation. x-axis : time, y-axis: voltage sent to the speaker
+    - (done) Plot the multiple waves thinner and the superposition wave in the back, thicker
     - Calculate the volume correctly
-    - In the frequency representation. Dont put anything when no touching, try to find a nice way to represent all the finger frequencies
+    - (done) In the frequency representation. Dont put anything when no touching, try to find a nice way to represent all the finger frequencies
+    - Very slow on iPad and no sound
+    - touch boolean variable
+    - vh : viewport HEIGHT
+    - do it in js!!
+    - tone.js
+    - changedTouches loop through
+    - touch-action --> none?
 */
 
 // Setting the audio API and connecting all of its components.
@@ -80,8 +87,9 @@ var maxFreq = 20000;
 // If very sensitive, it will be updated at the minimum change. If not sensitive, it will take longer to update.
 var changeSensitivity = 0.015;
 
-// Number of points in the graph (only for sine version)
+// Number of points in the graph and distance between points (only for sine version)
 var numberPoints = 2048*16;
+var sliceWidth = WIDTH / numberPoints;
 // Time variable (only for sine version)
 var t=0;
 
@@ -97,9 +105,8 @@ var amplitude=[];
 var touch=[];
 // Number of fingers touching the screen
 var nFingers=0;
-// Maximum number of fingers allowed in the system - 1
-// If we put eleven fingers, an error is printed but the program does not crash
-var MAXFINGERS = 11;
+// Maximum number of fingers allowed in the system
+var MAXFINGERS = 4;
 // Variable to traverse the fingers in different methods
 var finger;
 
@@ -133,7 +140,7 @@ function setCanvas() {
   mouseMove = false;
 
   // Initialize our finger variables to their default values
-  for (j=0; j<MAXFINGERS; j++){
+  for (var j=0; j<MAXFINGERS; j++){
     mousePos[j] = {
       x: 0,
       y: 0
@@ -223,40 +230,40 @@ function createGrid(ctx) {
 function draw() {
     var freqInfoMessage;
 
-    if (nFingers < 2){
-      if (frequency[0]===1){
-        freqInfoMessage="0 Hz (cycles/second)";
-      } else {
-        freqInfoMessage=Math.round(frequency[0])+" Hz (cycles/second)";
-      }
-    } else {
-      freqInfoMessage=nFingers+" Finger Mode";
-    }
+    // if (nFingers < 2) {
+    //   if (frequency[0]===1){
+    //     freqInfoMessage="";
+    //   } else {
+    //     freqInfoMessage=Math.round(frequency[0])+" Hz (cycles/second)";
+    //   }
+    // } else {
+    //   freqInfoMessage=nFingers+" Finger Mode";
+    // }
 
-
-    document.getElementById("freq-info").innerHTML=freqInfoMessage;
     // We clear whatever is in scope and we create the grid again
     scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
     createGrid(scopeCtx);
 
     //Draw Graph on Screen
 
-    // We draw the blue wave line
-    scopeCtx.beginPath();
-    scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
-    scopeCtx.lineWidth = '5';
+
     // We get the x-distance between each point by dividing the total width by the number of points
 
     if (type==="sine"){
-
-      var sliceWidth = WIDTH / numberPoints;
       // x starts at 0 (first point is at 0)
       t++;
       if (nFingers===0){
+        numberPoints = 2048*16;
+        sliceWidth = WIDTH / numberPoints;
+        // We draw the blue wave line
+        scopeCtx.beginPath();
+        scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
+        scopeCtx.lineWidth = '5';
+
         var x = 0;
         // For each of the points that we have
         for (var i = 0; i < numberPoints; i++) {
-          var wavelength = 60000 / frequency[0];
+          var wavelength = 100 * HEIGHT / frequency[0];
           var v = wavelength/frequency[0];
           var k = 2*Math.PI/wavelength;
           var y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
@@ -270,78 +277,116 @@ function draw() {
           // x moves the x-distance to the right
           x += sliceWidth;
         }
+        scopeCtx.stroke();
       } else {
+        numberPoints = 2048*16/nFingers;
+        sliceWidth = WIDTH / numberPoints;
+        if (nFingers>1){
+          numberPoints = 2048*16/(nFingers+1);
+          sliceWidth = WIDTH / numberPoints;
+          scopeCtx.beginPath();
+          scopeCtx.lineWidth = '5';
+          scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
+          var x = 0;
+          // For each of the points that we have
+          for (var i = 0; i < numberPoints; i++) {
+            var y=0;
 
-        if (nFingers===1){
-            scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
-        } else if (nFingers===2){
-            scopeCtx.strokeStyle = 'rgb(246, 109, 244)';
-        } else if (nFingers===3){
-            scopeCtx.strokeStyle = 'rgb(101, 255, 0)';
-        } else {
-            scopeCtx.strokeStyle = 'rgb(2, 0, 185)';
+            for (var j=0; j<nFingers; j++){
+              var wavelength = 100 * HEIGHT / frequency[j];
+              var v = wavelength/frequency[j];
+              var k = 2*Math.PI/wavelength;
+              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            }
+            y+= HEIGHT/2;
+            // We draw the point in the canvas
+            if (i === 0) {
+              scopeCtx.moveTo(x, y);
+            } else {
+              scopeCtx.lineTo(x, y);
+            }
+            // x moves the x-distance to the right
+            x += sliceWidth;
+          }
+          scopeCtx.stroke();
         }
-        var x = 0;
-        // For each of the points that we have
-        for (var i = 0; i < numberPoints; i++) {
-          var y=0;
 
-          for (j=0; j<nFingers; j++){
-            var wavelength = 60000 / frequency[j];
+        for (var j=0; j<nFingers; j++){
+          // For each of the points that we have
+          var x = 0;
+          // We draw the blue wave line
+          scopeCtx.beginPath();
+          if (nFingers===1){
+            scopeCtx.lineWidth = '5';
+          } else {
+            scopeCtx.lineWidth = '1';
+          }
+          if (j===0){
+              scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
+              freqInfoMessage="<span style='color: rgb(66, 229, 244)'>"+Math.round(frequency[j])+"</span>";
+          } else if (j===1){
+              scopeCtx.strokeStyle = 'rgb(246, 109, 244)';
+              freqInfoMessage+=" <span style='color: rgb(246, 109, 244)'>"+Math.round(frequency[j])+"</span>";
+          } else if (j===2){
+              scopeCtx.strokeStyle = 'rgb(101, 255, 0)';
+              freqInfoMessage+=" <span style='color: rgb(101, 255, 0)'>"+Math.round(frequency[j])+"</span>";
+          } else {
+              scopeCtx.strokeStyle = 'rgb(2, 0, 185)';
+              freqInfoMessage+=" <span style='color: rgb(2, 0, 185)'>"+Math.round(frequency[j])+"</span>";
+          }
+          for (var i = 0; i < numberPoints; i++) {
+            // Why 128?
+            //var v = dataArray[i] / 128;
+            // We get the height of the point
+            //var y = v * HEIGHT / 2;
+            var y=0;
+
+
+            var wavelength = 100 * HEIGHT / frequency[j];
             var v = wavelength/frequency[j];
             var k = 2*Math.PI/wavelength;
             y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+
+            y+= HEIGHT/2;
+            // We draw the point in the canvas
+            if (i === 0) {
+              scopeCtx.moveTo(x, y);
+            } else {
+              scopeCtx.lineTo(x, y);
+            }
+            // x moves the x-distance to the right
+            x += sliceWidth;
           }
-          y+= HEIGHT/2;
-          // We draw the point in the canvas
-          if (i === 0) {
-            scopeCtx.moveTo(x, y);
-          } else {
-            scopeCtx.lineTo(x, y);
-          }
-          // x moves the x-distance to the right
-          x += sliceWidth;
+          scopeCtx.stroke();
         }
-
-
-        // numberPoints = 2048*16/nFingers;
-        // for (j=0; j<nFingers; j++){
-        //   // For each of the points that we have
-        //   var x = 0;
-        //
-        //   for (var i = 0; i < numberPoints; i++) {
-        //     // Why 128?
-        //     //var v = dataArray[i] / 128;
-        //     // We get the height of the point
-        //     //var y = v * HEIGHT / 2;
-        //     var y=0;
-        //
-        //
-        //     var wavelength = 60000 / frequency[j];
-        //     var v = wavelength/frequency[j];
-        //     var k = 2*Math.PI/wavelength;
-        //     y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
-        //
-        //     y+= HEIGHT/2;
-        //     // We draw the point in the canvas
-        //     if (i === 0) {
-        //       scopeCtx.moveTo(x, y);
-        //     } else {
-        //       scopeCtx.lineTo(x, y);
-        //     }
-        //     // x moves the x-distance to the right
-        //     x += sliceWidth;
-        //   }
-        // }
+      }
+      if (nFingers < 2) {
+        if (frequency[0]===1){
+          freqInfoMessage="";
+        } else {
+          freqInfoMessage=Math.round(frequency[0])+" Hz (cycles/second)";
+        }
+      } else {
+        freqInfoMessage+=" <span style='color: rgb(255, 255, 255)'>Hz</span>";
       }
     } else {
+      if (frequency[0]===1){
+        freqInfoMessage="";
+      } else {
+        freqInfoMessage=Math.round(frequency[0])+" Hz (cycles/second)";
+      }
 
-      var sliceWidth = WIDTH * 1.0 / dataArray.length;
+      // We draw the blue wave line
+      scopeCtx.beginPath();
+      scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
+      scopeCtx.lineWidth = '5';
+
+      sliceWidth = WIDTH * 1.0 / dataArray.length;
       analyser.getByteTimeDomainData(dataArray);
       // x starts at 0 (first point is at 0)
       var x = 0;
       // For each of the points that we have
-      for (var i = 0; i < numberPoints; i++) {
+      for (var i = 0; i < bufferLength; i++) {
         var v = dataArray[i] / 128;
         // We get the height of the point
         var y = v * HEIGHT / 2;
@@ -355,12 +400,9 @@ function draw() {
         // x moves the x-distance to the right
         x += sliceWidth;
       }
-
+      scopeCtx.stroke();
     }
-
-
-    scopeCtx.stroke();
-//  }
+    document.getElementById("freq-info").innerHTML=freqInfoMessage;
 };
 
 
@@ -376,12 +418,12 @@ function renderCanvas() {
     let setFj = setFrequency(((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
     setV = setV || setVj;
     setF = setF || setFj;
-    for (j=1 ; j<nFingers; j++){
+    for (var w=1; w<nFingers; w++){
       // We set the volume and the frequency
-      let setVj = setVolume(mousePos[j].x / DRAWWIDTH, j);
-      let setFj = setFrequency(((mousePos[j].y / DRAWHEIGHT) - 1) * -1, j);
-      setV = setV || setVj;
-      setF = setF || setFj;
+      let setVw = setVolume(mousePos[w].x / DRAWWIDTH, w);
+      let setFw = setFrequency(((mousePos[w].y / DRAWHEIGHT) - 1) * -1, w);
+      setV = setV || setVw;
+      setF = setF || setFw;
     }
     if(setV | setF){
       if(!mouseMove){
@@ -521,10 +563,13 @@ drawCanvas.addEventListener("touchstart", function(e) {
 
   e.preventDefault();
   if (nFingers<MAXFINGERS){
-    nFingers++;
     var mouseEvent;
     touch = e.touches;
-    for (j=0; j<nFingers; j++){
+    nFingers = touch.length;
+    if (nFingers>MAXFINGERS){
+      nFingers = MAXFINGERS;
+    }
+    for (var j=0; j<nFingers; j++){
       finger = j;
       mouseEvent = new MouseEvent("mousedown", {
         clientX: touch[j].clientX,
@@ -538,28 +583,38 @@ drawCanvas.addEventListener("touchstart", function(e) {
 
 // When the user stops touching the screen, we simulate a mouse unclick
 drawCanvas.addEventListener("touchend", function(e) {
+  e.preventDefault();
   var indexFingerUp;
-
-  for (j=0; j<nFingers; j++){
-    if (touch[j].clientX === e.changedTouches[0].clientX && touch[j].clientY === e.changedTouches[0].clientY){
-      indexFingerUp = j;
+  auxTouch = [];
+  for (var z=0; z<touch.length; z++){
+    auxTouch[z] = touch [z];
+  }
+  for (var z=0; z<e.changedTouches.length; z++){
+    for (var j=0; j<auxTouch.length; j++){
+      if(auxTouch[j] && e.changedTouches[z]){
+        if (auxTouch[j].clientX === e.changedTouches[z].clientX && auxTouch[j].clientY === e.changedTouches[z].clientY){
+          indexFingerUp = j;
+        }
+      }
+    }
+    if (indexFingerUp<MAXFINGERS && nFingers<=MAXFINGERS && indexFingerUp<nFingers){
+      nFingers--;
+      auxTouch.splice(indexFingerUp, 1);
+      mousePos.splice(indexFingerUp, 1);
+      oldFreq.splice(indexFingerUp, 1);
+      oldVol.splice(indexFingerUp, 1);
+      frequency.splice(indexFingerUp, 1);
+      amplitude.splice(indexFingerUp, 1);
+      mousePos.push({x: 0, y: 0});
+      oldFreq.push(-1);
+      oldVol.push(-1);
+      frequency.push(1);
+      amplitude.push(0);
     }
   }
-
-  nFingers--;
-
-  mousePos.splice(indexFingerUp, 1);
-  oldFreq.splice(indexFingerUp, 1);
-  oldVol.splice(indexFingerUp, 1);
-  frequency.splice(indexFingerUp, 1);
-  amplitude.splice(indexFingerUp, 1);
-  mousePos.push({x: 0, y: 0});
-  oldFreq.push(-1);
-  oldVol.push(-1);
-  frequency.push(1);
-  amplitude.push(0);
-
-  if (nFingers===0){
+  touch = auxTouch;
+  if (nFingers<=0){
+    nFingers=0;
     touch = [];
     setToZero();
   } else {
@@ -569,10 +624,11 @@ drawCanvas.addEventListener("touchend", function(e) {
 
 // When the user moves its fingers in the screen, we simulate a mouse move
 drawCanvas.addEventListener("touchmove", function(e) {
+  e.preventDefault();
   if (nFingers<= MAXFINGERS){
     var mouseEvent;
     touch = e.touches;
-    for (j=0; j<nFingers; j++){
+    for (var j=0; j<touch.length; j++){
       finger = j;
       mouseEvent = new MouseEvent("mousedown", {
         clientX: touch[j].clientX,
