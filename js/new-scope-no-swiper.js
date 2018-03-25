@@ -23,7 +23,7 @@
 
 var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 var analyser = audioCtx.createAnalyser();
-analyser.fftSize = 2048;
+analyser.fftSize = 2048*8;
 var osc = audioCtx.createOscillator();
 var gain = audioCtx.createGain();
 osc.connect(gain);
