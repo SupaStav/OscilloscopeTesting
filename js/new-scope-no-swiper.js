@@ -8,27 +8,22 @@
 /* To do:
     - (semidone) Think of a possible design for data representation. x-axis : time, y-axis: voltage sent to the speaker
     - (done) Plot the multiple waves thinner and the superposition wave in the back, thicker
-    - Calculate the volume correctly
+    - (semidone) Calculate the volume correctly (Tone js) --> solve the buzzing
     - (done) In the frequency representation. Dont put anything when no touching, try to find a nice way to represent all the finger frequencies
-    - Very slow on iPad and no sound
-    - touch boolean variable
-    - vh : viewport HEIGHT
-    - do it in js!!
-    - tone.js
-    - changedTouches loop through
-    - touch-action --> none?
+    - (matthew solving it) Very slow on iPad and no sound
+    - Maybe fix position of pure tone and complex tune
 */
 
 // Setting the audio API and connecting all of its components.
 
-var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+var type = "sine";
+/*var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 var analyser = audioCtx.createAnalyser();
-analyser.fftSize = 2048*8;
+analyser.fftSize = 2048;
 var osc = audioCtx.createOscillator();
 var gain = audioCtx.createGain();
 osc.connect(gain);
 gain.gain.setValueAtTime(0, audioCtx.currentTime);
-var type = "sine";
 osc.type = type;
 osc.start();
 gain.connect(audioCtx.destination);
@@ -36,8 +31,16 @@ graphGain = audioCtx.createGain();
 graphGain.gain.setValueAtTime(10, audioCtx.currentTime);
 gain.connect(graphGain);
 graphGain.connect(analyser);
+*/
 
-
+// Positionate the y axes header in the correct position
+document.getElementById('yAxis-header').style.bottom = document.getElementsByClassName('container')[0].clientHeight-document.getElementById('scope-1').clientHeight+'px';
+var pureLocation = document.getElementById('pure-button').getBoundingClientRect();
+var complexLocation = document.getElementById('complex-button').getBoundingClientRect();
+document.getElementById('pure-header').style.left = pureLocation.left+pureLocation.width/5+'px';
+document.getElementById('pure-header').style.top = pureLocation.top+pureLocation.height-10+'px';
+document.getElementById('complex-header').style.left = complexLocation.left+'px';
+document.getElementById('complex-header').style.top = complexLocation.top+complexLocation.height-10+'px';
 // This function creates a Canvas with a good quality, using the pixel ratio of the device.
 createHiDPICanvas = function(w, h, canvasName, ratio) {
     if (!ratio) { ratio = PIXEL_RATIO; }
@@ -77,8 +80,8 @@ var DRAWHEIGHT, DRAWWIDTH;
 var timbre = 0;
 
 // Variables to store the data to make the wave
-var bufferLength = analyser.frequencyBinCount;
-var dataArray = new Uint8Array(bufferLength);
+/*var bufferLength = analyser.frequencyBinCount;
+var dataArray = new Uint8Array(bufferLength);*/
 
 // Minimum and maximum frequencies in the table
 var minFreq = 20;
@@ -110,8 +113,37 @@ var MAXFINGERS = 4;
 // Variable to traverse the fingers in different methods
 var finger;
 
+
+
+
+
+var oscillators;
+var synths;
+var masterVolume;
+
 // This function will set up the two canvas that we are using in the application
-function setCanvas() {
+function start() {
+
+  /*var options = {
+   oscillator  : {
+     type  : "sine"
+   },
+  };*/
+
+  Tone.context = new(window.AudioContext || window.webkitAudioContext)();
+  oscillators = new Array(MAXFINGERS);
+  synths = new Array(MAXFINGERS);
+  masterVolume = new Tone.Volume(0);
+  for(let i=0; i<MAXFINGERS; i++){
+   /*synths[i] = new Tone.Synth(options);
+   synths[i].chain(masterVolume, Tone.Master);*/
+   oscillators[i] = new Tone.Oscillator({
+        "type" : "sine",
+  			"frequency" : 1,
+  			"volume" : 0
+  		}).toMaster();
+  }
+
   // Function that calculates the pixel ratio of the device
   PIXEL_RATIO = (function () {
       var ctx = document.createElement("canvas").getContext("2d"),
@@ -166,7 +198,7 @@ function setCanvas() {
 }
 
 // We initially set both canvas
-setCanvas();
+start();
 
 
 // This function creates the grid of the canvas inserted as argument (it will be used for scope)
@@ -409,9 +441,9 @@ function draw() {
 // Draw blue point where finger is, sets corresponding volume and frequency
 function renderCanvas() {
   if (mouseDown) {
-    if(graphGain.gain.value!=10){
+    /*if(graphGain.gain.value!=10){
       graphGain.gain.value = 10;
-    }
+    }*/
     let setV = false;
     let setF = false;
     let setVj = setVolume(mousePos[0].x / DRAWWIDTH, 0);
@@ -457,11 +489,14 @@ function drawPoint() {
 
 // Function that sets the volume to the value indicated as argument
 function setVolume(vol, index) {
+
   var newVolume = logspace(0.001, 0.5, vol, 2);
-  gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
+  //gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
+  //synths[index].volume.value = newVolume;
   var redraw = false;
   if (Math.abs(vol - oldVol[index]) > changeSensitivity) {
     draw();
+    oscillators[index].volume.exponentialRampTo(newVolume, 0.002);
     oldVol[index] = vol;
     redraw = true;
   }
@@ -472,11 +507,15 @@ function setVolume(vol, index) {
 // Function that sets the frequency to the value indicated as argument
 function setFrequency(freq, index) {
   var newFreq = logspace(minFreq, maxFreq, freq, 2);
-  osc.frequency.value = newFreq;
+  //osc.frequency.value = newFreq;
+  //synths[index].triggerAttack(newFreq);
   frequency[index] = newFreq;
   var redraw = false;
   if (Math.abs(freq - oldFreq[index]) > changeSensitivity) {
+    console.log(newFreq);
     draw();
+    oscillators[index].start();
+    oscillators[index].frequency.value = newFreq;
     oldFreq[index] = freq;
     redraw = true;
   }
@@ -528,7 +567,8 @@ function renderAxesLabels() {
 
 // Whem the mouse is clicked, we will create a wave dependent on the mouse position
 drawCanvas.addEventListener("mousedown", function(e) {
-  gain.gain.cancelScheduledValues(0);
+  //gain.gain.cancelScheduledValues(0);
+  e.preventDefault();
   mouseDown = true;
   mouseMove = false;
 
@@ -539,16 +579,17 @@ drawCanvas.addEventListener("mousedown", function(e) {
     mousePos[finger] = getMousePos(drawCanvas, e);
   }
 
-  if(osc == null){
+  /*if(osc == null){
     osc = audioCtx.createOscillator();
     osc.type = type;
     osc.start();
     osc.connect(gain);
-  }
+  }*/
 }, false);
 
 // When the mouse moves, we keep track of its position.
 drawCanvas.addEventListener("mousemove", function(e) {
+  e.preventDefault();
   mouseMove = true;
   if (nFingers === 0){
     mousePos[0] = getMousePos(drawCanvas, e);
@@ -560,7 +601,6 @@ drawCanvas.addEventListener("mousemove", function(e) {
 
 // When the user touches the screen, we simulate a mouse click
 drawCanvas.addEventListener("touchstart", function(e) {
-
   e.preventDefault();
   if (nFingers<MAXFINGERS){
     var mouseEvent;
@@ -599,6 +639,19 @@ drawCanvas.addEventListener("touchend", function(e) {
     }
     if (indexFingerUp<MAXFINGERS && nFingers<=MAXFINGERS && indexFingerUp<nFingers){
       nFingers--;
+      /*synths[indexFingerUp].triggerRelease();
+      synths.splice(indexFingerUp, 1);
+      synths.push(new Tone.Synth(options));
+      synths[MAXFINGERS-1].chain(masterVolume, Tone.Master);*/
+      oscillators[indexFingerUp].stop();
+      oscillators.splice(indexFingerUp, 1);
+      oscillators.push(new Tone.Oscillator({
+           "type" : "sine",
+     			"frequency" : 1,
+     			"volume" : 0
+     		}));
+      oscillators[MAXFINGERS-1].toMaster();
+
       auxTouch.splice(indexFingerUp, 1);
       mousePos.splice(indexFingerUp, 1);
       oldFreq.splice(indexFingerUp, 1);
@@ -641,7 +694,7 @@ drawCanvas.addEventListener("touchmove", function(e) {
 }, false);
 
 // Resize function to resize the canvas correctly (not working)
-// window.addEventListener("resize", setCanvas);
+// window.addEventListener("resize", start);
 
 
 // Get the position of the mouse relative to the canvas
@@ -658,8 +711,8 @@ function setToZero(){
     mouseMove = false;
     drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
     renderAxesLabels();
-    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime+0.2);
-    graphGain.gain.value = 0;
+  /*  gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime+0.2);
+    graphGain.gain.value = 0;*/
     oldFreq[0] = -1;
     oldVol[0] = -1;
     frequency[0]= 1;
@@ -668,6 +721,10 @@ function setToZero(){
       x: 0,
       y: 0
     };
+    //synths[0].triggerRelease();
+    oscillators[0].stop();
+    oscillators[0].frequency.value=1;
+    oscillators[0].volume.value=0;
     if (type === "sine"){
       draw();
     } else {
@@ -684,6 +741,7 @@ function setToZero(){
 // Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
 document.addEventListener('DOMContentLoaded', function() {
 
+/*
   // Alternative to jQuery click function
   document.getElementById("timbre-button").onclick = function () {
     timbre = (timbre + 1) % 4;
@@ -717,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
     osc.type = type;
     osc.start();
   }
-
+*/
 
   // Alternative to jQuery mouseup function
   document.onmouseup = function(){

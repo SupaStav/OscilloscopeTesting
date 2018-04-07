@@ -15,22 +15,26 @@
       <div class="controls-container">
         <canvas id="draw-canvas"></canvas>
       </div>
-      <span id='yAxis-header'>y: Voltage sent to the speaker</span>
+      <span id='yAxis-header'>Voltage sent to the speaker</span>
       <div class="scopes-container">
         <div class="scope-container">
           <canvas id="scope-1" class="scope"></canvas>
           <h1 class="header-text">
-            Oscilloscope
+            Wave Generator
           </h1>
           <div class="units-container">25ms</div>
         </div>
-        <span id='xAxis-header'>x: Time</span>
+        <span id='xAxis-header'>Time</span>
         <div class="zoom-container">
           <button id="freq-info"></button>
-          <button id="timbre-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
+          <button id="pure-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
+          <button id="complex-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
         </div>
       </div>
     </div>
+    <p class="button-header" id="pure-header">Pure<br>tone</p>
+    <p class="button-header" id="complex-header">Complex<br>tone</p>
+    <script src="./js/Tone.js"></script>
     <script src="./js/new-scope-no-swiper.js"></script>
   </body>
 </html>
