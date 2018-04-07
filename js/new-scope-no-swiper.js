@@ -113,6 +113,7 @@ var MAXFINGERS = 4;
 // Variable to traverse the fingers in different methods
 var finger;
 
+var isStarted = false;
 
 
 
@@ -121,9 +122,7 @@ var oscillators;
 var synths;
 var masterVolume;
 
-// This function will set up the two canvas that we are using in the application
-function start() {
-
+function start(){
   /*var options = {
    oscillator  : {
      type  : "sine"
@@ -143,6 +142,10 @@ function start() {
   			"volume" : 0
   		}).toMaster();
   }
+}
+
+// This function will set up the two canvas that we are using in the application
+function setUp() {
 
   // Function that calculates the pixel ratio of the device
   PIXEL_RATIO = (function () {
@@ -198,7 +201,7 @@ function start() {
 }
 
 // We initially set both canvas
-start();
+setUp();
 
 
 // This function creates the grid of the canvas inserted as argument (it will be used for scope)
@@ -512,7 +515,6 @@ function setFrequency(freq, index) {
   frequency[index] = newFreq;
   var redraw = false;
   if (Math.abs(freq - oldFreq[index]) > changeSensitivity) {
-    console.log(newFreq);
     draw();
     oscillators[index].start();
     oscillators[index].frequency.value = newFreq;
@@ -571,6 +573,10 @@ drawCanvas.addEventListener("mousedown", function(e) {
   e.preventDefault();
   mouseDown = true;
   mouseMove = false;
+  if (!isStarted){
+      isStarted = true;
+      start();
+  }
 
   if (nFingers === 0){
     mousePos[0] = getMousePos(drawCanvas, e);
@@ -694,7 +700,7 @@ drawCanvas.addEventListener("touchmove", function(e) {
 }, false);
 
 // Resize function to resize the canvas correctly (not working)
-// window.addEventListener("resize", start);
+// window.addEventListener("resize", setUp);
 
 
 // Get the position of the mouse relative to the canvas
