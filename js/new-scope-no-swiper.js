@@ -142,6 +142,7 @@ function start(){
   			"volume" : 0
   		}).toMaster();
   }
+  console.log(Tone.context.state);
 }
 
 // This function will set up the two canvas that we are using in the application
@@ -437,7 +438,8 @@ function draw() {
       }
       scopeCtx.stroke();
     }
-    document.getElementById("freq-info").innerHTML=freqInfoMessage;
+    //document.getElementById("freq-info").innerHTML=freqInfoMessage;
+    document.getElementById("freq-info").innerHTML=Tone.context.state;
 };
 
 
