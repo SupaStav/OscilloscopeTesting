@@ -211,13 +211,14 @@ button:focus {
   font-weight: bold;
   color: white;
   writing-mode: vertical-rl;
-  -webkit-transform:rotate(180deg);
+  /*-webkit-transform:rotate(180deg);
   -moz-transform:rotate(180deg);
   -o-transform: rotate(180deg);
   -ms-transform:rotate(180deg);
-  transform: rotate(180deg);
+  transform: rotate(180deg);*/
+  text-orientation: upright;
   position: relative;
-  bottom: 100px;
+  /*bottom: 100px;*/
   left: 8px;
 }
 
