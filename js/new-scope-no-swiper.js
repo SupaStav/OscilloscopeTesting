@@ -115,7 +115,11 @@ var finger;
 
 var isStarted = false;
 
-
+var options = {
+ oscillator  : {
+   type  : "sine"
+ },
+};
 
 
 var oscillators;
@@ -123,26 +127,20 @@ var synths;
 var masterVolume;
 
 function start(){
-  /*var options = {
-   oscillator  : {
-     type  : "sine"
-   },
-  };*/
 
   Tone.context = new(window.AudioContext || window.webkitAudioContext)();
-  oscillators = new Array(MAXFINGERS);
+  //oscillators = new Array(MAXFINGERS);
   synths = new Array(MAXFINGERS);
   masterVolume = new Tone.Volume(0);
   for(let i=0; i<MAXFINGERS; i++){
-   /*synths[i] = new Tone.Synth(options);
-   synths[i].chain(masterVolume, Tone.Master);*/
-   oscillators[i] = new Tone.Oscillator({
+   synths[i] = new Tone.Synth(options);
+   synths[i].chain(masterVolume, Tone.Master);
+   /*oscillators[i] = new Tone.Oscillator({
         "type" : "sine",
   			"frequency" : 1,
   			"volume" : 0
-  		}).toMaster();
+  		}).toMaster();*/
   }
-  console.log(Tone.context.state);
 }
 
 // This function will set up the two canvas that we are using in the application
@@ -438,8 +436,7 @@ function draw() {
       }
       scopeCtx.stroke();
     }
-    //document.getElementById("freq-info").innerHTML=freqInfoMessage;
-    document.getElementById("freq-info").innerHTML=Tone.context.state;
+    document.getElementById("freq-info").innerHTML=freqInfoMessage;
 };
 
 
@@ -497,11 +494,11 @@ function setVolume(vol, index) {
 
   var newVolume = logspace(0.001, 0.5, vol, 2);
   //gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
-  //synths[index].volume.value = newVolume;
   var redraw = false;
   if (Math.abs(vol - oldVol[index]) > changeSensitivity) {
     draw();
-    oscillators[index].volume.exponentialRampTo(newVolume, 0.002);
+    synths[index].volume.value = newVolume;
+    //oscillators[index].volume.exponentialRampTo(newVolume, 0.002);
     oldVol[index] = vol;
     redraw = true;
   }
@@ -513,13 +510,13 @@ function setVolume(vol, index) {
 function setFrequency(freq, index) {
   var newFreq = logspace(minFreq, maxFreq, freq, 2);
   //osc.frequency.value = newFreq;
-  //synths[index].triggerAttack(newFreq);
   frequency[index] = newFreq;
   var redraw = false;
   if (Math.abs(freq - oldFreq[index]) > changeSensitivity) {
     draw();
-    oscillators[index].start();
-    oscillators[index].frequency.value = newFreq;
+    synths[index].triggerAttack(newFreq);
+    //oscillators[index].start();
+    //oscillators[index].frequency.value = newFreq;
     oldFreq[index] = freq;
     redraw = true;
   }
@@ -647,18 +644,18 @@ drawCanvas.addEventListener("touchend", function(e) {
     }
     if (indexFingerUp<MAXFINGERS && nFingers<=MAXFINGERS && indexFingerUp<nFingers){
       nFingers--;
-      /*synths[indexFingerUp].triggerRelease();
+      synths[indexFingerUp].triggerRelease();
       synths.splice(indexFingerUp, 1);
       synths.push(new Tone.Synth(options));
-      synths[MAXFINGERS-1].chain(masterVolume, Tone.Master);*/
-      oscillators[indexFingerUp].stop();
+      synths[MAXFINGERS-1].chain(masterVolume, Tone.Master);
+      /*oscillators[indexFingerUp].stop();
       oscillators.splice(indexFingerUp, 1);
       oscillators.push(new Tone.Oscillator({
            "type" : "sine",
      			"frequency" : 1,
      			"volume" : 0
      		}));
-      oscillators[MAXFINGERS-1].toMaster();
+      oscillators[MAXFINGERS-1].toMaster();*/
 
       auxTouch.splice(indexFingerUp, 1);
       mousePos.splice(indexFingerUp, 1);
@@ -729,10 +726,10 @@ function setToZero(){
       x: 0,
       y: 0
     };
-    //synths[0].triggerRelease();
-    oscillators[0].stop();
+    synths[0].triggerRelease();
+    /*oscillators[0].stop();
     oscillators[0].frequency.value=1;
-    oscillators[0].volume.value=0;
+    oscillators[0].volume.value=0;*/
     if (type === "sine"){
       draw();
     } else {
