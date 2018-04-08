@@ -2,6 +2,7 @@ html {
   background-color: black;
   min-height: 100vh;
   display: flex;
+  -webkit-display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
