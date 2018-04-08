@@ -210,7 +210,7 @@ button:focus {
   font-size: 16px;
   font-weight: bold;
   color: white;
-  writing-mode: tb-rl;
+  writing-mode: vertical-rl;
   -webkit-transform:rotate(180deg);
   -moz-transform:rotate(180deg);
   -o-transform: rotate(180deg);
