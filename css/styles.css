@@ -15,6 +15,7 @@ html {
 
 .container {
   display: flex;
+  -webkit-display: flex;
   justify-content: space-around;
   flex: 1;
   background-color: black;
@@ -25,6 +26,7 @@ html {
 
 .controls-container {
   display: flex;
+  -webkit-display: flex;
   flex-direction: column;
   flex: 2;
 }
@@ -42,6 +44,7 @@ html {
 
 .scopes-container {
   display: flex;
+  -webkit-display: flex;
   flex-direction: column;
   flex: 7 5;
   margin: 12px;
@@ -52,6 +55,7 @@ html {
   position: relative;
   flex: 3;
   display: flex;
+  -webkit-display: flex;
   justify-content: center;
   align-items: stretch;
 }
@@ -74,7 +78,6 @@ html {
   top: -50px;
   background-color: black;
   opacity: 0.8;
-  user-select: none;
   border: 5px solid rgba(190, 199, 206, .5);
   border-radius: 25px;
   padding: 5px;
@@ -95,6 +98,7 @@ html {
 
 .zoom-container {
   display: flex;
+  -webkit-display: flex;
   flex: 0.25;
   margin-top: 5px;
   align-items: stretch;
