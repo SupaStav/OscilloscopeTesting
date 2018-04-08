@@ -34,7 +34,8 @@ graphGain.connect(analyser);
 */
 
 // Positionate the y axes header in the correct position
-document.getElementById('yAxis-header').style.bottom = document.getElementsByClassName('container')[0].clientHeight-document.getElementById('scope-1').clientHeight+'px';
+//document.getElementById('yAxis-header').style.bottom = document.getElementsByClassName('container')[0].clientHeight-document.getElementById('scope-1').clientHeight+'px';
+document.getElementById('yAxis-header').style.bottom = '0px';
 var pureLocation = document.getElementById('pure-button').getBoundingClientRect();
 var complexLocation = document.getElementById('complex-button').getBoundingClientRect();
 document.getElementById('pure-header').style.left = pureLocation.left+pureLocation.width/5+'px';
