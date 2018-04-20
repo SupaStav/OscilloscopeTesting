@@ -42,6 +42,7 @@ document.getElementById('yAxis-header').style.top = document.getElementById('sco
 
 /* From the previous version
 
+
 var pureLocation = document.getElementById('pure-button').getBoundingClientRect();
 var complexLocation = document.getElementById('complex-button').getBoundingClientRect();
 document.getElementById('pure-header').style.left = pureLocation.left+pureLocation.width/5+'px';
