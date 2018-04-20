@@ -11,7 +11,10 @@ html {
   -moz-user-select: none; /* Firefox 2+ */
   -ms-user-select: none; /* IE 10+ */
   user-select: none; /* Standard syntax */
+}
 
+body * {
+  border: 2px solid red;
 }
 
 .container {
@@ -114,8 +117,9 @@ html {
   user-select: none;
 }
 
-.zoom-container {
+.bottom-container {
   display: flex;
+  justify-content: space-between;
   -webkit-display: flex;
   flex: 0.25;
   -webkit-flex: 0.25; /* Safari 6.1+ */
@@ -123,23 +127,37 @@ html {
   margin-top: 5px;
   align-items: stretch;
   user-select: none;
+  border: 2px solid green;
 }
 
+#freq-info {
+  width: 165px;
+  background-color: #1e1e1e;
+  color: white;
+  font-weight: bold;
+  padding-left: 2px;
+  padding-right: 2px;
+}
 
 button {
   border: none;
   text-decoration: none;
   background-color: #c1c5c9;
-}
-
-button:hover {
-  color: white;
-  background-color: #8d98a3;
+  border: 2px solid blue;
 }
 
 button:focus {
   outline: 0;
 }
+
+#pure-button {
+  background-color: #FFE900;
+}
+
+button:hover {
+  background-color: #8d98a3 !important;
+}
+
 
 .button-header{
   color: white;
@@ -150,7 +168,26 @@ button:focus {
   text-align: center;
 }
 
-/* This percentages can be even more precise with media queries */
+#button-container{
+  border: 2px solid yellow;
+}
+
+#pure-button {
+  position: relative;
+  bottom: 20px;
+  right: 30%;
+  height: 43px;
+
+}
+
+#complex-button {
+  position: relative;
+  bottom: 20px;
+  right: 10%;
+  height: 43px;
+}
+
+/* This percentages can be even more precise with media queries
 #pure-button {
   margin-left: auto;
   margin-right: auto;
@@ -190,9 +227,9 @@ button:focus {
     #pure-button {
         left: 7%;
     }
-}
+}*/
 
-/* This percentages can be even more precise with media queries */
+/* This percentages can be even more precise with media queries
 #complex-button {
   margin-left: auto;
   margin-right: auto;
@@ -220,7 +257,7 @@ button:focus {
     #complex-button {
         left: 1%;
     }
-}
+}*/
 
 #xAxis-header {
   font-family: sans-serif;
@@ -246,15 +283,6 @@ button:focus {
   -ms-transform:rotate(180deg);
   transform: rotate(180deg);
   position: relative;
-  bottom: 100px;
   left: 8px;
-}
-
-#freq-info {
-  width: 165px;
-  background-color: #1e1e1e;
-  color: white;
-  font-weight: bold;
-  padding-left: 2px;
-  padding-right: 2px;
+  height: 215px;
 }

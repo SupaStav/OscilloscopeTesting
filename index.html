@@ -25,16 +25,22 @@
           <div class="units-container">25ms</div>
         </div>
         <span id='xAxis-header'>Time</span>
-        <div class="zoom-container">
+        <div class="bottom-container">
           <button id="freq-info"></button>
-          <button id="pure-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
-          <button id="complex-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
+          <div id="button-container">
+            <button id="pure-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
+            <button id="complex-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>
+          </div>
         </div>
       </div>
     </div>
     <p class="button-header" id="pure-header">Pure<br>tone</p>
     <p class="button-header" id="complex-header">Complex<br>tone</p>
     <script src="./js/Tone.js"></script>
-    <script src="./js/new-scope-no-swiper.js"></script>
+    <script src="./js/util.js"></script>
+    <script src="./js/drawing.js"></script>
+    <script src="./js/initialize.js"></script>
+    <script src="./js/mouse_functions.js"></script>
+    <script src="./js/touch_functions.js"></script>
   </body>
 </html>
