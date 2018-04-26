@@ -272,7 +272,7 @@ button:hover {
   font-family: sans-serif;
   font-size: 16px;
   font-weight: bold;
-  color: white;
+  color: yellow;
   flex: 0.1;
   -webkit-flex: 0.1; /* Safari 6.1+ */
   -ms-flex: 0.1; /* IE 10 */
@@ -286,5 +286,5 @@ button:hover {
   position: relative;
   left: 8px;
   height: 215px;
-  width: 23px;
+  /*width: 23px;*/
 }
