@@ -11,11 +11,6 @@ html {
   -moz-user-select: none; /* Firefox 2+ */
   -ms-user-select: none; /* IE 10+ */
   user-select: none; /* Standard syntax */
-
-  height: 100%;
-  width: 100%;
-  padding: 0;
-  margin: 0;
 }
 
 
@@ -23,6 +18,8 @@ html {
   display: flex;
   -webkit-display: flex;
   justify-content: space-around;
+  -webkit-justify-content: space-around;
+  -moz-justify-content: space-around;
   -webkit-flex: 1; /* Safari 6.1+ */
   -ms-flex: 1; /* IE 10 */
   flex: 1;
@@ -71,6 +68,8 @@ html {
   -webkit-flex: 3; /* Safari 6.1+ */
   -ms-flex: 3; /* IE 10 */
   justify-content: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
   align-items: stretch;
 }
 
@@ -108,8 +107,10 @@ html {
 
 .bottom-container {
   display: flex;
-  justify-content: space-between;
   -webkit-display: flex;
+  -webkit-justify-content: space-between;
+  -moz-justify-content: space-between;
+  justify-content: space-between;
   flex: 0.25;
   -webkit-flex: 0.25; /* Safari 6.1+ */
   -ms-flex: 0.25; /* IE 10 */
@@ -162,7 +163,9 @@ button:focus {
 #button-container{
   width: 180px;
   display: flex;
-  justify-content: space-evenly;
+  -webkit-justify-content: space-around;
+  -moz-justify-content: space-around;
+  justify-content: space-around;
   -webkit-display: flex;
 }
 

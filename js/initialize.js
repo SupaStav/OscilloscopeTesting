@@ -46,9 +46,9 @@ document.getElementById('header-text').style.top = -document.getElementById('hea
 document.getElementById('pure-header').style.width = document.getElementById('pure-button').clientWidth+'px';
 document.getElementById('complex-header').style.width = document.getElementById('complex-button').clientWidth+'px';
 var freeSpace = document.getElementById('button-container').clientWidth-2*document.getElementById('pure-button').clientWidth;
-document.getElementById('pure-header').style.right = document.getElementById('button-container').clientWidth-(freeSpace/3)-document.getElementById('pure-button').clientWidth+'px';
+document.getElementById('pure-header').style.right = document.getElementById('button-container').clientWidth-(freeSpace/4)-document.getElementById('pure-button').clientWidth+'px';
 document.getElementById('pure-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
-document.getElementById('complex-header').style.right = document.getElementById('button-container').clientWidth-(2*freeSpace/3)-2*document.getElementById('pure-button').clientWidth+'px';
+document.getElementById('complex-header').style.right = document.getElementById('button-container').clientWidth-(3*freeSpace/4)-2*document.getElementById('pure-button').clientWidth+'px';
 document.getElementById('complex-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
 
 
