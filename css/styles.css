@@ -19,7 +19,6 @@ html {
 }
 
 body * {
-  border: 2px solid red;
 }
 
 .container {
@@ -75,7 +74,6 @@ body * {
   -ms-flex: 3; /* IE 10 */
   justify-content: center;
   align-items: stretch;
-  border: 2px solid green;
 }
 
 #scope-1 {
@@ -120,7 +118,6 @@ body * {
   margin-top: 5px;
   align-items: stretch;
   user-select: none;
-  border: 2px solid green;
 }
 
 #freq-info {
@@ -136,7 +133,6 @@ button {
   border: none;
   text-decoration: none;
   background-color: #c1c5c9;
-  border: 2px solid blue;
 }
 
 button:focus {
@@ -165,9 +161,6 @@ button:focus {
   text-align: center;
 }
 
-#button-container{
-  border: 2px solid yellow;
-}
 
 #pure-button {
   position: relative;
