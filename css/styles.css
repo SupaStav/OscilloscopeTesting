@@ -74,9 +74,6 @@ body * {
 
 #scope-1 {
   user-select: none;
-  flex: 1;
-  -webkit-flex: 1; /* Safari 6.1+ */
-  -ms-flex: 1; /* IE 10 */
   width: 100%;
   height: 100%;
 }
@@ -88,9 +85,6 @@ body * {
 
 #header-text {
   text-align: center;
-  flex: 1;
-  -webkit-flex: 1; /* Safari 6.1+ */
-  -ms-flex: 1; /* IE 10 */
   color: white;
   position: absolute;
   z-index: 100;
@@ -104,9 +98,6 @@ body * {
 }
 
 .units-container {
-  flex: 0.1;
-  -webkit-flex: 0.1; /* Safari 6.1+ */
-  -ms-flex: 0.1; /* IE 10 */
   position: absolute;
   right: 5px;
   top: 5px;
@@ -272,7 +263,7 @@ button:hover {
   font-family: sans-serif;
   font-size: 16px;
   font-weight: bold;
-  color: yellow;
+  color: white;
   flex: 0.1;
   -webkit-flex: 0.1; /* Safari 6.1+ */
   -ms-flex: 0.1; /* IE 10 */
@@ -286,5 +277,5 @@ button:hover {
   position: relative;
   left: 8px;
   height: 215px;
-  /*width: 23px;*/
+  width: 23px;
 }
