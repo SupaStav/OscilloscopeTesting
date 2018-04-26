@@ -42,6 +42,7 @@ document.getElementById('yAxis-header').style.top = document.getElementById('sco
 document.getElementById('header-text').style.left = document.getElementById('scope-1').clientWidth/2-document.getElementById('header-text').clientWidth/2+'px';
 //document.getElementById('header-text').style.bottom = document.getElementById('scope-1').clientHeight-document.getElementById('header-text').clientHeight/2+'px';
 document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight/2+'px';
+document.getElementById('scope-1').style.clientHeight = document.getElementById('scope-container').style.clientHeight+'px';
 /* From the previous version
 
 
