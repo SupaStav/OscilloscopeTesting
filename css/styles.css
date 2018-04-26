@@ -169,13 +169,15 @@ button:focus {
 #pure-button {
   position: relative;
   bottom: 20px;
-  height: 43px;
+  height: 45px;
+  width: 45px;
 }
 
 #complex-button {
   position: relative;
   bottom: 20px;
-  height: 43px;
+  height: 45px;
+  width: 45px;
 }
 
 /* This percentages can be even more precise with media queries

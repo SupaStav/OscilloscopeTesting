@@ -41,13 +41,14 @@ graphGain.connect(analyser);
 document.getElementById('scope-1').style.height = document.getElementById('scope-container').clientHeight+"px";
 document.getElementById('yAxis-header').style.top = document.getElementById('scope-1').clientHeight-document.getElementById('yAxis-header').clientHeight+'px';
 document.getElementById('header-text').style.left = document.getElementById('scope-1').clientWidth/2-document.getElementById('header-text').clientWidth/2+'px';
-document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight/2+'px';
+document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight*1/3+'px';
 
 document.getElementById('pure-header').style.width = document.getElementById('pure-button').clientWidth+'px';
 document.getElementById('complex-header').style.width = document.getElementById('complex-button').clientWidth+'px';
-document.getElementById('pure-header').style.right = 3/5*document.getElementById('button-container').clientWidth+'px';
+var freeSpace = document.getElementById('button-container').clientWidth-2*document.getElementById('pure-button').clientWidth;
+document.getElementById('pure-header').style.right = document.getElementById('button-container').clientWidth-(freeSpace/3)-document.getElementById('pure-button').clientWidth+'px';
 document.getElementById('pure-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
-document.getElementById('complex-header').style.right = 2/11*document.getElementById('button-container').clientWidth+'px';
+document.getElementById('complex-header').style.right = document.getElementById('button-container').clientWidth-(2*freeSpace/3)-2*document.getElementById('pure-button').clientWidth+'px';
 document.getElementById('complex-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
 
 
