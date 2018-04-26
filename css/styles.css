@@ -260,7 +260,7 @@ button:hover {
   font-family: sans-serif;
   font-size: 16px;
   font-weight: bold;
-  color: yellow;
+  color: white;
   flex: 0.1;
   -webkit-flex: 0.1; /* Safari 6.1+ */
   -ms-flex: 0.1; /* IE 10 */
