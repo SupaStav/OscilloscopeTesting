@@ -42,17 +42,14 @@ document.getElementById('scope-1').style.height = document.getElementById('scope
 document.getElementById('yAxis-header').style.top = document.getElementById('scope-1').clientHeight-document.getElementById('yAxis-header').clientHeight+'px';
 document.getElementById('header-text').style.left = document.getElementById('scope-1').clientWidth/2-document.getElementById('header-text').clientWidth/2+'px';
 document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight/2+'px';
-/* From the previous version
 
+document.getElementById('pure-header').style.width = document.getElementById('pure-button').clientWidth+'px';
+document.getElementById('complex-header').style.width = document.getElementById('complex-button').clientWidth+'px';
+document.getElementById('pure-header').style.right = 3/5*document.getElementById('button-container').clientWidth+'px';
+document.getElementById('pure-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
+document.getElementById('complex-header').style.right = 2/11*document.getElementById('button-container').clientWidth+'px';
+document.getElementById('complex-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
 
-var pureLocation = document.getElementById('pure-button').getBoundingClientRect();
-var complexLocation = document.getElementById('complex-button').getBoundingClientRect();
-document.getElementById('pure-header').style.left = pureLocation.left+pureLocation.width/5+'px';
-document.getElementById('pure-header').style.top = pureLocation.top+pureLocation.height-10+'px';
-document.getElementById('complex-header').style.left = complexLocation.left+'px';
-document.getElementById('complex-header').style.top = complexLocation.top+complexLocation.height-10+'px';
-
-*/
 
 // This function creates a Canvas with a good quality, using the pixel ratio of the device.
 createHiDPICanvas = function(w, h, canvasName, ratio) {

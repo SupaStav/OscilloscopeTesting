@@ -18,8 +18,6 @@ html {
   margin: 0;
 }
 
-body * {
-}
 
 .container {
   display: flex;
@@ -161,19 +159,22 @@ button:focus {
   text-align: center;
 }
 
+#button-container{
+  width: 180px;
+  display: flex;
+  justify-content: space-evenly;
+  -webkit-display: flex;
+}
 
 #pure-button {
   position: relative;
   bottom: 20px;
-  right: 30%;
   height: 43px;
-
 }
 
 #complex-button {
   position: relative;
   bottom: 20px;
-  right: 10%;
   height: 43px;
 }
 
