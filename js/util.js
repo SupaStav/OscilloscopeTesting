@@ -9,7 +9,7 @@
 // Function that sets the volume to the value indicated as argument
 function setVolume(vol, index) {
   //var newVolume = logspace(0.001, 0.5, vol, 2);
-  newVolume = -1*(vol*volumePower);
+  newVolume = -1*((1-vol)*volumePower);
   //gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
   var redraw = false;
   if (Math.abs(vol - oldVol[index]) > changeSensitivity) {

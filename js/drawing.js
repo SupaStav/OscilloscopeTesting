@@ -334,7 +334,7 @@ function renderCanvas() {
         startFrequency (((mousePos[w].y / DRAWHEIGHT) - 1) * -1, w);
       }
     }
-    let setV = setVolume(1-(mousePos[0].x / DRAWWIDTH), 0);
+    let setV = setVolume(mousePos[0].x / DRAWWIDTH, 0);
     let setF = setFrequency(((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
     if (mode==="complex"){
       for (var w=1; w<WAVESCOMPLEXMODE; w++) {
@@ -347,7 +347,7 @@ function renderCanvas() {
     } else {
       for (var w=1; w<nFingers; w++){
         // We set the volume and the frequency
-        let setVw = setVolume(1-(mousePos[w].x / DRAWWIDTH), w);
+        let setVw = setVolume(mousePos[w].x / DRAWWIDTH, w);
         let setFw = setFrequency(((mousePos[w].y / DRAWHEIGHT) - 1) * -1, w);
         setV = setV || setVw;
         setF = setF || setFw;
