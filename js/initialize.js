@@ -11,52 +11,67 @@
 */
 
 /* To do:
-    - (semidone) Think of a possible design for data representation. x-axis : time, y-axis: voltage sent to the speaker
     - (matthew solving it) Very slow on iPad and no sound
-    - Maybe fix position of pure tone and complex tune
     - Touchend is not firing sometimes, leaving one wave on screen
-    - Otro problema: Cuando spameas el touch muchas veces, el sonido acaba por desaparecer o sufrir interferencias (la pag se bugea)
+
+    Mode oscillator:
+      - Noise when stopping the oscillator
+      - Buzzing in the multitouch mode
+
+    Mode Synths:
+      - For me it still sounds weird when changing frequencies
+      - When you spam the touch, sound starts to buzz and then it disappears
+      - It does not sound great for multitouch mode
 */
 
-// Setting the audio API and connecting all of its components.
 
-var mode = "pure";
-/*var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-var analyser = audioCtx.createAnalyser();
-analyser.fftSize = 2048;
-var osc = audioCtx.createOscillator();
-var gain = audioCtx.createGain();
-osc.connect(gain);
-gain.gain.setValueAtTime(0, audioCtx.currentTime);
-osc.type = type;
-osc.start();
-gain.connect(audioCtx.destination);
-graphGain = audioCtx.createGain();
-graphGain.gain.setValueAtTime(10, audioCtx.currentTime);
-gain.connect(graphGain);
-graphGain.connect(analyser);
-*/
+function fixHeaderPosition () {
+  // Instruction done in JS because css works incorrectly for iOS devices
+  document.getElementById('scope-1').style.height = document.getElementById('scope-container').clientHeight+"px";
+  document.getElementById('header-text').style.left = document.getElementById('scope-1').clientWidth/2-document.getElementById('header-text').clientWidth/2+'px';
+  document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight*1/3+'px';
 
-// Positionate the y axes header in the correct position
-document.getElementById('scope-1').style.height = document.getElementById('scope-container').clientHeight+"px";
-document.getElementById('yAxis-header').style.top = document.getElementById('scope-1').clientHeight-document.getElementById('yAxis-header').clientHeight+'px';
-document.getElementById('header-text').style.left = document.getElementById('scope-1').clientWidth/2-document.getElementById('header-text').clientWidth/2+'px';
-document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight*1/3+'px';
+  document.getElementById('yAxis-header').style.top = document.getElementById('scope-1').clientHeight-document.getElementById('yAxis-header').clientHeight+'px';
+}
 
-document.getElementById('pure-header').style.width = document.getElementById('pure-button').clientWidth+'px';
-document.getElementById('complex-header').style.width = document.getElementById('complex-button').clientWidth+'px';
-var freeSpace = document.getElementById('button-container').clientWidth-2*document.getElementById('pure-button').clientWidth;
-document.getElementById('pure-header').style.right = document.getElementById('button-container').clientWidth-(freeSpace/4)-document.getElementById('pure-button').clientWidth+'px';
-document.getElementById('pure-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
-document.getElementById('complex-header').style.right = document.getElementById('button-container').clientWidth-(3*freeSpace/4)-2*document.getElementById('pure-button').clientWidth+'px';
-document.getElementById('complex-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
+
+function fixButtonHeaderPosition (){
+  // Instruction done in JS because css works incorrectly for iOS devices
+  let freeSpace = document.getElementById('button-container').clientWidth-2*document.getElementById('pure-button').clientWidth;
+
+  document.getElementById('pure-header').style.width = document.getElementById('pure-button').clientWidth+'px';
+  document.getElementById('pure-header').style.right = document.getElementById('button-container').clientWidth-(freeSpace/4)-document.getElementById('pure-button').clientWidth+'px';
+  document.getElementById('pure-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
+
+  document.getElementById('complex-header').style.width = document.getElementById('complex-button').clientWidth+'px';
+  document.getElementById('complex-header').style.right = document.getElementById('button-container').clientWidth-(3*freeSpace/4)-2*document.getElementById('pure-button').clientWidth+'px';
+  document.getElementById('complex-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
+}
+
+function setUpScope (){
+  //Create scope canvas with the device resolution and initialize the variables accordingly
+  scopeId = document.getElementById('scope-1');
+  HEIGHT = scopeId.clientHeight;
+  WIDTH = scopeId.clientWidth;
+  scope = createHiDPICanvas(WIDTH, HEIGHT, 'scope-1');
+  scopeCtx = scope.getContext('2d');
+}
+
+function setUpDrawCanvas (){
+  //Create draw canvas with the device resolution.
+  drawCanvasId = document.getElementById('draw-canvas');
+  DRAWHEIGHT = drawCanvasId.clientHeight;
+  DRAWWIDTH = drawCanvasId.clientWidth;
+  drawCanvas = createHiDPICanvas(DRAWWIDTH, DRAWHEIGHT, 'draw-canvas');
+  drawCanvasCtx = drawCanvas.getContext('2d');
+}
 
 
 // This function creates a Canvas with a good quality, using the pixel ratio of the device.
 createHiDPICanvas = function(w, h, canvasName, ratio) {
     if (!ratio) { ratio = PIXEL_RATIO; }
     // We create a canvas with the pixel ratio, in order to get the maximum quality
-    var can = document.getElementById(canvasName);
+    let can = document.getElementById(canvasName);
     can.width = w * ratio;
     can.height = h * ratio;
     can.style.width = w + "px";
@@ -65,17 +80,15 @@ createHiDPICanvas = function(w, h, canvasName, ratio) {
     return can;
 }
 
+var mode = "pure";
+var isSynths = true;
+
 // Declaration of some variables that we will need later
 var PIXEL_RATIO;
 // Scope canvas context, id of the scope canvas, the element itself
 var scopeCtx, scopeId, scope;
 // Width and height of the scope canvas element
 var WIDTH, HEIGHT;
-// Mid point of the scope canvas (used to create the grid)
-var midPoint = {
-  x: WIDTH / 2,
-  y: HEIGHT / 2
-};
 
 // Boolean storing if the mouse is clicked or not
 var mouseDown;
@@ -103,7 +116,7 @@ var changeSensitivity = 0.0015;
 
 // Decrease the value to Increase the volume
 var volumePower = 40;
-var firstFrequency = false;
+var firstDown = false;
 
 // Number of points in the graph and distance between points (only for sine version)
 var numberPoints = 2048*16;
@@ -138,40 +151,45 @@ var finger;
 
 var isStarted = false;
 
+var oscillators;
+var synths;
 var options = {
  oscillator  : {
    type  : "sine"
  },
 };
-
-
-var oscillators;
-var synths;
 var masterVolume;
 
 function start(){
-
   Tone.context = new(window.AudioContext || window.webkitAudioContext)();
-  //oscillators = new Array(MAXFINGERS);
-  synths = new Array(lengthArrays);
+  if (isSynths) {
+    synths = new Array(lengthArrays);
+  } else {
+    oscillators = new Array(lengthArrays);
+  }
   masterVolume = new Tone.Volume(0);
   for(let i=0; i<lengthArrays; i++){
-   synths[i] = new Tone.Synth(options);
-   synths[i].chain(masterVolume, Tone.Master);
-   /*oscillators[i] = new Tone.Oscillator({
-        "type" : "sine",
-  			"frequency" : 1,
-  			"volume" : 0
-  		}).toMaster();*/
+    if (isSynths) {
+      synths[i] = new Tone.Synth(options);
+      synths[i].chain(masterVolume, Tone.Master);
+    } else {
+      oscillators[i] = new Tone.Oscillator({
+           "type" : "sine",
+     			"frequency" : 1,
+     			"volume" : 0
+     		}).toMaster();
+    }
   }
 }
 
 // This function will set up the two canvas that we are using in the application
 function setUp() {
+  fixHeaderPosition();
+  fixButtonHeaderPosition();
 
   // Function that calculates the pixel ratio of the device
   PIXEL_RATIO = (function () {
-      var ctx = document.createElement("canvas").getContext("2d"),
+      let ctx = document.createElement("canvas").getContext("2d"),
           dpr = window.devicePixelRatio || 1,
           bsr = ctx.webkitBackingStorePixelRatio ||
                 ctx.mozBackingStorePixelRatio ||
@@ -182,23 +200,9 @@ function setUp() {
       return dpr / bsr;
   })();
 
-  //Create scope canvas with the device resolution and initialize the variables accordingly
-  scopeId = document.getElementById('scope-1');
-  HEIGHT = scopeId.clientHeight;
-  WIDTH = scopeId.clientWidth;
-  scope = createHiDPICanvas(WIDTH, HEIGHT, 'scope-1');
-  scopeCtx = scope.getContext('2d');
-  midPoint = {
-    x: WIDTH / 2,
-    y: HEIGHT / 2
-  };
+  setUpScope();
 
-  //Create draw canvas with the device resolution.
-  drawCanvasId = document.getElementById('draw-canvas');
-  DRAWHEIGHT = drawCanvasId.clientHeight;
-  DRAWWIDTH = drawCanvasId.clientWidth;
-  drawCanvas = createHiDPICanvas(DRAWWIDTH, DRAWHEIGHT, 'draw-canvas');
-  drawCanvasCtx = drawCanvas.getContext('2d');
+  setUpDrawCanvas();
 
   setToZero();
 }
@@ -222,9 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
-
-
-
 
 // We initially set both canvas
 setUp();

@@ -8,7 +8,7 @@ drawCanvas.addEventListener("mousedown", function(e) {
   e.preventDefault();
   mouseDown = true;
   mouseMove = false;
-  firstFrequency = true;
+  firstDown = true;
   if (!isStarted){
       isStarted = true;
       start();
@@ -17,17 +17,10 @@ drawCanvas.addEventListener("mousedown", function(e) {
   if (nFingers === 0){
     mousePos[0] = getMousePos(drawCanvas, e);
     renderCanvas();
-    firstFrequency = false;
+    firstDown = false;
   } else {
     mousePos[finger] = getMousePos(drawCanvas, e);
   }
-
-  /*if(osc == null){
-    osc = audioCtx.createOscillator();
-    osc.type = type;
-    osc.start();
-    osc.connect(gain);
-  }*/
 }, false);
 
 // When the mouse moves, we keep track of its position.

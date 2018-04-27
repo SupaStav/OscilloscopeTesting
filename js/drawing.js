@@ -9,6 +9,12 @@
 
 // This function creates the grid of the canvas inserted as argument (it will be used for scope)
 function createGrid(ctx) {
+  // Mid point of the scope canvas (used to create the grid)
+  let midPoint = {
+    x: WIDTH / 2,
+    y: HEIGHT / 2
+  };
+
   // Draw the two gray axes
   ctx.beginPath();
   ctx.moveTo(0, midPoint.y);
@@ -27,10 +33,10 @@ function createGrid(ctx) {
   ctx.lineWidth = '5';
 
   // Dash Space determines the distance between white lines
-  var dashSpace = 50;
+  let dashSpace = 50;
   // Dash size determines the size of the white lines
-  var dashSize = 15;
-  var greatDashSize = 26;
+  let dashSize = 15;
+  let greatDashSize = 26;
   let linesDrawn = 1;
   // Draw the dashes of the left half of x axis
   let dashesX = midPoint.x - dashSpace;
@@ -95,7 +101,7 @@ function createGrid(ctx) {
 
 // Scope canvas drawing
 function draw() {
-    var freqInfoMessage;
+    let freqInfoMessage;
 
     // We clear whatever is in scope and we create the grid again
     scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -120,14 +126,14 @@ function draw() {
         scopeCtx.lineWidth = '5';
 
         // x starts at 0 (first point is at 0)
-        var x = 0;
+        let x = 0;
         // For each of the points that we have
-        for (var i = 0; i < numberPoints; i++) {
+        for (let i = 0; i < numberPoints; i++) {
           // Calculate the location of the point using the equation of the wave.
-          var wavelength = 100 * HEIGHT / frequency[0];
-          var v = wavelength/frequency[0];
-          var k = 2*Math.PI/wavelength;
-          var y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
+          let wavelength = 100 * HEIGHT / frequency[0];
+          let v = wavelength/frequency[0];
+          let k = 2*Math.PI/wavelength;
+          let y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
 
           // We draw the point in the canvas
           if (i === 0) {
@@ -151,14 +157,14 @@ function draw() {
           scopeCtx.beginPath();
           scopeCtx.lineWidth = '5';
           scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
-          var x = 0;
-          for (var i = 0; i < numberPoints; i++) {
-            var y=0;
+          let x = 0;
+          for (let i = 0; i < numberPoints; i++) {
+            let y=0;
             // Add the result of each of the waves in position x
-            for (var j=0; j<nFingers; j++){
-              var wavelength = 100 * HEIGHT / frequency[j];
-              var v = wavelength/frequency[j];
-              var k = 2*Math.PI/wavelength;
+            for (let j=0; j<nFingers; j++){
+              let wavelength = 100 * HEIGHT / frequency[j];
+              let v = wavelength/frequency[j];
+              let k = 2*Math.PI/wavelength;
               y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
             }
             y+= HEIGHT/2;
@@ -173,8 +179,8 @@ function draw() {
         }
 
         // Now, we will draw each of the thinner lines for each finger.
-        for (var j=0; j<nFingers; j++){
-          var x = 0;
+        for (let j=0; j<nFingers; j++){
+          let x = 0;
           scopeCtx.beginPath();
           // If we have only 1 finger, the line will still be thick
           if (nFingers===1){
@@ -199,11 +205,11 @@ function draw() {
               scopeCtx.strokeStyle = 'rgb(255, 140, 0)';
               freqInfoMessage+=" <span style='color: rgb(255, 140, 0)'>"+Math.round(frequency[j])+"</span>";
           }
-          for (var i = 0; i < numberPoints; i++) {
-            var y=0;
-            var wavelength = 100 * HEIGHT / frequency[j];
-            var v = wavelength/frequency[j];
-            var k = 2*Math.PI/wavelength;
+          for (let i = 0; i < numberPoints; i++) {
+            let y=0;
+            let wavelength = 100 * HEIGHT / frequency[j];
+            let v = wavelength/frequency[j];
+            let k = 2*Math.PI/wavelength;
             y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
 
             y+= HEIGHT/2;
@@ -238,12 +244,12 @@ function draw() {
         scopeCtx.beginPath();
         scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
         scopeCtx.lineWidth = '5';
-        var x = 0;
-        for (var i = 0; i < numberPoints; i++) {
-          var wavelength = 100 * HEIGHT / frequency[0];
-          var v = wavelength/frequency[0];
-          var k = 2*Math.PI/wavelength;
-          var y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
+        let x = 0;
+        for (let i = 0; i < numberPoints; i++) {
+          let wavelength = 100 * HEIGHT / frequency[0];
+          let v = wavelength/frequency[0];
+          let k = 2*Math.PI/wavelength;
+          let y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
 
           if (i === 0) {
             scopeCtx.moveTo(x, y);
@@ -261,14 +267,14 @@ function draw() {
         scopeCtx.beginPath();
         scopeCtx.lineWidth = '5';
         scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
-        var x = 0;
-        for (var i = 0; i < numberPoints; i++) {
-          var y=0;
+        let x = 0;
+        for (let i = 0; i < numberPoints; i++) {
+          let y=0;
 
-          for (var j=0; j<WAVESCOMPLEXMODE; j++){
-            var wavelength = 100 * HEIGHT / frequency[j];
-            var v = wavelength/frequency[j];
-            var k = 2*Math.PI/wavelength;
+          for (let j=0; j<WAVESCOMPLEXMODE; j++){
+            let wavelength = 100 * HEIGHT / frequency[j];
+            let v = wavelength/frequency[j];
+            let k = 2*Math.PI/wavelength;
             y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
           }
           y+= HEIGHT/2;
@@ -281,8 +287,8 @@ function draw() {
         }
         scopeCtx.stroke();
 
-        for (var j=0; j<WAVESCOMPLEXMODE; j++){
-          var x = 0;
+        for (let j=0; j<WAVESCOMPLEXMODE; j++){
+          let x = 0;
           scopeCtx.beginPath();
           scopeCtx.lineWidth = '1';
           if (j===0){
@@ -301,11 +307,11 @@ function draw() {
               scopeCtx.strokeStyle = 'rgb(255, 140, 0)';
               freqInfoMessage+=" <span style='color: rgb(255, 140, 0)'>"+Math.round(frequency[j])+"</span>";
           }
-          for (var i = 0; i < numberPoints; i++) {
-            var y=0;
-            var wavelength = 100 * HEIGHT / frequency[j];
-            var v = wavelength/frequency[j];
-            var k = 2*Math.PI/wavelength;
+          for (let i = 0; i < numberPoints; i++) {
+            let y=0;
+            let wavelength = 100 * HEIGHT / frequency[j];
+            let v = wavelength/frequency[j];
+            let k = 2*Math.PI/wavelength;
             y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
             y+= HEIGHT/2;
             if (i === 0) {
@@ -328,16 +334,16 @@ function draw() {
 function renderCanvas() {
   if (mouseDown) {
 
-    if (firstFrequency) {
+    if (firstDown) {
       startFrequency (((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
-      for (var w=1; w<nFingers; w++){
+      for (let w=1; w<nFingers; w++){
         startFrequency (((mousePos[w].y / DRAWHEIGHT) - 1) * -1, w);
       }
     }
     let setV = setVolume(mousePos[0].x / DRAWWIDTH, 0);
     let setF = setFrequency(((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
     if (mode==="complex"){
-      for (var w=1; w<WAVESCOMPLEXMODE; w++) {
+      for (let w=1; w<WAVESCOMPLEXMODE; w++) {
         calculateRandomVolume(w);
       }
       calculateFrequencyMultiplier(frequency[0], 2, 1);
@@ -345,7 +351,7 @@ function renderCanvas() {
       calculateFrequencyMultiplier(frequency[0], 0.5, 3);
       calculateFrequencyMultiplier(frequency[0], 0.25, 4);
     } else {
-      for (var w=1; w<nFingers; w++){
+      for (let w=1; w<nFingers; w++){
         // We set the volume and the frequency
         let setVw = setVolume(mousePos[w].x / DRAWWIDTH, w);
         let setFw = setFrequency(((mousePos[w].y / DRAWHEIGHT) - 1) * -1, w);
@@ -370,21 +376,21 @@ function renderCanvas() {
 
 // Function that draws of the axes labels in the left canvas
 function renderAxesLabels() {
-  var ticks = 4;
-  var yLabelOffset = 13;
+  let ticks = 4;
+  let yLabelOffset = 13;
+  let x = DRAWWIDTH;
   // Render the vertical frequency axis.
-  for (var i = 0; i <= ticks; i++) {
-    var freq = ((i) / (ticks))
-    var tickFreq = Math.round(logspace(minFreq, maxFreq, freq, 2));
-    var switchAmp = ((freq / ticks - 1) * -1);
-    var tickAmp = Math.round(logspace(0.001, 0.5, switchAmp, 2) * 100) / 10 * 2;
-    var percent = i / (ticks);
-    var y = (1 - percent) * DRAWHEIGHT;
-    var x = DRAWWIDTH;
+  for (let i = 0; i <= ticks; i++) {
+    let freq = ((i) / (ticks))
+    let tickFreq = Math.round(logspace(minFreq, maxFreq, freq, 2));
+    let switchAmp = ((freq / ticks - 1) * -1);
+    let tickAmp = Math.round(logspace(0.001, 0.5, switchAmp, 2) * 100) / 10 * 2;
+    let percent = i / (ticks);
+    let y = (1 - percent) * DRAWHEIGHT;
     // Get the value for the current y coordinate.
 
-    var ampX = (1 - percent) * DRAWWIDTH;
-    var ampY = DRAWHEIGHT - 0;
+    let ampX = (1 - percent) * DRAWWIDTH;
+    let ampY = DRAWHEIGHT - 0;
     drawCanvasCtx.beginPath();
     drawCanvasCtx.font = '16px Verdana ';
     // Draw the value.
@@ -410,8 +416,8 @@ function renderAxesLabels() {
 function drawPoint() {
   drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
   // We choose a size and fill a rectangle in the middle of the pointer
-  var rectSizeY = 18;
-  var rectSizeX = 8;
+  let rectSizeY = 18;
+  let rectSizeX = 8;
   drawCanvasCtx.fillRect(mousePos[0].x-rectSizeX/2-2, mousePos[0].y-rectSizeY/2, rectSizeX, rectSizeY);
 }
 

@@ -6,26 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Matthew Rice, Pablo Canas">
 
-    <link rel="stylesheet" href="css/styles.css?v=1.0">
+    <link rel="stylesheet" href="css/generalStyles.css">
+    <link rel="stylesheet" href="css/controlsCStyles.css">
+    <link rel="stylesheet" href="css/scopesCStyles.css">
+    <link rel="stylesheet" href="css/bottomCStyles.css">
   </head>
 
   <body>
 
-    <div class="container">
-      <div class="controls-container">
+    <div id="container">
+      <div id="controls-container">
         <canvas id="draw-canvas"></canvas>
       </div>
       <span id='yAxis-header'>Voltage sent to the speaker</span>
-      <div class="scopes-container">
+      <div id="scopes-container">
         <div id="scope-container">
           <canvas id="scope-1"></canvas>
         </div>
           <h1 id="header-text">
             Wave Generator
           </h1>
-          <div class="units-container">25ms</div>
+          <div id="units-container">25ms</div>
         <span id='xAxis-header'>Time</span>
-        <div class="bottom-container">
+        <div id="bottom-container">
           <button id="freq-info"></button>
           <div id="button-container">
             <button id="pure-button"><img src="./resources/sine.png" style='height: 25px; width: 30px'></img></button>

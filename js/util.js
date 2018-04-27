@@ -8,13 +8,14 @@
 
 // Function that sets the volume to the value indicated as argument
 function setVolume(vol, index) {
-  //var newVolume = logspace(0.001, 0.5, vol, 2);
   newVolume = -1*((1-vol)*volumePower);
-  //gain.gain.setTargetAtTime(newVolume, audioCtx.currentTime, 0.05);
-  var redraw = false;
+  let redraw = false;
   if (Math.abs(vol - oldVol[index]) > changeSensitivity) {
-    synths[index].volume.value = newVolume;
-    //oscillators[index].volume.exponentialRampTo(newVolume, 0.002);
+    if (isSynths) {
+        synths[index].volume.value = newVolume;
+    } else {
+      oscillators[index].volume.value = newVolume;
+    }
     oldVol[index] = vol;
     redraw = true;
   }
@@ -25,37 +26,53 @@ function setVolume(vol, index) {
 /* Function used in the complex mode.
 It calculates a random volume and applies it to the volume with the given index */
 function calculateRandomVolume (index) {
-  var vol = Math.random();
-  var newVolume = logspace(0.001, 0.5, vol, 2);
-  synths[index].volume.value = newVolume;
+  let vol = Math.random();
+  let newVolume = logspace(0.001, 0.5, vol, 2);
+  if (isSynths) {
+      synths[index].volume.value = newVolume;
+  } else {
+    oscillators[index].volume.value = newVolume;
+  }
   amplitude[index] = vol;
 }
 
 // Function that sets the frequency to the value indicated as argument
 function setFrequency(freq, index) {
-  var newFreq = logspace(minFreq, maxFreq, freq, 2);
-  //osc.frequency.value = newFreq;
+  let newFreq = logspace(minFreq, maxFreq, freq, 2);
   frequency[index] = newFreq;
-  var redraw = false;
+  let redraw = false;
   if (Math.abs(freq - oldFreq[index]) > changeSensitivity) {
-    synths[index].frequency.value = newFreq;
-    //oscillators[index].start();
-    //oscillators[index].frequency.value = newFreq;
+    if (isSynths) {
+      synths[index].frequency.value = newFreq;
+    } else {
+      oscillators[index].frequency.value = newFreq;
+    }
     oldFreq[index] = freq;
     redraw = true;
   }
   return redraw;
 }
+
 function startFrequency (freq, index){
-  var newFreq = logspace(minFreq, maxFreq, freq, 2);
-  synths[index].triggerAttack(newFreq);
+  let newFreq = logspace(minFreq, maxFreq, freq, 2);
+  if (isSynths) {
+    synths[index].triggerAttack(newFreq);
+  } else {
+    oscillators[index].start();
+    oscillators[index].frequency.value = newFreq;
+  }
 }
 
 /* Function used in the complex mode.
 It takes a frequency, applies a multiplier and copies it to the frequency with the given index */
 function calculateFrequencyMultiplier (freq, multiplier, index){
   frequency [index] = freq * multiplier;
-  synths[index].triggerAttack(frequency [index]);
+  if (isSynths) {
+    synths[index].triggerAttack(frequency [index]);
+  } else {
+    oscillators[index].start();
+    oscillators[index].frequency.value = frequency [index];
+  }
 }
 
 // Function used to translate our data into the frequencies and volume ranges we predefined
@@ -66,11 +83,41 @@ function logspace(start, stop, n, N) {
 
 // Get the position of the mouse relative to the canvas
 function getMousePos(canvas, evt) {
-  var rect = canvas.getBoundingClientRect(); // abs. size of element
+  let rect = canvas.getBoundingClientRect(); // abs. size of element
   return {
     x: (evt.clientX - rect.left), // scale mouse coordinates after they have
     y: (evt.clientY - rect.top) // been adjusted to be relative to element
   }
+}
+
+function deleteFinger (indexFinger){
+  if (isSynths) {
+    synths[indexFinger].triggerRelease();
+    synths.splice(indexFinger, 1);
+    synths.push(new Tone.Synth(options));
+    synths[lengthArrays-1].chain(masterVolume, Tone.Master);
+  } else {
+    oscillators[indexFinger].stop();
+    oscillators.splice(indexFinger, 1);
+    oscillators.push(new Tone.Oscillator({
+         "type" : "sine",
+        "frequency" : 1,
+        "volume" : 0
+      }));
+    oscillators[lengthArrays-1].toMaster();
+  }
+
+  auxTouch.splice(indexFinger, 1);
+  mousePos.splice(indexFinger, 1);
+  oldFreq.splice(indexFinger, 1);
+  oldVol.splice(indexFinger, 1);
+  frequency.splice(indexFinger, 1);
+  amplitude.splice(indexFinger, 1);
+  mousePos.push({x: 0, y: 0});
+  oldFreq.push(-1);
+  oldVol.push(-1);
+  frequency.push(1);
+  amplitude.push(0);
 }
 
 /* The closest to a reset function. It reinitializes almost everything.
@@ -84,7 +131,7 @@ function setToZero(){
   renderAxesLabels();
   mouseDown = false;
   mouseMove = false;
-  for (var j=0; j<lengthArrays; j++){
+  for (let j=0; j<lengthArrays; j++){
     mousePos[j] = {
       x: 0,
       y: 0
@@ -102,13 +149,16 @@ function releaseSynths(){
   if (!isStarted) {
     start();
   } else {
-    for (var j=0; j<lengthArrays; j++){
-      synths[j].triggerRelease();
-      synths[j] = new Tone.Synth(options);
-      synths[j].chain(masterVolume, Tone.Master);
-      /*oscillators[0].stop();
-      oscillators[0].frequency.value=1;
-      oscillators[0].volume.value=0;*/
+    for (let j=0; j<lengthArrays; j++){
+      if (isSynths){
+        synths[j].triggerRelease();
+        synths[j] = new Tone.Synth(options);
+        synths[j].chain(masterVolume, Tone.Master);
+      } else {
+        oscillators[j].stop();
+        oscillators[j].frequency.value=1;
+        oscillators[j].volume.value=0;
+      }
     }
   }
 }
