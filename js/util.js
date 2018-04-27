@@ -27,9 +27,25 @@ function setVolume(vol, index) {
 It calculates a random volume and applies it to the volume with the given index */
 function calculateRandomVolume (index) {
   let vol = Math.random();
-  let newVolume = logspace(0.001, 0.5, vol, 2);
+  let newVolume = -1*((1-vol)*volumePower);
   if (isSynths) {
-      synths[index].volume.value = newVolume;
+    synths[index].volume.value = newVolume;
+  } else {
+    oscillators[index].volume.value = newVolume;
+  }
+  amplitude[index] = vol;
+}
+
+function calculateNewVolume(offset, index){
+  let vol = amplitude[index]-offset;
+  let newVolume;
+  if (vol<0){
+    newVolume = -1*((1-0)*volumePower);
+  } else {
+    newVolume = -1*((1-vol)*volumePower);
+  }
+  if (isSynths) {
+    synths[index].volume.value = newVolume;
   } else {
     oscillators[index].volume.value = newVolume;
   }
@@ -94,8 +110,9 @@ function deleteFinger (indexFinger){
   if (isSynths) {
     synths[indexFinger].triggerRelease();
     synths.splice(indexFinger, 1);
-    synths.push(new Tone.Synth(options));
-    synths[lengthArrays-1].chain(masterVolume, Tone.Master);
+    let newSynth = new Tone.Synth(options).toMaster();
+    synths.push(newSynth);
+    //synths[lengthArrays-1].chain(masterVolume, Tone.Master);
   } else {
     oscillators[indexFinger].stop();
     oscillators.splice(indexFinger, 1);
@@ -152,8 +169,8 @@ function releaseSynths(){
     for (let j=0; j<lengthArrays; j++){
       if (isSynths){
         synths[j].triggerRelease();
-        synths[j] = new Tone.Synth(options);
-        synths[j].chain(masterVolume, Tone.Master);
+        synths[j] = new Tone.Synth(options).toMaster();
+        //synths[j].chain(masterVolume, Tone.Master);
       } else {
         oscillators[j].stop();
         oscillators[j].frequency.value=1;

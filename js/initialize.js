@@ -157,6 +157,14 @@ var options = {
  oscillator  : {
    type  : "sine"
  },
+ envelope  : {
+   attack  : 0.005,
+   decay  : 0,
+   sustain  : 1,
+   release  : 0.01,
+   attackCurve  : "linear",
+   releaseCurve  : "exponential"
+  }
 };
 var masterVolume;
 
@@ -170,8 +178,8 @@ function start(){
   masterVolume = new Tone.Volume(0);
   for(let i=0; i<lengthArrays; i++){
     if (isSynths) {
-      synths[i] = new Tone.Synth(options);
-      synths[i].chain(masterVolume, Tone.Master);
+      synths[i] = new Tone.Synth(options).toMaster();
+      //synths[i].chain(masterVolume, Tone.Master);
     } else {
       oscillators[i] = new Tone.Oscillator({
            "type" : "sine",

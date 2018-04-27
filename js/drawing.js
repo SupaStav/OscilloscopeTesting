@@ -129,12 +129,17 @@ function draw() {
         let x = 0;
         // For each of the points that we have
         for (let i = 0; i < numberPoints; i++) {
+          let y=0;
           // Calculate the location of the point using the equation of the wave.
           let wavelength = 100 * HEIGHT / frequency[0];
           let v = wavelength/frequency[0];
           let k = 2*Math.PI/wavelength;
-          let y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
-
+          if (amplitude[0]<0){
+            y += (0 * 350 * Math.cos(k*(x+v*t)));
+          } else {
+            y += (amplitude[0]* 350 * Math.cos(k*(x+v*t)));
+          }
+          y += HEIGHT/2;
           // We draw the point in the canvas
           if (i === 0) {
             scopeCtx.moveTo(x, y);
@@ -165,7 +170,11 @@ function draw() {
               let wavelength = 100 * HEIGHT / frequency[j];
               let v = wavelength/frequency[j];
               let k = 2*Math.PI/wavelength;
-              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+              if (amplitude[j]<0){
+                y += (0* 350 * Math.cos(k*(x+v*t)));
+              } else {
+                y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+              }
             }
             y+= HEIGHT/2;
             if (i === 0) {
@@ -210,9 +219,13 @@ function draw() {
             let wavelength = 100 * HEIGHT / frequency[j];
             let v = wavelength/frequency[j];
             let k = 2*Math.PI/wavelength;
-            y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            if (amplitude[j]<0){
+              y += (0 * 350 * Math.cos(k*(x+v*t)));
+            } else {
+              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            }
 
-            y+= HEIGHT/2;
+            y += HEIGHT/2;
             if (i === 0) {
               scopeCtx.moveTo(x, y);
             } else {
@@ -246,11 +259,16 @@ function draw() {
         scopeCtx.lineWidth = '5';
         let x = 0;
         for (let i = 0; i < numberPoints; i++) {
+          let y=0;
           let wavelength = 100 * HEIGHT / frequency[0];
           let v = wavelength/frequency[0];
           let k = 2*Math.PI/wavelength;
-          let y = (amplitude[0]* 350 * Math.cos(k*(x+v*t)) + HEIGHT/2);
-
+          if (amplitude[0]<0){
+            y += (0 * 350 * Math.cos(k*(x+v*t)));
+          } else {
+            y += (amplitude[0]* 350 * Math.cos(k*(x+v*t)));
+          }
+          y += HEIGHT/2;
           if (i === 0) {
             scopeCtx.moveTo(x, y);
           } else {
@@ -275,7 +293,11 @@ function draw() {
             let wavelength = 100 * HEIGHT / frequency[j];
             let v = wavelength/frequency[j];
             let k = 2*Math.PI/wavelength;
-            y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            if (amplitude[j]<0){
+              y += (0 * 350 * Math.cos(k*(x+v*t)));
+            } else {
+              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            }
           }
           y+= HEIGHT/2;
           if (i === 0) {
@@ -312,7 +334,11 @@ function draw() {
             let wavelength = 100 * HEIGHT / frequency[j];
             let v = wavelength/frequency[j];
             let k = 2*Math.PI/wavelength;
-            y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            if (amplitude[j]<0){
+              y += (0 * 350 * Math.cos(k*(x+v*t)));
+            } else {
+              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+            }
             y+= HEIGHT/2;
             if (i === 0) {
               scopeCtx.moveTo(x, y);
@@ -340,16 +366,24 @@ function renderCanvas() {
         startFrequency (((mousePos[w].y / DRAWHEIGHT) - 1) * -1, w);
       }
     }
-    let setV = setVolume(mousePos[0].x / DRAWWIDTH, 0);
     let setF = setFrequency(((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
+
+    let offset = amplitude[0];
+    let setV = setVolume(mousePos[0].x / DRAWWIDTH, 0);
+    offset = offset - amplitude[0];
+
     if (mode==="complex"){
       for (let w=1; w<WAVESCOMPLEXMODE; w++) {
-        calculateRandomVolume(w);
+        if (firstDown) {
+          calculateRandomVolume(w);
+        } else {
+          calculateNewVolume(offset, w);
+        }
       }
       calculateFrequencyMultiplier(frequency[0], 2, 1);
-      calculateFrequencyMultiplier(frequency[0], 4, 2);
-      calculateFrequencyMultiplier(frequency[0], 0.5, 3);
-      calculateFrequencyMultiplier(frequency[0], 0.25, 4);
+      calculateFrequencyMultiplier(frequency[0], 3, 2);
+      calculateFrequencyMultiplier(frequency[0], 4, 3);
+      calculateFrequencyMultiplier(frequency[0], 5, 4);
     } else {
       for (let w=1; w<nFingers; w++){
         // We set the volume and the frequency
