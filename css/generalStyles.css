@@ -1,0 +1,29 @@
+html {
+  background-color: black;
+  min-height: 100vh;
+  display: flex;
+  -webkit-display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+}
+
+#container {
+  display: flex;
+  -webkit-display: flex;
+  justify-content: space-around;
+  -webkit-justify-content: space-around;
+  -moz-justify-content: space-around;
+  -webkit-flex: 1; /* Safari 6.1+ */
+  -ms-flex: 1; /* IE 10 */
+  flex: 1;
+  background-color: black;
+  border: 8px outset #E4E3DF;
+  min-height: 93vh;
+  min-width: 98vw;
+}

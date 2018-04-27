@@ -1,0 +1,16 @@
+#controls-container {
+  display: flex;
+  -webkit-display: flex;
+  flex-direction: column;
+  -webkit-flex: 2; /* Safari 6.1+ */
+  -ms-flex: 2; /* IE 10 */
+  flex: 2;
+}
+
+#draw-canvas {
+  border: 2px solid black;
+  flex: 1;
+  -webkit-flex: 1; /* Safari 6.1+ */
+  -ms-flex: 1; /* IE 10 */
+  background-color: #c1c5c9;
+}
