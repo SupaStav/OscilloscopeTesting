@@ -11,12 +11,19 @@
 */
 
 /* To do:
+    - IN TOUCH MODE YOU CAN GET OUT OF THE CANVAS, THAT IS WRONG
     - (matthew solving it) Very slow on iPad and no sound
-    - Touchend is not firing sometimes, leaving one wave on screen
+    - (I think this is solved) Touchend is not firing sometimes, leaving one wave on screen
+    - Errors in the multitouch when you touch out of the canvas
+    - Saturation problems (several)
+        * When you go out of the canvas with mouse, it starts saturating
+        * Saturation with several Fingers
+        * Saturation with complex waves
+        * Several more...
 
-    Mode oscillator:
-      - Noise when stopping the oscillator
-      - Buzzing in the multitouch mode
+    (I chose this option) Mode oscillator:
+      - (solved) Noise when stopping the oscillator
+      - (solved) Buzzing in the multitouch mode
 
     Mode Synths:
       - For me it still sounds weird when changing frequencies
@@ -81,7 +88,7 @@ createHiDPICanvas = function(w, h, canvasName, ratio) {
 }
 
 var mode = "pure";
-var isSynths = true;
+var isSynths = false;
 
 // Declaration of some variables that we will need later
 var PIXEL_RATIO;
@@ -150,9 +157,12 @@ if (MAXFINGERS>WAVESCOMPLEXMODE){
 var finger;
 
 var isStarted = false;
+var startOscillators = [];
 
 var oscillators;
 var synths;
+
+
 var options = {
  oscillator  : {
    type  : "sine"
@@ -167,7 +177,6 @@ var options = {
   }
 };
 var masterVolume;
-
 function start(){
   Tone.context = new(window.AudioContext || window.webkitAudioContext)();
   if (isSynths) {
@@ -212,6 +221,10 @@ function setUp() {
 
   setUpDrawCanvas();
 
+  for (let j=0; j<lengthArrays; j++){
+      startOscillators [j] = false;
+  }
+
   setToZero();
 }
 
@@ -233,6 +246,10 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('pure-button').style.backgroundColor = '#c1c5c9';
     }
   }
+});
+
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
 });
 
 // We initially set both canvas

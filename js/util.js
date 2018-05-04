@@ -74,7 +74,10 @@ function startFrequency (freq, index){
   if (isSynths) {
     synths[index].triggerAttack(newFreq);
   } else {
-    oscillators[index].start();
+    if (!startOscillators[index]){
+      oscillators[index].start();
+      startOscillators[index]=true;
+    }
     oscillators[index].frequency.value = newFreq;
   }
 }
@@ -86,7 +89,6 @@ function calculateFrequencyMultiplier (freq, multiplier, index){
   if (isSynths) {
     synths[index].triggerAttack(frequency [index]);
   } else {
-    oscillators[index].start();
     oscillators[index].frequency.value = frequency [index];
   }
 }
@@ -114,14 +116,12 @@ function deleteFinger (indexFinger){
     synths.push(newSynth);
     //synths[lengthArrays-1].chain(masterVolume, Tone.Master);
   } else {
-    oscillators[indexFinger].stop();
-    oscillators.splice(indexFinger, 1);
-    oscillators.push(new Tone.Oscillator({
-         "type" : "sine",
-        "frequency" : 1,
-        "volume" : 0
-      }));
-    oscillators[lengthArrays-1].toMaster();
+    for (let j=indexFinger; j<lengthArrays-1; j++){
+      oscillators[j].frequency.rampTo(oscillators[j+1].frequency.value, 0.05);
+      oscillators[j].volume.rampTo(oscillators[j+1].volume.value, 0.05);
+    }
+    oscillators[lengthArrays-1].frequency.rampTo(1, 0.1);
+    oscillators[lengthArrays-1].volume.rampTo(-Infinity, 0.1);
   }
 
   auxTouch.splice(indexFinger, 1);
@@ -172,9 +172,9 @@ function releaseSynths(){
         synths[j] = new Tone.Synth(options).toMaster();
         //synths[j].chain(masterVolume, Tone.Master);
       } else {
-        oscillators[j].stop();
-        oscillators[j].frequency.value=1;
-        oscillators[j].volume.value=0;
+        oscillators[j].frequency.rampTo(1, 0.1);
+        oscillators[j].volume.rampTo(-Infinity, 0.1);
+        //oscillators[j].stop();
       }
     }
   }

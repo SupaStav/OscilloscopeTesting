@@ -67,7 +67,7 @@ function createGrid(ctx) {
   }
 
   linesDrawn = 1;
-  // Draw the dashes of the bottom half of y axis
+  // Draw the dashes of the top half of y axis
   let dashesY = midPoint.y - dashSpace;
   while (dashesY >= 0) {
     if (linesDrawn%4 === 0){
@@ -82,7 +82,7 @@ function createGrid(ctx) {
   }
 
   linesDrawn = 0;
-  // Draw the dashes of the top half of y axis
+  // Draw the dashes of the bottom half of y axis
   dashesY = midPoint.y;
   while (dashesY <= HEIGHT) {
     if (linesDrawn%4 === 0){
@@ -97,6 +97,29 @@ function createGrid(ctx) {
   }
 
   ctx.stroke();
+  ctx.closePath();
+
+  let lengthScale = dashSpace*4;
+  let offsetY = 8;
+  let offsetX = 3;
+  let lengthLittleLines = 10;
+  dashesY = HEIGHT;
+  // Draw yellow scale
+  ctx.beginPath();
+  ctx.strokeStyle = "rgb(255,233,0)";
+  ctx.lineWidth = '3';
+
+  ctx.moveTo(midPoint.x + offsetX, dashesY-offsetY);
+  ctx.lineTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY);
+
+  ctx.moveTo(midPoint.x + offsetX, dashesY-offsetY-lengthLittleLines/2);
+  ctx.lineTo(midPoint.x + offsetX, dashesY-offsetY+lengthLittleLines/2);
+
+  ctx.moveTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY-lengthLittleLines/2);
+  ctx.lineTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY+lengthLittleLines/2);
+
+  ctx.stroke();
+  ctx.closePath();
 }
 
 // Scope canvas drawing
@@ -152,51 +175,44 @@ function draw() {
         scopeCtx.stroke();
       } else {
         // In case we are in touch mode
-        numberPoints = 2048*16/nFingers;
+        /* If there is more than 1 finger pressed, we will draw a thick yellow line
+        which will be the result of adding all the other waves */
+        numberPoints = 2048*16/(nFingers+1);
         sliceWidth = WIDTH / numberPoints;
-        if (nFingers>1){
-          /* If there is more than 1 finger pressed, we will draw a thick yellow line
-          which will be the result of adding all the other waves */
-          numberPoints = 2048*16/(nFingers+1);
-          sliceWidth = WIDTH / numberPoints;
-          scopeCtx.beginPath();
-          scopeCtx.lineWidth = '5';
-          scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
-          let x = 0;
-          for (let i = 0; i < numberPoints; i++) {
-            let y=0;
-            // Add the result of each of the waves in position x
-            for (let j=0; j<nFingers; j++){
-              let wavelength = 100 * HEIGHT / frequency[j];
-              let v = wavelength/frequency[j];
-              let k = 2*Math.PI/wavelength;
-              if (amplitude[j]<0){
-                y += (0* 350 * Math.cos(k*(x+v*t)));
-              } else {
-                y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
-              }
-            }
-            y+= HEIGHT/2;
-            if (i === 0) {
-              scopeCtx.moveTo(x, y);
+
+        scopeCtx.beginPath();
+        scopeCtx.lineWidth = '5';
+        scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
+        let x = 0;
+        for (let i = 0; i < numberPoints; i++) {
+          let y=0;
+          // Add the result of each of the waves in position x
+          for (let j=0; j<nFingers; j++){
+            let wavelength = 100 * HEIGHT / frequency[j];
+            let v = wavelength/frequency[j];
+            let k = 2*Math.PI/wavelength;
+            if (amplitude[j]<0){
+              y += (0* 350 * Math.cos(k*(x+v*t)));
             } else {
-              scopeCtx.lineTo(x, y);
+              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
             }
-            x += sliceWidth;
           }
-          scopeCtx.stroke();
+          y+= HEIGHT/2;
+          if (i === 0) {
+            scopeCtx.moveTo(x, y);
+          } else {
+            scopeCtx.lineTo(x, y);
+          }
+          x += sliceWidth;
         }
+        scopeCtx.stroke();
 
         // Now, we will draw each of the thinner lines for each finger.
         for (let j=0; j<nFingers; j++){
           let x = 0;
           scopeCtx.beginPath();
           // If we have only 1 finger, the line will still be thick
-          if (nFingers===1){
-            scopeCtx.lineWidth = '5';
-          } else {
-            scopeCtx.lineWidth = '1';
-          }
+          scopeCtx.lineWidth = '1';
           // In case of the finger number, we will choose one color and write its frequency
           if (j===0){
               scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
@@ -237,7 +253,7 @@ function draw() {
         }
       }
       // Write the message in case of the number of fingers we have
-      if (nFingers < 2) {
+      if (nFingers < 1) {
         if (frequency[0]===1){
           freqInfoMessage="";
         } else {
@@ -401,7 +417,13 @@ function renderCanvas() {
     drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
     // We redraw the axes and the point
     renderAxesLabels();
-    drawPoint();
+    if (nFingers==0){
+      drawPointMouse();
+    } else {
+      for (let w=0; w<nFingers; w++){
+        drawPointFinger(w);
+      }
+    }
     // What is this for?
     requestAnimationFrame(renderCanvas);
   }
@@ -447,12 +469,37 @@ function renderAxesLabels() {
 
 
 // Draw blue point where finger/mouse is
-function drawPoint() {
-  drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
+function drawPointMouse() {
+  /*drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
   // We choose a size and fill a rectangle in the middle of the pointer
   let rectSizeY = 18;
   let rectSizeX = 8;
-  drawCanvasCtx.fillRect(mousePos[0].x-rectSizeX/2-2, mousePos[0].y-rectSizeY/2, rectSizeX, rectSizeY);
+  drawCanvasCtx.fillRect(mousePos[0].x-rectSizeX/2-2, mousePos[0].y-rectSizeY/2, rectSizeX, rectSizeY);*/
+  let radius = 8;
+  drawCanvasCtx.beginPath();
+  drawCanvasCtx.arc(mousePos[0].x, mousePos[0].y, radius, 0, 2 * Math.PI);
+  drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
+  drawCanvasCtx.fill();
+  drawCanvasCtx.stroke();
+}
+
+function drawPointFinger(index) {
+  let radius = 40;
+  drawCanvasCtx.beginPath();
+  drawCanvasCtx.arc(mousePos[index].x, mousePos[index].y, radius, 0, 2 * Math.PI);
+  if (index===0){
+      drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
+  } else if (index===1){
+      drawCanvasCtx.fillStyle = 'rgb(246, 109, 244)';
+  } else if (index===2){
+      drawCanvasCtx.fillStyle = 'rgb(101, 255, 0)';
+  } else if (index===3){
+      drawCanvasCtx.fillStyle = 'rgb(2, 0, 185)';
+  } else {
+      drawCanvasCtx.fillStyle = 'rgb(255, 140, 0)';
+  }
+  drawCanvasCtx.fill();
+  drawCanvasCtx.stroke();
 }
 
 
