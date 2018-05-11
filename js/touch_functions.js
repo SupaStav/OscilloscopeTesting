@@ -35,7 +35,12 @@ drawCanvas.addEventListener("touchstart", function(e) {
       }
     }
 
-    renderCanvas();
+    if (!isStarted){
+      isStarted = true;
+      start();
+    } else {
+      renderCanvas();
+    }
     firstDown = false;
   }
 }, false);

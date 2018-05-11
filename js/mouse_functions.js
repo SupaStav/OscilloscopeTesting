@@ -10,15 +10,15 @@ drawCanvas.addEventListener("mousedown", function(e) {
   mouseDown = true;
   mouseMove = false;
   firstDown = true;
-
-  if (!isStarted){
-      isStarted = true;
-      start();
-  }
-
   if (nFingers === 0){
     mousePos[0] = getMousePos(drawCanvas, e);
-    renderCanvas();
+    if (!isStarted){
+      isStarted = true;
+      start();
+    } else {
+      renderCanvas();
+    }
+
     firstDown = false;
   } else {
     mousePos[finger] = getMousePos(drawCanvas, e);

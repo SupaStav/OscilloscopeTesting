@@ -184,16 +184,14 @@ var masterVolume;
 
 
 function start(){
-  StartAudioContext(Tone.context, 'body').then(function(){
-    console.log('Audio Context Started');
-  })
+
   if (isSynths) {
     synths = new Array(lengthArrays);
   } else {
     oscillators = new Array(lengthArrays);
   }
   masterVolume = new Tone.Volume(0);
-  //var limiter = new Tone.Limiter(-6);
+  var limiter = new Tone.Limiter(-6);
   for(let i=0; i<lengthArrays; i++){
     if (isSynths) {
       synths[i] = new Tone.Synth(options).toMaster();
@@ -203,9 +201,15 @@ function start(){
            "type" : "sine",
      			"frequency" : 1,
      			"volume" : 0
-     		}).toMaster();
+     		}).connect(limiter);
     }
   }
+  limiter.toMaster();
+  StartAudioContext(Tone.context, 'body').then(function(){
+    firstDown = true;
+    renderCanvas();
+    firstDown = false;
+  })
 }
 
 // This function will set up the two canvas that we are using in the application

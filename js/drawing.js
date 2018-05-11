@@ -380,7 +380,6 @@ function draw() {
 // Draw blue point where finger is, sets corresponding volume and frequency
 function renderCanvas() {
   if (mouseDown) {
-
     if (firstDown) {
       startFrequency (((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
       for (let w=1; w<nFingers; w++){
@@ -399,7 +398,6 @@ function renderCanvas() {
       } else {
         proportion = originalComplexAmplitude/amplitude[0];
       }
-
       if (firstDown) {
         pureOn = true;
       }

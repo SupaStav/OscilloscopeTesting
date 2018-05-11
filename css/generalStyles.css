@@ -6,6 +6,7 @@ html {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  touch-action: none;
 
   -webkit-user-select: none; /* Safari 3.1+ */
   -moz-user-select: none; /* Firefox 2+ */
