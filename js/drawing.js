@@ -418,7 +418,7 @@ function renderCanvas() {
       }
     }
     if(setV | setF){
-      //  draw();
+        draw();
     }
 
     // We clear the canvas to make sure we don't leave anything painted
