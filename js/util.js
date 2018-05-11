@@ -14,7 +14,13 @@ function setVolume(vol, index) {
     if (isSynths) {
         synths[index].volume.value = newVolume;
     } else {
-      oscillators[index].volume.value = newVolume;
+      //if (newVolume>0){
+      //  oscillators[index].volume.value = 0;
+      //} else {
+        oscillators[index].volume.value = newVolume;
+      //}
+
+      //console.log(newVolume);
     }
     oldVol[index] = vol;
     redraw = true;
@@ -23,27 +29,19 @@ function setVolume(vol, index) {
   return redraw;
 }
 
+function calculateRandomVolumes(){
+  for (let h=1; h<WAVESCOMPLEXMODE; h++){
+    randomInitialAmplitudes[h] = Math.random();
+  }
+};
+
 /* Function used in the complex mode.
 It calculates a random volume and applies it to the volume with the given index */
-function calculateRandomVolume (index) {
-  let vol = Math.random();
-  let newVolume = -1*((1-vol)*volumePower);
-  if (isSynths) {
-    synths[index].volume.value = newVolume;
-  } else {
-    oscillators[index].volume.value = newVolume;
-  }
-  amplitude[index] = vol;
-}
 
-function calculateNewVolume(offset, index){
-  let vol = amplitude[index]-offset;
-  let newVolume;
-  if (vol<0){
-    newVolume = -1*((1-0)*volumePower);
-  } else {
-    newVolume = -1*((1-vol)*volumePower);
-  }
+function calculateNewVolume(proportion, index){
+  let vol = randomInitialAmplitudes[index]/proportion;
+
+  let newVolume = -1*((1-vol)*volumePower);
   if (isSynths) {
     synths[index].volume.value = newVolume;
   } else {
@@ -101,10 +99,25 @@ function logspace(start, stop, n, N) {
 
 // Get the position of the mouse relative to the canvas
 function getMousePos(canvas, evt) {
-  let rect = canvas.getBoundingClientRect(); // abs. size of element
-  return {
-    x: (evt.clientX - rect.left), // scale mouse coordinates after they have
-    y: (evt.clientY - rect.top) // been adjusted to be relative to element
+  if (mouseDown){
+    let rect = canvas.getBoundingClientRect(); // abs. size of element
+    var toReturnX = (evt.clientX - rect.left);
+    var toReturnY = (evt.clientY - rect.top);
+
+    if (toReturnX < 0){
+      toReturnX = 0;
+    } else if (toReturnX > rect.width){
+      toReturnX = rect.width;
+    }
+    if (toReturnY < 0){
+      toReturnY = 0;
+    } else if (toReturnY > rect.height){
+      toReturnY = rect.height;
+    }
+    return {
+      x: toReturnX, // scale mouse coordinates after they have
+      y: toReturnY // been adjusted to be relative to element
+    }
   }
 }
 
@@ -156,8 +169,11 @@ function setToZero(){
     oldFreq[j] = -1;
     oldVol[j] = -1;
     frequency[j] = 1;
+    randomInitialAmplitudes[j] = amplitude[j];
     amplitude[j] = 0;
+    originalComplexAmplitude = 0;
   }
+  pureOn = false;
   draw();
 }
 

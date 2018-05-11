@@ -35,13 +35,13 @@ button:focus {
   background-color: #FFE900;
 }
 
-#pure-button:hover {
+/*#pure-button:hover {
   background-color: #8d98a3 !important;
 }
 
 #complex-button:hover {
   background-color: #8d98a3 !important;
-}
+}*/
 
 
 .button-header{

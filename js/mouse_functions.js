@@ -6,9 +6,11 @@
 drawCanvas.addEventListener("mousedown", function(e) {
   //gain.gain.cancelScheduledValues(0);
   e.preventDefault();
+
   mouseDown = true;
   mouseMove = false;
   firstDown = true;
+
   if (!isStarted){
       isStarted = true;
       start();
@@ -40,7 +42,10 @@ drawCanvas.addEventListener("mousemove", function(e) {
 document.addEventListener('DOMContentLoaded', function() {
   // Alternative to jQuery mouseup function
   document.onmouseup = function(){
-      setToZero();
-      releaseSynths();
+      if (pureOn || mode==="pure"){
+        setToZero();
+        releaseSynths();
+      }
+
   }
 });

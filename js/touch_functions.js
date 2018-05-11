@@ -2,24 +2,39 @@
     - Every function related handling a touch event.
 */
 
+
 // When the user touches the screen, we simulate a mouse click
 drawCanvas.addEventListener("touchstart", function(e) {
   e.preventDefault();
-  if ((mode==="pure" || nFingers<=1) && nFingers<MAXFINGERS){
+
+  if (nFingers<MAXFINGERS){
     let mouseEvent;
     touch = e.touches;
     nFingers = touch.length;
     if (nFingers>MAXFINGERS){
       nFingers = MAXFINGERS;
     }
-    for (let j=0; j<nFingers; j++){
-      finger = j;
-      mouseEvent = new MouseEvent("mousedown", {
-        clientX: touch[j].clientX,
-        clientY: touch[j].clientY
-      });
-      drawCanvas.dispatchEvent(mouseEvent);
+
+    if (mode=="pure"){
+      for (let j=0; j<nFingers; j++){
+        finger = j;
+        mouseEvent = new MouseEvent("mousedown", {
+          clientX: touch[j].clientX,
+          clientY: touch[j].clientY
+        });
+        drawCanvas.dispatchEvent(mouseEvent);
+      }
+    } else {
+      for (let j=0; j<1; j++){
+        finger = j;
+        mouseEvent = new MouseEvent("mousedown", {
+          clientX: touch[j].clientX,
+          clientY: touch[j].clientY
+        });
+        drawCanvas.dispatchEvent(mouseEvent);
+      }
     }
+
     renderCanvas();
     firstDown = false;
   }
@@ -67,35 +82,40 @@ drawCanvas.addEventListener("touchend", function(e) {
       draw();
     }
   } else {
-    setToZero();
-    releaseSynths();
+    if(touch[0] && e.changedTouches[0]){
+      if (touch[0].clientX === e.changedTouches[0].clientX && touch[0].clientY === e.changedTouches[0].clientY && pureOn){
+        setToZero();
+        releaseSynths();
+      }
+    }
   }
 }, false);
 
 // When the user moves its fingers in the screen, we simulate a mouse move
 drawCanvas.addEventListener("touchmove", function(e) {
   e.preventDefault();
-  if (mode==="pure" || nFingers<=1){
-    if (nFingers<= MAXFINGERS){
+  if (nFingers<= MAXFINGERS){
       let mouseEvent;
       touch = e.touches;
-      for (let j=0; j<touch.length; j++){
-        finger = j;
-        mouseEvent = new MouseEvent("mousemove", {
-          clientX: touch[j].clientX,
-          clientY: touch[j].clientY
-        });
-        drawCanvas.dispatchEvent(mouseEvent);
+      if (mode=="pure"){
+        for (let j=0; j<touch.length; j++){
+          finger = j;
+          mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch[j].clientX,
+            clientY: touch[j].clientY
+          });
+          drawCanvas.dispatchEvent(mouseEvent);
+        }
+      } else{
+        for (let j=0; j<1; j++){
+          finger = j;
+          mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch[j].clientX,
+            clientY: touch[j].clientY
+          });
+          drawCanvas.dispatchEvent(mouseEvent);
+        }
       }
       renderCanvas();
-    }
   }
-}, false);
-
-drawCanvas.addEventListener("touchcancel", function(e) {
-  console.log('AAAAAAAAAAAss');
-  console.log('AAAAAAAAAAA');
-  console.log('TOUCH CANCELLED');
-  console.log('AAAAAAAAAAA');
-  console.log('AAAAAAAAAAAss');
 }, false);

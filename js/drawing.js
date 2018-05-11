@@ -212,7 +212,12 @@ function draw() {
           let x = 0;
           scopeCtx.beginPath();
           // If we have only 1 finger, the line will still be thick
-          scopeCtx.lineWidth = '1';
+          if (nFingers===1){
+            scopeCtx.lineWidth = '2';
+          } else {
+            scopeCtx.lineWidth = '1';
+          }
+
           // In case of the finger number, we will choose one color and write its frequency
           if (j===0){
               scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
@@ -383,18 +388,23 @@ function renderCanvas() {
       }
     }
     let setF = setFrequency(((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
-
-    let offset = amplitude[0];
     let setV = setVolume(mousePos[0].x / DRAWWIDTH, 0);
-    offset = offset - amplitude[0];
+    if (firstDown){
+      originalComplexAmplitude = amplitude[0];
+    }
 
     if (mode==="complex"){
+      if(amplitude[0] <= 0){
+        proportion = originalComplexAmplitude/0.00001;
+      } else {
+        proportion = originalComplexAmplitude/amplitude[0];
+      }
+
+      if (firstDown) {
+        pureOn = true;
+      }
       for (let w=1; w<WAVESCOMPLEXMODE; w++) {
-        if (firstDown) {
-          calculateRandomVolume(w);
-        } else {
-          calculateNewVolume(offset, w);
-        }
+        calculateNewVolume(proportion, w);
       }
       calculateFrequencyMultiplier(frequency[0], 2, 1);
       calculateFrequencyMultiplier(frequency[0], 3, 2);
@@ -420,9 +430,14 @@ function renderCanvas() {
     if (nFingers==0){
       drawPointMouse();
     } else {
-      for (let w=0; w<nFingers; w++){
-        drawPointFinger(w);
+      if (mode==="pure"){
+        for (let w=0; w<nFingers; w++){
+          drawPointFinger(w);
+        }
+      } else {
+        drawPointFinger(0);
       }
+
     }
     // What is this for?
     requestAnimationFrame(renderCanvas);

@@ -140,6 +140,7 @@ var oldVol = [];
 // Variable to keep track of the frequency and volume (array done for each of the possible fingers)
 var frequency=[];
 var amplitude=[];
+var randomInitialAmplitudes=[];
 // Variable to keep track of the fingers touching the screen (only in finger mode)
 var touch=[];
 // Number of fingers touching the screen
@@ -163,6 +164,9 @@ var oscillators;
 var synths;
 
 
+var pureOn = false;
+var originalComplexAmplitude;
+
 var options = {
  oscillator  : {
    type  : "sine"
@@ -177,14 +181,19 @@ var options = {
   }
 };
 var masterVolume;
+
+
 function start(){
-  Tone.context = new(window.AudioContext || window.webkitAudioContext)();
+  StartAudioContext(Tone.context, 'body').then(function(){
+    console.log('Audio Context Started');
+  })
   if (isSynths) {
     synths = new Array(lengthArrays);
   } else {
     oscillators = new Array(lengthArrays);
   }
   masterVolume = new Tone.Volume(0);
+  //var limiter = new Tone.Limiter(-6);
   for(let i=0; i<lengthArrays; i++){
     if (isSynths) {
       synths[i] = new Tone.Synth(options).toMaster();
@@ -245,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('complex-button').style.backgroundColor = '#FFE900';
       document.getElementById('pure-button').style.backgroundColor = '#c1c5c9';
     }
+    calculateRandomVolumes();
   }
 });
 
