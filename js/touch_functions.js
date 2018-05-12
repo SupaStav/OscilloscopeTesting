@@ -68,17 +68,17 @@ drawCanvas.addEventListener("touchend", function(e) {
       if (indexFingerUp<MAXFINGERS && nFingers<=MAXFINGERS && indexFingerUp<nFingers){
         nFingers--;
 
-        console.log('RELEASED!!');
-        console.log('Fingers left = '+nFingers);
-        console.log(' ');
+        // console.log('RELEASED!!');
+        // console.log('Fingers left = '+nFingers);
+        // console.log(' ');
 
         deleteFinger (indexFingerUp);
       }
     }
     touch = auxTouch;
-    console.log(touch);
-    console.log('');
-    console.log(' ');
+    // console.log(touch);
+    // console.log('');
+    // console.log(' ');
     auxTouch = [];
     if (nFingers<=0){
       setToZero();

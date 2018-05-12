@@ -14,13 +14,14 @@ function setVolume(vol, index) {
     if (isSynths) {
         synths[index].volume.value = newVolume;
     } else {
-      //if (newVolume>0){
-      //  oscillators[index].volume.value = 0;
-      //} else {
+      if (newVolume>0){
+        oscillators[index].volume.value = 0;
+      } else {
         oscillators[index].volume.value = newVolume;
-      //}
+      }
 
-      //console.log(newVolume);
+      console.log("Volume number "+index+" is "+newVolume);
+      
     }
     oldVol[index] = vol;
     redraw = true;
@@ -91,9 +92,19 @@ function calculateFrequencyMultiplier (freq, multiplier, index){
   }
 }
 
+function calculateMousePos(index) {
+  mousePos[index].y = ((inverseLogsPace(minFreq, maxFreq, frequency[index], 2)*(-1))+1)*DRAWHEIGHT;
+  mousePos[index].x = amplitude[index]*DRAWWIDTH;
+
+}
+
 // Function used to translate our data into the frequencies and volume ranges we predefined
 function logspace(start, stop, n, N) {
   return start * Math.pow(stop / start, n / (N - 1));
+}
+
+function inverseLogsPace(start, stop, freq, N){
+  return (N-1)*Math.log(freq/start)/Math.log(stop/start);
 }
 
 
@@ -169,7 +180,6 @@ function setToZero(){
     oldFreq[j] = -1;
     oldVol[j] = -1;
     frequency[j] = 1;
-    randomInitialAmplitudes[j] = amplitude[j];
     amplitude[j] = 0;
     originalComplexAmplitude = 0;
   }

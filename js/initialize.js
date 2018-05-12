@@ -162,7 +162,7 @@ var startOscillators = [];
 
 var oscillators;
 var synths;
-
+var limiter;
 
 var pureOn = false;
 var originalComplexAmplitude;
@@ -181,7 +181,7 @@ var options = {
   }
 };
 var masterVolume;
-
+var makeUpGain;
 
 function start(){
 
@@ -190,8 +190,12 @@ function start(){
   } else {
     oscillators = new Array(lengthArrays);
   }
-  masterVolume = new Tone.Volume(0);
-  var limiter = new Tone.Limiter(-6);
+  masterVolume = new Tone.Volume(-40);
+  makeUpGain = new Tone.Volume(15);
+  limiter = new Tone.Compressor({
+    ratio : 100,
+    threshold: -6
+  });
   for(let i=0; i<lengthArrays; i++){
     if (isSynths) {
       synths[i] = new Tone.Synth(options).toMaster();
@@ -201,10 +205,18 @@ function start(){
            "type" : "sine",
      			"frequency" : 1,
      			"volume" : 0
-     		}).connect(limiter);
+     		}).connect(masterVolume);
+        // oscillators[i] = new Tone.Oscillator({
+        //      "type" : "sine",
+       	// 		"frequency" : 1,
+       	// 		"volume" : 0
+       	// 	}).toMaster();
     }
   }
-  limiter.toMaster();
+   masterVolume.connect(limiter);
+   limiter.connect(makeUpGain);
+   makeUpGain.toMaster();
+
   StartAudioContext(Tone.context, 'body').then(function(){
     firstDown = true;
     renderCanvas();

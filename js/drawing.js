@@ -401,13 +401,15 @@ function renderCanvas() {
       if (firstDown) {
         pureOn = true;
       }
-      for (let w=1; w<WAVESCOMPLEXMODE; w++) {
-        calculateNewVolume(proportion, w);
-      }
       calculateFrequencyMultiplier(frequency[0], 2, 1);
       calculateFrequencyMultiplier(frequency[0], 3, 2);
       calculateFrequencyMultiplier(frequency[0], 4, 3);
       calculateFrequencyMultiplier(frequency[0], 5, 4);
+      for (let w=1; w<WAVESCOMPLEXMODE; w++) {
+        calculateNewVolume(proportion, w);
+        calculateMousePos(w);
+      }
+      console.log();
     } else {
       for (let w=1; w<nFingers; w++){
         // We set the volume and the frequency
@@ -417,6 +419,7 @@ function renderCanvas() {
         setF = setF || setFw;
       }
     }
+    console.log(limiter._compressor.reduction);
     if(setV | setF){
         draw();
     }
@@ -426,14 +429,23 @@ function renderCanvas() {
     // We redraw the axes and the point
     renderAxesLabels();
     if (nFingers==0){
-      drawPointMouse();
+      if (mode==="pure"){
+        drawPoint(0, 8);
+      } else {
+        for (let w=0; w<WAVESCOMPLEXMODE; w++) {
+          drawPoint(w, 8);
+        }
+      }
     } else {
       if (mode==="pure"){
         for (let w=0; w<nFingers; w++){
-          drawPointFinger(w);
+          drawPoint(w, 40);
         }
       } else {
-        drawPointFinger(0);
+        drawPoint(0, 40);
+        for (let w=1; w<WAVESCOMPLEXMODE; w++) {
+          drawPoint(w, 27);
+        }
       }
 
     }
@@ -481,25 +493,10 @@ function renderAxesLabels() {
 }
 
 
-// Draw blue point where finger/mouse is
-function drawPointMouse() {
-  /*drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
-  // We choose a size and fill a rectangle in the middle of the pointer
-  let rectSizeY = 18;
-  let rectSizeX = 8;
-  drawCanvasCtx.fillRect(mousePos[0].x-rectSizeX/2-2, mousePos[0].y-rectSizeY/2, rectSizeX, rectSizeY);*/
-  let radius = 8;
+function drawPoint(index, radius) {
+  let myRadius = radius;
   drawCanvasCtx.beginPath();
-  drawCanvasCtx.arc(mousePos[0].x, mousePos[0].y, radius, 0, 2 * Math.PI);
-  drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
-  drawCanvasCtx.fill();
-  drawCanvasCtx.stroke();
-}
-
-function drawPointFinger(index) {
-  let radius = 40;
-  drawCanvasCtx.beginPath();
-  drawCanvasCtx.arc(mousePos[index].x, mousePos[index].y, radius, 0, 2 * Math.PI);
+  drawCanvasCtx.arc(mousePos[index].x, mousePos[index].y, myRadius, 0, 2 * Math.PI);
   if (index===0){
       drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
   } else if (index===1){
