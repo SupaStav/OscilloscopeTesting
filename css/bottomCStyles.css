@@ -12,6 +12,32 @@
   user-select: none;
 }
 
+#pure-tones-text {
+  position: absolute;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  color: white;
+  text-align: center;
+  visibility: hidden;
+}
+
+#line-canvas {
+  position: absolute;
+  width: 20px;
+  visibility: hidden;
+}
+
+#leyend-text {
+  position: absolute;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 13px;
+  color: white;
+  text-align: center;
+  visibility: hidden;
+}
+
 #freq-info {
   width: 165px;
   background-color: #1e1e1e;

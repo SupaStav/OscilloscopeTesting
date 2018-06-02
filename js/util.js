@@ -6,9 +6,43 @@
       * Set to zero
 */
 
+function calculateMaximumPureSingleWave(sliceWidth){
+  let max=0;
+  let x=0;
+  // For each of the points that we have
+  for (let i = 0; i < numberPoints; i++) {
+    let y=0;
+    // Calculate the location of the point using the equation of the wave.
+    let wavelength = 100 * HEIGHT / frequency[0];
+    let v = wavelength/frequency[0];
+    let k = 2*Math.PI/wavelength;
+    if (amplitude[0]<0){
+      y += (0 * 350 * Math.cos(k*(x+v*t)));
+    } else {
+      y += (amplitude[0]* 350 * Math.cos(k*(x+v*t)));
+    }
+    y += HEIGHT/2;
+
+    if (max<y) max=y;
+
+    // x moves the x-distance to the right
+    x += sliceWidth;
+  }
+  return max;
+}
+
+function calculateProportionWave(max){
+  if (max<HEIGHT){
+    return 1;
+  } else {
+    return HEIGHT/max;
+  }
+}
+
 // Function that sets the volume to the value indicated as argument
 function setVolume(vol, index) {
-  newVolume = -1*((1-vol)*volumePower);
+  //let newVolume = -1*((1-vol)*volumePower);
+  let newVolume = logspace(-50, -1, vol, 2);
   let redraw = false;
   if (Math.abs(vol - oldVol[index]) > changeSensitivity) {
     if (isSynths) {
@@ -20,8 +54,6 @@ function setVolume(vol, index) {
         oscillators[index].volume.value = newVolume;
       }
 
-      console.log("Volume number "+index+" is "+newVolume);
-      
     }
     oldVol[index] = vol;
     redraw = true;
@@ -32,7 +64,7 @@ function setVolume(vol, index) {
 
 function calculateRandomVolumes(){
   for (let h=1; h<WAVESCOMPLEXMODE; h++){
-    randomInitialAmplitudes[h] = Math.random();
+    randomInitialAmplitudes[h] = Math.random()*amplitude[0];
   }
 };
 
@@ -42,12 +74,14 @@ It calculates a random volume and applies it to the volume with the given index 
 function calculateNewVolume(proportion, index){
   let vol = randomInitialAmplitudes[index]/proportion;
 
-  let newVolume = -1*((1-vol)*volumePower);
+  let newVolume = logspace(-50, -1, vol, 2);
+  //let newVolume = -1*((1-vol)*volumePower);
   if (isSynths) {
     synths[index].volume.value = newVolume;
   } else {
     oscillators[index].volume.value = newVolume;
   }
+
   amplitude[index] = vol;
 }
 
@@ -109,6 +143,52 @@ function inverseLogsPace(start, stop, freq, N){
 
 
 // Get the position of the mouse relative to the canvas
+function getMousePos(canvas, evt, index) {
+  if (mouseDown){
+    let rect = canvas.getBoundingClientRect(); // abs. size of element
+
+    let prevX = previouseMousePos[index].x;
+    let prevY = previouseMousePos[index].y;
+
+    let currentX = (evt.clientX - rect.left);
+    let currentY = (evt.clientY - rect.top);
+
+    realMousePos[index].x = currentX;
+    realMousePos[index].y = currentY;
+
+    let toReturnX;
+    let toReturnY;
+    if (prevX===-1 && prevY===-1){
+      toReturnX = currentX;
+      toReturnY = currentY;
+    } else {
+      toReturnX = 0.92*(prevX-currentX)+currentX;
+      toReturnY = 0.92*(prevY-currentY)+currentY;
+    }
+
+    if (toReturnX < 0){
+      toReturnX = 0;
+    } else if (toReturnX > rect.width){
+      toReturnX = rect.width;
+    }
+    if (toReturnY < 0){
+      toReturnY = 0;
+    } else if (toReturnY > rect.height){
+      toReturnY = rect.height;
+    }
+
+    previouseMousePos[index].x = toReturnX;
+    previouseMousePos[index].y = toReturnY;
+
+    return {
+      x: toReturnX, // scale mouse coordinates after they have
+      y: toReturnY // been adjusted to be relative to element
+    }
+  }
+}
+
+/*
+// Get the position of the mouse relative to the canvas
 function getMousePos(canvas, evt) {
   if (mouseDown){
     let rect = canvas.getBoundingClientRect(); // abs. size of element
@@ -130,15 +210,16 @@ function getMousePos(canvas, evt) {
       y: toReturnY // been adjusted to be relative to element
     }
   }
-}
+}*/
 
 function deleteFinger (indexFinger){
   if (isSynths) {
     synths[indexFinger].triggerRelease();
+    synths[indexFinger].disconnect(masterVolume);
     synths.splice(indexFinger, 1);
-    let newSynth = new Tone.Synth(options).toMaster();
+    let newSynth = new Tone.Synth(options);
     synths.push(newSynth);
-    //synths[lengthArrays-1].chain(masterVolume, Tone.Master);
+    synths[lengthArrays-1].connect(masterVolume);
   } else {
     for (let j=indexFinger; j<lengthArrays-1; j++){
       oscillators[j].frequency.rampTo(oscillators[j+1].frequency.value, 0.05);
@@ -168,22 +249,27 @@ function setToZero(){
   mouseMove = false;
   nFingers = 0;
   touch = [];
-  drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
-  renderAxesLabels();
-  mouseDown = false;
-  mouseMove = false;
   for (let j=0; j<lengthArrays; j++){
     mousePos[j] = {
       x: 0,
       y: 0
     };
+    previouseMousePos[j] = {
+      x: -1,
+      y: -1
+    };
+    realMousePos[j] = {
+      x: -1,
+      y: -1
+    };
     oldFreq[j] = -1;
     oldVol[j] = -1;
     frequency[j] = 1;
     amplitude[j] = 0;
-    originalComplexAmplitude = 0;
   }
   pureOn = false;
+  drawCanvasCtx.clearRect(0, 0, DRAWWIDTH, DRAWHEIGHT);
+  renderAxesLabels();
   draw();
 }
 
@@ -195,8 +281,6 @@ function releaseSynths(){
     for (let j=0; j<lengthArrays; j++){
       if (isSynths){
         synths[j].triggerRelease();
-        synths[j] = new Tone.Synth(options).toMaster();
-        //synths[j].chain(masterVolume, Tone.Master);
       } else {
         oscillators[j].frequency.rampTo(1, 0.1);
         oscillators[j].volume.rampTo(-Infinity, 0.1);

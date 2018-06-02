@@ -14,6 +14,34 @@ html {
   user-select: none; /* Standard syntax */
 }
 
+#startText {
+    position: absolute;
+    width: 100%;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+#introText {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 270%;
+}
+
+#tapText {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
 #container {
   display: flex;
   -webkit-display: flex;

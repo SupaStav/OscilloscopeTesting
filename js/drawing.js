@@ -23,6 +23,7 @@ function createGrid(ctx) {
   ctx.lineTo(midPoint.x, HEIGHT);
   ctx.strokeStyle = "rgb(124, 124, 124)";
   ctx.lineWidth = '5';
+  ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
   ctx.stroke();
   ctx.closePath();
@@ -31,6 +32,7 @@ function createGrid(ctx) {
   ctx.beginPath();
   ctx.strokeStyle = "rgb(255, 255, 255)";
   ctx.lineWidth = '5';
+  ctx.globalAlpha = 1;
 
   // Dash Space determines the distance between white lines
   let dashSpace = 50;
@@ -108,6 +110,7 @@ function createGrid(ctx) {
   ctx.beginPath();
   ctx.strokeStyle = "rgb(255,233,0)";
   ctx.lineWidth = '3';
+  ctx.globalAlpha = 1;
 
   ctx.moveTo(midPoint.x + offsetX, dashesY-offsetY);
   ctx.lineTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY);
@@ -120,12 +123,25 @@ function createGrid(ctx) {
 
   ctx.stroke();
   ctx.closePath();
+
+  ctx.beginPath();
+  ctx.strokeStyle = "rgb(255,255,255)";
+  ctx.globalAlpha = 1;
+
+  ctx.font = '16px Verdana';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'white';
+
+  ctx.fillText('25 ms', midPoint.x + lengthScale/2 - offsetX/2, dashesY-offsetY-lengthLittleLines/2);
+
+  ctx.stroke();
+  ctx.closePath();
 }
 
 // Scope canvas drawing
 function draw() {
     let freqInfoMessage;
-
+    let opacityLevel = 0.65;
     // We clear whatever is in scope and we create the grid again
     scopeCtx.clearRect(0, 0, WIDTH, HEIGHT);
     createGrid(scopeCtx);
@@ -143,10 +159,16 @@ function draw() {
         // We get the x-distance between each point by dividing the total width by the number of points
         sliceWidth = WIDTH / numberPoints;
 
+        // let maxHeight = calculateMaximumPureSingleWave(sliceWidth);
+        // let scaleProportion = calculateProportionWave(maxHeight*1.2);
+        // console.log(scaleProportion);
+
+
         // We draw the blue wave line
         scopeCtx.beginPath();
-        scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
+        scopeCtx.strokeStyle = WAVECOLORTOTAL;
         scopeCtx.lineWidth = '5';
+        scopeCtx.globalAlpha = 1;
 
         // x starts at 0 (first point is at 0)
         let x = 0;
@@ -162,12 +184,25 @@ function draw() {
           } else {
             y += (amplitude[0]* 350 * Math.cos(k*(x+v*t)));
           }
+
           y += HEIGHT/2;
+
+
+          // if (y<(HEIGHT/2)){
+          //   let opposite = HEIGHT - y;
+          //   y += opposite-(opposite*scaleProportion);
+          // } else {
+          //   y *= scaleProportion;
+          // }
+
           // We draw the point in the canvas
           if (i === 0) {
             scopeCtx.moveTo(x, y);
           } else {
             scopeCtx.lineTo(x, y);
+
+            // scopeCtx.fillStyle = WAVECOLORTOTAL;
+            // scopeCtx.fillRect(x,y,1,1);
           }
           // x moves the x-distance to the right
           x += sliceWidth;
@@ -182,7 +217,8 @@ function draw() {
 
         scopeCtx.beginPath();
         scopeCtx.lineWidth = '5';
-        scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
+        scopeCtx.globalAlpha = 1;
+        scopeCtx.strokeStyle = WAVECOLORTOTAL;
         let x = 0;
         for (let i = 0; i < numberPoints; i++) {
           let y=0;
@@ -213,27 +249,29 @@ function draw() {
           scopeCtx.beginPath();
           // If we have only 1 finger, the line will still be thick
           if (nFingers===1){
-            scopeCtx.lineWidth = '2';
+            scopeCtx.globalAlpha = 1;
+            scopeCtx.lineWidth = '1.3';
           } else {
-            scopeCtx.lineWidth = '1';
+            scopeCtx.globalAlpha = opacityLevel;
+            scopeCtx.lineWidth = '2';
           }
 
           // In case of the finger number, we will choose one color and write its frequency
           if (j===0){
-              scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
-              freqInfoMessage="<span style='color: rgb(66, 229, 244)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR1;
+              freqInfoMessage="<span style='color: "+WAVECOLOR1+"'>"+Math.round(frequency[j])+"</span>";
           } else if (j===1){
-              scopeCtx.strokeStyle = 'rgb(246, 109, 244)';
-              freqInfoMessage+=" <span style='color: rgb(246, 109, 244)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR2;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR2+"'>"+Math.round(frequency[j])+"</span>";
           } else if (j===2){
-              scopeCtx.strokeStyle = 'rgb(101, 255, 0)';
-              freqInfoMessage+=" <span style='color: rgb(101, 255, 0)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR3;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR3+"'>"+Math.round(frequency[j])+"</span>";
           } else if (j===3){
-              scopeCtx.strokeStyle = 'rgb(2, 0, 185)';
-              freqInfoMessage+=" <span style='color: rgb(2, 0, 185)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR4;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR4+"'>"+Math.round(frequency[j])+"</span>";
           } else {
-              scopeCtx.strokeStyle = 'rgb(255, 140, 0)';
-              freqInfoMessage+=" <span style='color: rgb(255, 140, 0)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR5;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR5+"'>"+Math.round(frequency[j])+"</span>";
           }
           for (let i = 0; i < numberPoints; i++) {
             let y=0;
@@ -261,11 +299,20 @@ function draw() {
       if (nFingers < 1) {
         if (frequency[0]===1){
           freqInfoMessage="";
+          document.getElementById("pure-tones-text").style.visibility='hidden';
+          document.getElementById("leyend-text").style.visibility='hidden';
+          document.getElementById("line-canvas").style.visibility='hidden';
         } else {
           freqInfoMessage=Math.round(frequency[0])+" Hz (cycles/second)";
+          document.getElementById("pure-tones-text").style.visibility='visible';
+          document.getElementById("leyend-text").style.visibility='visible';
+          document.getElementById("line-canvas").style.visibility='visible';
         }
       } else {
         freqInfoMessage+=" <span style='color: rgb(255, 255, 255)'>Hz</span>";
+        document.getElementById("pure-tones-text").style.visibility='visible';
+        document.getElementById("leyend-text").style.visibility='visible';
+        document.getElementById("line-canvas").style.visibility='visible';
       }
     } else {
       // COMPLEX MODE
@@ -276,8 +323,9 @@ function draw() {
         numberPoints = 2048*16;
         sliceWidth = WIDTH / numberPoints;
         scopeCtx.beginPath();
-        scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
+        scopeCtx.strokeStyle = WAVECOLORTOTAL;
         scopeCtx.lineWidth = '5';
+        scopeCtx.globalAlpha = 1;
         let x = 0;
         for (let i = 0; i < numberPoints; i++) {
           let y=0;
@@ -298,6 +346,9 @@ function draw() {
           x += sliceWidth;
         }
         scopeCtx.stroke();
+        document.getElementById("pure-tones-text").style.visibility='hidden';
+        document.getElementById("leyend-text").style.visibility='hidden';
+        document.getElementById("line-canvas").style.visibility='hidden';
       } else {
         // Otherwise:
         // We will draw the thick yellow line and the other thinner lines as if we where in touching mode
@@ -305,7 +356,8 @@ function draw() {
         sliceWidth = WIDTH / numberPoints;
         scopeCtx.beginPath();
         scopeCtx.lineWidth = '5';
-        scopeCtx.strokeStyle = 'rgb(255, 255, 0)';
+        scopeCtx.globalAlpha = 1;
+        scopeCtx.strokeStyle = WAVECOLORTOTAL;
         let x = 0;
         for (let i = 0; i < numberPoints; i++) {
           let y=0;
@@ -334,21 +386,22 @@ function draw() {
           let x = 0;
           scopeCtx.beginPath();
           scopeCtx.lineWidth = '1';
+          scopeCtx.globalAlpha = opacityLevel;
           if (j===0){
-              scopeCtx.strokeStyle = 'rgb(66, 229, 244)';
-              freqInfoMessage="<span style='color: rgb(66, 229, 244)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR1;
+              freqInfoMessage="<span style='color: "+WAVECOLOR1+"'>"+Math.round(frequency[j])+"</span>";
           } else if (j===1){
-              scopeCtx.strokeStyle = 'rgb(246, 109, 244)';
-              freqInfoMessage+=" <span style='color: rgb(246, 109, 244)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR2;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR2+"'>"+Math.round(frequency[j])+"</span>";
           } else if (j===2){
-              scopeCtx.strokeStyle = 'rgb(101, 255, 0)';
-              freqInfoMessage+=" <span style='color: rgb(101, 255, 0)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR3;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR3+"'>"+Math.round(frequency[j])+"</span>";
           } else if (j===3){
-              scopeCtx.strokeStyle = 'rgb(2, 0, 185)';
-              freqInfoMessage+=" <span style='color: rgb(2, 0, 185)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR4;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR4+"'>"+Math.round(frequency[j])+"</span>";
           } else {
-              scopeCtx.strokeStyle = 'rgb(255, 140, 0)';
-              freqInfoMessage+=" <span style='color: rgb(255, 140, 0)'>"+Math.round(frequency[j])+"</span>";
+              scopeCtx.strokeStyle = WAVECOLOR5;
+              freqInfoMessage+=" <span style='color: "+WAVECOLOR5+"'>"+Math.round(frequency[j])+"</span>";
           }
           for (let i = 0; i < numberPoints; i++) {
             let y=0;
@@ -371,9 +424,13 @@ function draw() {
           scopeCtx.stroke();
         }
         freqInfoMessage+=" <span style='color: rgb(255, 255, 255)'>Hz</span>";
+        document.getElementById("pure-tones-text").style.visibility='visible';
+        document.getElementById("leyend-text").style.visibility='visible';
+        document.getElementById("line-canvas").style.visibility='visible';
       }
     }
     document.getElementById("freq-info").innerHTML=freqInfoMessage;
+    drawTimeStamp = Date.now();
 };
 
 
@@ -388,10 +445,11 @@ function renderCanvas() {
     }
     let setF = setFrequency(((mousePos[0].y / DRAWHEIGHT) - 1) * -1, 0);
     let setV = setVolume(mousePos[0].x / DRAWWIDTH, 0);
-    if (firstDown){
+    if (firstComplex){
+      calculateRandomVolumes();
       originalComplexAmplitude = amplitude[0];
+      firstComplex = false;
     }
-
     if (mode==="complex"){
       if(amplitude[0] <= 0){
         proportion = originalComplexAmplitude/0.00001;
@@ -409,7 +467,6 @@ function renderCanvas() {
         calculateNewVolume(proportion, w);
         calculateMousePos(w);
       }
-      console.log();
     } else {
       for (let w=1; w<nFingers; w++){
         // We set the volume and the frequency
@@ -419,9 +476,8 @@ function renderCanvas() {
         setF = setF || setFw;
       }
     }
-    console.log(limiter._compressor.reduction);
-    if(setV | setF){
-        draw();
+    if((setV | setF) && Date.now()-drawTimeStamp>40){
+      draw();
     }
 
     // We clear the canvas to make sure we don't leave anything painted
@@ -430,10 +486,10 @@ function renderCanvas() {
     renderAxesLabels();
     if (nFingers==0){
       if (mode==="pure"){
-        drawPoint(0, 8);
+        drawPoint(0, 10);
       } else {
         for (let w=0; w<WAVESCOMPLEXMODE; w++) {
-          drawPoint(w, 8);
+          drawPoint(w, 10);
         }
       }
     } else {
@@ -498,15 +554,16 @@ function drawPoint(index, radius) {
   drawCanvasCtx.beginPath();
   drawCanvasCtx.arc(mousePos[index].x, mousePos[index].y, myRadius, 0, 2 * Math.PI);
   if (index===0){
-      drawCanvasCtx.fillStyle = 'rgb(66, 229, 244)';
+      if (nFingers===0 && mode==="pure") drawCanvasCtx.fillStyle = WAVECOLORTOTAL;
+      else drawCanvasCtx.fillStyle = WAVECOLOR1;
   } else if (index===1){
-      drawCanvasCtx.fillStyle = 'rgb(246, 109, 244)';
+      drawCanvasCtx.fillStyle = WAVECOLOR2;
   } else if (index===2){
-      drawCanvasCtx.fillStyle = 'rgb(101, 255, 0)';
+      drawCanvasCtx.fillStyle = WAVECOLOR3;
   } else if (index===3){
-      drawCanvasCtx.fillStyle = 'rgb(2, 0, 185)';
+      drawCanvasCtx.fillStyle = WAVECOLOR4;
   } else {
-      drawCanvasCtx.fillStyle = 'rgb(255, 140, 0)';
+      drawCanvasCtx.fillStyle = WAVECOLOR5;
   }
   drawCanvasCtx.fill();
   drawCanvasCtx.stroke();

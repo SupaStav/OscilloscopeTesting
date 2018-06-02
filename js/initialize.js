@@ -7,30 +7,38 @@
 /* Things to improve:
     - Making the site fully responsive (in the 1st load its responsive, we need to do so when resizing)
     - Set a scale for drawing the axis in the right canvas, because now it prints more or less axes depending on the size of the page
-    - When moving the cursor too fast outside the left canvas, the blue dot gets blocked
 */
 
 /* To do:
-    - IN TOUCH MODE YOU CAN GET OUT OF THE CANVAS, THAT IS WRONG
     - (matthew solving it) Very slow on iPad and no sound
-    - (I think this is solved) Touchend is not firing sometimes, leaving one wave on screen
-    - Errors in the multitouch when you touch out of the canvas
     - Saturation problems (several)
         * When you go out of the canvas with mouse, it starts saturating
         * Saturation with several Fingers
         * Saturation with complex waves
         * Several more...
-
-    (I chose this option) Mode oscillator:
-      - (solved) Noise when stopping the oscillator
-      - (solved) Buzzing in the multitouch mode
-
-    Mode Synths:
-      - For me it still sounds weird when changing frequencies
-      - When you spam the touch, sound starts to buzz and then it disappears
-      - It does not sound great for multitouch mode
 */
 
+
+const WAVECOLOR1 = 'rgb(246, 109, 244)'; // Light blue
+const WAVECOLOR2 = 'rgb(66, 229, 244)'; // Violet
+const WAVECOLOR3 = 'rgb(101, 255, 0)'; // Light green
+const WAVECOLOR4 = 'rgb(255, 140, 0)'; // Orange
+const WAVECOLOR5 = 'rgb(2, 10, 185)'; // Dark blue
+const WAVECOLORTOTAL = 'rgb(255, 255, 0)'; // Yellow
+
+
+// Function that calculates the pixel ratio of the device
+const PIXEL_RATIO = (function () {
+    let ctx = document.createElement("canvas").getContext("2d"),
+        dpr = window.devicePixelRatio || 1,
+        bsr = ctx.webkitBackingStorePixelRatio ||
+              ctx.mozBackingStorePixelRatio ||
+              ctx.msBackingStorePixelRatio ||
+              ctx.oBackingStorePixelRatio ||
+              ctx.backingStorePixelRatio || 1;
+
+    return dpr / bsr;
+})();
 
 function fixHeaderPosition () {
   // Instruction done in JS because css works incorrectly for iOS devices
@@ -38,7 +46,7 @@ function fixHeaderPosition () {
   document.getElementById('header-text').style.left = document.getElementById('scope-1').clientWidth/2-document.getElementById('header-text').clientWidth/2+'px';
   document.getElementById('header-text').style.top = -document.getElementById('header-text').clientHeight*1/3+'px';
 
-  document.getElementById('yAxis-header').style.top = document.getElementById('scope-1').clientHeight-document.getElementById('yAxis-header').clientHeight+'px';
+  document.getElementById('yAxis-header').style.top = document.getElementById('scope-1').clientHeight/2-document.getElementById('yAxis-header').clientHeight/2+'px';
 }
 
 
@@ -55,9 +63,41 @@ function fixButtonHeaderPosition (){
   document.getElementById('complex-header').style.bottom = -document.getElementById("button-container").clientHeight*4/7+'px';
 }
 
+function fixLeyendPosition () {
+  // Instruction done in JS because css works incorrectly for iOS devices
+  let offsetPureTones = 5;
+  document.getElementById('pure-tones-text').style.bottom = document.getElementById('freq-info').clientHeight+offsetPureTones+'px';
+  document.getElementById('pure-tones-text').style.left = offsetPureTones+'px';
+
+  let leftOffsetLineCanvas = 10;
+  document.getElementById('line-canvas').style.height = document.getElementById('freq-info').clientHeight+'px';
+  document.getElementById('line-canvas').style.left = document.getElementById('freq-info').clientWidth+leftOffsetLineCanvas+'px';
+
+  document.getElementById('leyend-text').style.bottom = document.getElementById('line-canvas').clientHeight/2-document.getElementById('leyend-text').clientHeight/2+'px';
+  document.getElementById('leyend-text').style.left = document.getElementById('freq-info').clientWidth+leftOffsetLineCanvas+document.getElementById('line-canvas').clientWidth+'px';
+}
+
+function drawLeyendLine(){
+  let lineCanvasId = document.getElementById('line-canvas');
+  let lineCanvas = createHiDPICanvas(lineCanvasId.clientWidth, lineCanvasId.clientHeight, 'line-canvas');
+  let lineCanvasCtx = lineCanvas.getContext('2d');
+
+  let lineWidth = 3.5;
+  let lineHeightCut = 10;
+
+  lineCanvasCtx.beginPath();
+  lineCanvasCtx.strokeStyle = WAVECOLORTOTAL;
+  lineCanvasCtx.lineWidth = lineWidth;
+  lineCanvasCtx.globalAlpha = 1;
+  lineCanvasCtx.moveTo(lineCanvasId.clientWidth/2, lineHeightCut-2);
+  lineCanvasCtx.lineTo(lineCanvasId.clientWidth/2, lineCanvasId.clientHeight-lineHeightCut);
+  lineCanvasCtx.stroke();
+  lineCanvasCtx.closePath();
+}
+
 function setUpScope (){
   //Create scope canvas with the device resolution and initialize the variables accordingly
-  scopeId = document.getElementById('scope-1');
+  let scopeId = document.getElementById('scope-1');
   HEIGHT = scopeId.clientHeight;
   WIDTH = scopeId.clientWidth;
   scope = createHiDPICanvas(WIDTH, HEIGHT, 'scope-1');
@@ -66,7 +106,7 @@ function setUpScope (){
 
 function setUpDrawCanvas (){
   //Create draw canvas with the device resolution.
-  drawCanvasId = document.getElementById('draw-canvas');
+  let drawCanvasId = document.getElementById('draw-canvas');
   DRAWHEIGHT = drawCanvasId.clientHeight;
   DRAWWIDTH = drawCanvasId.clientWidth;
   drawCanvas = createHiDPICanvas(DRAWWIDTH, DRAWHEIGHT, 'draw-canvas');
@@ -87,13 +127,16 @@ createHiDPICanvas = function(w, h, canvasName, ratio) {
     return can;
 }
 
+var firstTouchEver;
+
+
+var drawTimeStamp;
+
 var mode = "pure";
 var isSynths = false;
 
-// Declaration of some variables that we will need later
-var PIXEL_RATIO;
 // Scope canvas context, id of the scope canvas, the element itself
-var scopeCtx, scopeId, scope;
+var scopeCtx, scope;
 // Width and height of the scope canvas element
 var WIDTH, HEIGHT;
 
@@ -101,9 +144,12 @@ var WIDTH, HEIGHT;
 var mouseDown;
 // Boolean storing if the mouse is moving or not
 var mouseMove;
+var timeSinceLastMove;
+var timeSinceLastCall;
+var setIntervalId;
 
 // Draw canvas context, id of the draw canvas, the element itself
-var drawCanvasCtx, drawCanvasId, drawCanvas;
+var drawCanvasCtx, drawCanvas;
 // Width and height of the draw canvas element
 var DRAWHEIGHT, DRAWWIDTH;
 
@@ -134,6 +180,9 @@ var affectTime = false;
 
 // Variable to keep track of the mouse/finger position (array done for each of the possible fingers)
 var mousePos = [];
+var previouseMousePos = [];
+var realMousePos = [];
+
 // Variable to keep track of the old frequency and old volume (array done for each of the possible fingers)
 var oldFreq = [];
 var oldVol = [];
@@ -165,6 +214,7 @@ var synths;
 var limiter;
 
 var pureOn = false;
+var firstComplex = false;
 var originalComplexAmplitude;
 
 var options = {
@@ -183,6 +233,15 @@ var options = {
 var masterVolume;
 var makeUpGain;
 
+
+function initiallizePage(){
+  firstTouchEver = false;
+
+  for (let j=0; j<lengthArrays; j++){
+      startOscillators [j] = false;
+  }
+}
+
 function start(){
 
   if (isSynths) {
@@ -193,12 +252,13 @@ function start(){
   masterVolume = new Tone.Volume(-40);
   makeUpGain = new Tone.Volume(15);
   limiter = new Tone.Compressor({
-    ratio : 100,
+    ratio : 20,
     threshold: -6
   });
   for(let i=0; i<lengthArrays; i++){
     if (isSynths) {
-      synths[i] = new Tone.Synth(options).toMaster();
+      synths[i] = new Tone.Synth(options);
+      synths[i].connect(masterVolume);
       //synths[i].chain(masterVolume, Tone.Master);
     } else {
       oscillators[i] = new Tone.Oscillator({
@@ -226,29 +286,21 @@ function start(){
 
 // This function will set up the two canvas that we are using in the application
 function setUp() {
+  document.getElementById("container").style.visibility = "visible";
+  document.getElementById("startText").style.visibility = "hidden";
+
   fixHeaderPosition();
   fixButtonHeaderPosition();
+  fixLeyendPosition();
 
-  // Function that calculates the pixel ratio of the device
-  PIXEL_RATIO = (function () {
-      let ctx = document.createElement("canvas").getContext("2d"),
-          dpr = window.devicePixelRatio || 1,
-          bsr = ctx.webkitBackingStorePixelRatio ||
-                ctx.mozBackingStorePixelRatio ||
-                ctx.msBackingStorePixelRatio ||
-                ctx.oBackingStorePixelRatio ||
-                ctx.backingStorePixelRatio || 1;
-
-      return dpr / bsr;
-  })();
+  drawLeyendLine();
 
   setUpScope();
 
   setUpDrawCanvas();
 
-  for (let j=0; j<lengthArrays; j++){
-      startOscillators [j] = false;
-  }
+  setMouseListeners();
+  setTouchListeners();
 
   setToZero();
 }
@@ -256,22 +308,26 @@ function setUp() {
 // Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
 document.addEventListener('DOMContentLoaded', function() {
   // Alternative to jQuery click function
+  let colorGray = '#c1c5c9';
+  let colorYellow = '#FFE900';
+
   document.getElementById("pure-button").onclick = function () {
     if (mode!=="pure"){
       mode = "pure";
-      document.getElementById('pure-button').style.backgroundColor = '#FFE900';
-      document.getElementById('complex-button').style.backgroundColor = '#c1c5c9';
+      document.getElementById('pure-button').style.backgroundColor = colorYellow;
+      document.getElementById('complex-button').style.backgroundColor = colorGray;
     }
   }
 
   document.getElementById("complex-button").onclick = function () {
     if (mode!=="complex"){
       mode = "complex";
-      document.getElementById('complex-button').style.backgroundColor = '#FFE900';
-      document.getElementById('pure-button').style.backgroundColor = '#c1c5c9';
+      document.getElementById('complex-button').style.backgroundColor = colorYellow;
+      document.getElementById('pure-button').style.backgroundColor = colorGray;
     }
-    calculateRandomVolumes();
+    firstComplex = true;
   }
+
 });
 
 document.addEventListener("contextmenu", function(e){
@@ -279,4 +335,4 @@ document.addEventListener("contextmenu", function(e){
 });
 
 // We initially set both canvas
-setUp();
+initiallizePage();
