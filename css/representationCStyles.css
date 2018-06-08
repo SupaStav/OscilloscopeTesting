@@ -1,0 +1,83 @@
+#representation-container {
+  display: flex;
+  -webkit-display: flex;
+  flex-direction: column;
+  flex: 7 5;
+  -webkit-flex: 7 5; /* Safari 6.1+ */
+  -ms-flex: 7 5; /* IE 10 */
+  margin: 12px;
+  position: relative;
+}
+
+#graph-container {
+  position: relative;
+  flex: 3;
+  -webkit-flex: 3; /* Safari 6.1+ */
+  -ms-flex: 3; /* IE 10 */
+  justify-content: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  align-items: stretch;
+}
+
+#waves-canvas {
+  width: 100%;
+  border: 3px solid #646465;
+  border-radius: 25px;
+}
+
+#header-text {
+  text-align: center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 32px;
+  color: white;
+  position: absolute;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, .7);
+  border: 5px solid rgba(190, 199, 206, .5);
+  border-radius: 25px;
+  padding: 5px;
+  margin: 0;
+  display:inline-block;
+}
+
+#units-container {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 10;
+  background-color: #8d98a3;
+  box-shadow: -6px 4px 4px #565e66;
+  padding: 4px;
+  font-size: 16px;
+  user-select: none;
+}
+
+#xAxis-header {
+  font-family: sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+#yAxis-header {
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  flex: 0.1;
+  -webkit-flex: 0.1; /* Safari 6.1+ */
+  -ms-flex: 0.1; /* IE 10 */
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
+  -webkit-transform:rotate(180deg);
+  -moz-transform:rotate(180deg);
+  -o-transform: rotate(180deg);
+  -ms-transform:rotate(180deg);
+  transform: rotate(180deg);
+  position: relative;
+  left: 8px;
+  height: 215px;
+  width: 23px;
+}
