@@ -17,16 +17,15 @@ function setMouseListeners (){
 
   // when the mouse is clicked, we will create a wave dependent on the mouse position
   controlsCanvas.addEventListener("mousedown", function(e) {
-    //gain.gain.cancelScheduledValues(0);
     e.preventDefault();
     mouseDown = true;
-    mouseMove = false;
-    if (!isToneJSSetUp){
-      setUpToneJS();
-    }
     if (nFingers === 0){
       mousePos[0] = getMousePos(controlsCanvas, e);
-      renderCanvas();
+      if (mode==="pure"){
+        renderPureWavesCanvas();
+      } else if (mode==="complex"){
+        renderComplexWavesCanvas();
+      }
 
     } else {
       mousePos[finger] = getMousePos(controlsCanvas, e);
@@ -37,10 +36,13 @@ function setMouseListeners (){
   document.addEventListener("mousemove", function(e) {
     e.preventDefault();
     if (mouseDown){
-      mouseMove = true;
       if (nFingers === 0){
         mousePos[0] = getMousePos(controlsCanvas, e);
-        renderCanvas();
+        if (mode==="pure"){
+          renderPureWavesCanvas();
+        } else if (mode==="complex"){
+          renderComplexWavesCanvas();
+        }
       } else {
         mousePos[finger] = getMousePos(controlsCanvas, e);
       }

@@ -8,6 +8,8 @@
     - Making the site fully responsive (in the 1st load its responsive, we need to do so when resizing)
     - Set a scale for drawing the axis in the right canvas, because now it prints more or less lines depending on the size of the page
     - Very slow on iPad and no sound
+    - There is a bug when you touch really quickly with two fingers inside the controlsCanvas aera,
+      just in the initial screen.
 
     - 'Low pass filter' effect
     - Do the bounding in the graphs correctly
@@ -133,7 +135,7 @@ var createHiDPICanvas = function(w, h, canvasName, ratio) {
     return can;
 }
 
-var firstTapInThePage;
+var firstTapInThePage = false;
 
 var mode = "pure";
 
@@ -145,19 +147,17 @@ var controlsCanvasCtx, controlsCanvas;
 
 // Boolean storing if the mouse is clicked or not
 var mouseDown;
-// Boolean storing if the mouse is moving or not
-var mouseMove;
 
 // Variable to keep track of the mouse/finger position (array done for each of the possible fingers)
 var mousePos = [];
 
-// Variable to keep track of the old frequency and old volume (array done for each of the possible fingers)
-var oldFreq = [];
-var oldVol = [];
 // Variable to keep track of the frequency and volume (array done for each of the possible fingers)
 var frequency=[];
 var amplitude=[];
-var randomInitialAmplitudes=[];
+// Variable to keep track of the old frequency and old volume (array done for each of the possible fingers)
+var oldFreq = [];
+var oldVol = [];
+
 // Variable to keep track of the fingers touching the screen (only in finger mode)
 var touch=[];
 // Number of fingers touching the screen
@@ -171,26 +171,14 @@ if (MAXFINGERS>WAVESCOMPLEXMODE){
 }
 // Variable to traverse the fingers in different methods
 var finger;
-
-var isToneJSSetUp = false;
-var isStartedOscillators = [];
 var oscillators = [];
 
 // Complex waves related variables
 var firstComplexRender = false;
 
-
-function initiallizePage(){
-  firstTapInThePage = false;
-  for (let j=0; j<lengthArrays; j++){
-      isStartedOscillators [j] = false;
-  }
-}
-
 StartAudioContext(Tone.context, 'body');
 
 function setUpToneJS(){
-  isToneJSSetUp = true;
   let masterVolume = new Tone.Volume(-40);
   let makeUpGain = new Tone.Volume(15);
   let limiter = new Tone.Compressor({
@@ -209,15 +197,14 @@ function setUpToneJS(){
   makeUpGain.toMaster();
 
   for (let w=0; w<lengthArrays; w++){
-    startFrequency (1, w);
-    setVolume(-Infinity, w);
+    oscillators[w].start();
   }
 }
 
 // This function will set up the two canvas that we are using in the application
 function setUp() {
-  document.getElementById("container").style.visibility = "visible";
   document.getElementById("startText").style.visibility = "hidden";
+  document.getElementById("container").style.visibility = "visible";
   firstTapInThePage = true;
 
   fixHeaderPosition();
@@ -233,7 +220,9 @@ function setUp() {
   setMouseListeners();
   setTouchListeners();
 
+
   setToZero();
+  setUpToneJS();
 }
 
 // Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
@@ -264,6 +253,3 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener("contextmenu", function(e){
   e.preventDefault();
 });
-
-// We initially set both canvas
-initiallizePage();

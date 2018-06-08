@@ -32,17 +32,11 @@ function setVolume(vol, index) {
   return redraw;
 }
 
-function calculateRandomVolumes(){
-  for (let h=1; h<WAVESCOMPLEXMODE; h++){
-    randomInitialAmplitudes[h] = Math.random()*amplitude[0];
-  }
-};
-
 /* Function used in the complex mode.
 It calculates a random volume and applies it to the volume with the given index */
 
-function calculateNewVolume(proportion, index){
-  let vol = randomInitialAmplitudes[index]/proportion;
+function calculateComplexVolume(proportion, index, randomInitialVolumes){
+  let vol = randomInitialVolumes[index]/proportion;
 
   let newVolume = logspace(MINVOLUME, MAXVOLUME, vol, EXPONENTIAL_INC_FACTOR);
   //let newVolume = -1*((1-vol)*VOLUMEPOWER);
@@ -63,16 +57,6 @@ function setFrequency(freq, index) {
     redraw = true;
   }
   return redraw;
-}
-
-function startFrequency (freq, index){
-  let newFreq = logspace(MINFREQ, MAXFREQ, freq, EXPONENTIAL_INC_FACTOR);
-
-  if (!isStartedOscillators[index]){
-    oscillators[index].start();
-    isStartedOscillators[index]=true;
-  }
-  oscillators[index].frequency.value = newFreq;
 }
 
 /* Function used in the complex mode.
@@ -147,7 +131,6 @@ function deleteFinger (indexFinger){
 Used in the initialization and in the mouse up callback */
 function setToZero(){
   mouseDown = false;
-  mouseMove = false;
   nFingers = 0;
   touch = [];
   for (let j=0; j<lengthArrays; j++){
@@ -160,18 +143,14 @@ function setToZero(){
     frequency[j] = 1;
     amplitude[j] = 0;
   }
-  renderAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
-  drawWavesCanvas();
+  drawAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
+  drawPureWavesCanvas();
 }
 
 // Function used to release all the synths for our sound.
 function releaseSynths(){
-  if (!isToneJSSetUp) {
-    setUpToneJS();
-  } else {
-    for (let j=0; j<lengthArrays; j++){
-      oscillators[j].frequency.rampTo(1, 0.1);
-      oscillators[j].volume.rampTo(-Infinity, 0.1);
-    }
+  for (let j=0; j<lengthArrays; j++){
+    oscillators[j].frequency.rampTo(1, 0.1);
+    oscillators[j].volume.rampTo(-Infinity, 0.1);
   }
 }

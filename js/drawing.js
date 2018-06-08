@@ -12,29 +12,29 @@ var t=0;
 var referenceComplexAmplitude;
 var drawTimeStamp;
 var prevNFingers = 0;
-
+var randomInitialVolumes=[];
 
 // This function creates the grid of the canvas inserted as argument (it will be used for scope)
-function createGrid(ctx) {
-  let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
-  let wavesCanvasHeight = wavesCanvasRect.height;
-  let wavesCanvasWidth = wavesCanvasRect.width;
+function createGrid(ctx, canvas) {
+  let canvasRect = canvas.getBoundingClientRect();
+  let canvasHeight = canvasRect.height;
+  let canvasWidth = canvasRect.width;
 
   // We clear whatever is in scope and we create the grid again
-  ctx.clearRect(0, 0, wavesCanvasWidth, wavesCanvasHeight);
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   // Mid point of the scope canvas (used to create the grid)
   let midPoint = {
-    x: wavesCanvasWidth / 2,
-    y: wavesCanvasHeight / 2
+    x: canvasWidth / 2,
+    y: canvasHeight / 2
   };
 
   // Draw the two gray axes
   ctx.beginPath();
   ctx.moveTo(0, midPoint.y);
-  ctx.lineTo(wavesCanvasWidth, midPoint.y);
+  ctx.lineTo(canvasWidth, midPoint.y);
   ctx.moveTo(midPoint.x, 0);
-  ctx.lineTo(midPoint.x, wavesCanvasHeight);
+  ctx.lineTo(midPoint.x, canvasHeight);
   setStyleWidthOpacity(ctx, "rgb(124, 124, 124)", '5', 1);
   ctx.globalCompositeOperation = 'source-over';
   ctx.stroke();
@@ -65,7 +65,7 @@ function createGrid(ctx) {
   linesDrawn = 0;
   // Draw the dashes of the right half of x axis
   dashesX = midPoint.x;
-  while (dashesX <= wavesCanvasWidth) {
+  while (dashesX <= canvasWidth) {
     if (linesDrawn%4 === 0){
       ctx.moveTo(dashesX, midPoint.y - greatDashSize);
       ctx.lineTo(dashesX, midPoint.y + greatDashSize);
@@ -95,7 +95,7 @@ function createGrid(ctx) {
   linesDrawn = 0;
   // Draw the dashes of the bottom half of y axis
   dashesY = midPoint.y;
-  while (dashesY <= wavesCanvasHeight) {
+  while (dashesY <= canvasHeight) {
     if (linesDrawn%4 === 0){
       ctx.moveTo(midPoint.x - greatDashSize, dashesY);
       ctx.lineTo(midPoint.x + greatDashSize, dashesY);
@@ -110,22 +110,26 @@ function createGrid(ctx) {
   ctx.stroke();
   ctx.closePath();
 
+  drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace);
+}
+
+function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace){
   let lengthScale = dashSpace*4;
-  let offsetY = 8;
+  let offsetY = 15;
   let offsetX = 3;
   let lengthLittleLines = 10;
-  dashesY = wavesCanvasHeight;
+
   // Draw yellow scale
   ctx.beginPath();
   setStyleWidthOpacity(ctx, "rgb(255, 233, 0)", '3', 1);
-  ctx.moveTo(midPoint.x + offsetX, dashesY-offsetY);
-  ctx.lineTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY);
+  ctx.moveTo(midPoint.x + offsetX, canvasHeight-offsetY);
+  ctx.lineTo(midPoint.x + lengthScale - offsetX, canvasHeight-offsetY);
 
-  ctx.moveTo(midPoint.x + offsetX, dashesY-offsetY-lengthLittleLines/2);
-  ctx.lineTo(midPoint.x + offsetX, dashesY-offsetY+lengthLittleLines/2);
+  ctx.moveTo(midPoint.x + offsetX, canvasHeight-offsetY-lengthLittleLines/2);
+  ctx.lineTo(midPoint.x + offsetX, canvasHeight-offsetY+lengthLittleLines/2);
 
-  ctx.moveTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY-lengthLittleLines/2);
-  ctx.lineTo(midPoint.x + lengthScale - offsetX, dashesY-offsetY+lengthLittleLines/2);
+  ctx.moveTo(midPoint.x + lengthScale - offsetX, canvasHeight-offsetY-lengthLittleLines/2);
+  ctx.lineTo(midPoint.x + lengthScale - offsetX, canvasHeight-offsetY+lengthLittleLines/2);
 
   ctx.stroke();
   ctx.closePath();
@@ -137,7 +141,7 @@ function createGrid(ctx) {
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
 
-  ctx.fillText('25 ms', midPoint.x + lengthScale/2 - offsetX/2, dashesY-offsetY-lengthLittleLines/2);
+  ctx.fillText('25 ms', midPoint.x + lengthScale/2 - offsetX/2, canvasHeight-offsetY-lengthLittleLines/2);
 
   ctx.stroke();
   ctx.closePath();
@@ -249,7 +253,7 @@ function calculateProportionWave(max){
 }
 
 // Scope canvas drawing
-function drawWavesCanvas() {
+function drawPureWavesCanvas() {
     let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
     let wavesCanvasHeight = wavesCanvasRect.height;
     let wavesCanvasWidth = wavesCanvasRect.width;
@@ -258,15 +262,13 @@ function drawWavesCanvas() {
     let freqInfoMessage;
     let opacityLevel = 0.65;
 
-    createGrid(wavesCanvasCtx);
+    createGrid(wavesCanvasCtx, wavesCanvas);
 
     // Make the effect of the graph moving in time (currently deactivated)
     if (AFFECTTIME) {
       t++;
     }
 
-    // PURE MODE
-    if (mode==="pure"){
       // In case we are in mouse mode (or nothing is being clicked/touched)
       if (nFingers===0){
         numberPoints = 2048*16;
@@ -414,200 +416,195 @@ function drawWavesCanvas() {
         freqInfoMessage+=" <span style='color: rgb(255, 255, 255)'>Hz</span>";
         setLeyendVisibility('visible');
       }
-    } else if (mode==="complex"){
+    document.getElementById("freq-info").innerHTML=freqInfoMessage;
+    drawTimeStamp = Date.now();
+};
 
-      // If nothing is being pressed, just draw the blue line
-      if (frequency[0]===1){
-        freqInfoMessage="";
-        numberPoints = 2048*16;
-        sliceWidth = wavesCanvasWidth / numberPoints;
-        wavesCanvasCtx.beginPath();
-        setStyleWidthOpacity(wavesCanvasCtx, WAVECOLORTOTAL, '5', 1);
-        let x = 0;
-        for (let i = 0; i < numberPoints; i++) {
-          let y=0;
-          let wavelength = 100 * wavesCanvasHeight / frequency[0];
-          let v = wavelength/frequency[0];
-          let k = 2*Math.PI/wavelength;
-          if (amplitude[0]<0){
-            y += (0 * 350 * Math.cos(k*(x+v*t)));
-          } else {
-            y += (amplitude[0]* 350 * Math.cos(k*(x+v*t)));
-          }
-          y += wavesCanvasHeight/2;
-          if (i === 0) {
-            wavesCanvasCtx.moveTo(x, y);
-          } else {
-            wavesCanvasCtx.lineTo(x, y);
-          }
-          x += sliceWidth;
-        }
-        wavesCanvasCtx.stroke();
-        setLeyendVisibility('hidden');
-      } else {
-        // Otherwise:
-        // We will draw the thick yellow line and the other thinner lines as if we where in touching mode
-        numberPoints = 2048*16/WAVESCOMPLEXMODE;
-        sliceWidth = wavesCanvasWidth / numberPoints;
+// Scope canvas drawing
+function drawComplexWavesCanvas() {
+    let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
+    let wavesCanvasHeight = wavesCanvasRect.height;
+    let wavesCanvasWidth = wavesCanvasRect.width;
+    let numberPoints = 2048*16/WAVESCOMPLEXMODE;
+    let sliceWidth = wavesCanvasWidth / numberPoints;
+    let freqInfoMessage;
+    let opacityLevel = 0.65;
 
-        let maxHeight = calculateMaximumComplexWaves(numberPoints, sliceWidth);
-        let scaleProportion = calculateProportionWave(maxHeight*2);
+    createGrid(wavesCanvasCtx, wavesCanvas);
 
-        wavesCanvasCtx.beginPath();
-        setStyleWidthOpacity(wavesCanvasCtx, WAVECOLORTOTAL, '5', 1);
-        let x = 0;
-        for (let i = 0; i < numberPoints; i++) {
-          let y=0;
-
-          for (let j=0; j<WAVESCOMPLEXMODE; j++){
-            let wavelength = 100 * wavesCanvasHeight / frequency[j];
-            let v = wavelength/frequency[j];
-            let k = 2*Math.PI/wavelength;
-            if (amplitude[j]<0){
-              y += (0 * 350 * Math.cos(k*(x+v*t)));
-            } else {
-              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
-            }
-          }
-          y *= scaleProportion;
-          y+= wavesCanvasHeight/2;
-          if (i === 0) {
-            wavesCanvasCtx.moveTo(x, y);
-          } else {
-            wavesCanvasCtx.lineTo(x, y);
-          }
-          x += sliceWidth;
-        }
-        wavesCanvasCtx.stroke();
-
-        for (let j=0; j<WAVESCOMPLEXMODE; j++){
-          let x = 0;
-          wavesCanvasCtx.beginPath();
-          wavesCanvasCtx.lineWidth = '1';
-          wavesCanvasCtx.globalAlpha = opacityLevel;
-          if (j===0){
-              wavesCanvasCtx.strokeStyle = WAVECOLOR1;
-              freqInfoMessage="<span style='color: "+WAVECOLOR1+"'>"+Math.round(frequency[j])+"</span>";
-          } else if (j===1){
-              wavesCanvasCtx.strokeStyle = WAVECOLOR2;
-              freqInfoMessage+=" <span style='color: "+WAVECOLOR2+"'>"+Math.round(frequency[j])+"</span>";
-          } else if (j===2){
-              wavesCanvasCtx.strokeStyle = WAVECOLOR3;
-              freqInfoMessage+=" <span style='color: "+WAVECOLOR3+"'>"+Math.round(frequency[j])+"</span>";
-          } else if (j===3){
-              wavesCanvasCtx.strokeStyle = WAVECOLOR4;
-              freqInfoMessage+=" <span style='color: "+WAVECOLOR4+"'>"+Math.round(frequency[j])+"</span>";
-          } else {
-              wavesCanvasCtx.strokeStyle = WAVECOLOR5;
-              freqInfoMessage+=" <span style='color: "+WAVECOLOR5+"'>"+Math.round(frequency[j])+"</span>";
-          }
-          for (let i = 0; i < numberPoints; i++) {
-            let y=0;
-            let wavelength = 100 * wavesCanvasHeight / frequency[j];
-            let v = wavelength/frequency[j];
-            let k = 2*Math.PI/wavelength;
-            if (amplitude[j]<0){
-              y += (0 * 350 * Math.cos(k*(x+v*t)));
-            } else {
-              y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
-            }
-            y *= scaleProportion;
-            y+= wavesCanvasHeight/2;
-            if (i === 0) {
-              wavesCanvasCtx.moveTo(x, y);
-            } else {
-              wavesCanvasCtx.lineTo(x, y);
-            }
-            x += sliceWidth;
-          }
-          wavesCanvasCtx.stroke();
-        }
-        freqInfoMessage+=" <span style='color: rgb(255, 255, 255)'>Hz</span>";
-        setLeyendVisibility ('visible');
-      }
+    // Make the effect of the graph moving in time (currently deactivated)
+    if (AFFECTTIME) {
+      t++;
     }
+
+    let maxHeight = calculateMaximumComplexWaves(numberPoints, sliceWidth);
+    let scaleProportion = calculateProportionWave(maxHeight*2);
+    wavesCanvasCtx.beginPath();
+    setStyleWidthOpacity(wavesCanvasCtx, WAVECOLORTOTAL, '5', 1);
+    let x = 0;
+    for (let i = 0; i < numberPoints; i++) {
+      let y=0;
+
+      for (let j=0; j<WAVESCOMPLEXMODE; j++){
+        let wavelength = 100 * wavesCanvasHeight / frequency[j];
+        let v = wavelength/frequency[j];
+        let k = 2*Math.PI/wavelength;
+        if (amplitude[j]<0){
+          y += (0 * 350 * Math.cos(k*(x+v*t)));
+        } else {
+          y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+        }
+      }
+      y *= scaleProportion;
+      y+= wavesCanvasHeight/2;
+      if (i === 0) {
+        wavesCanvasCtx.moveTo(x, y);
+      } else {
+        wavesCanvasCtx.lineTo(x, y);
+      }
+      x += sliceWidth;
+    }
+    wavesCanvasCtx.stroke();
+
+    for (let j=0; j<WAVESCOMPLEXMODE; j++){
+      let x = 0;
+      wavesCanvasCtx.beginPath();
+      wavesCanvasCtx.lineWidth = '1';
+      wavesCanvasCtx.globalAlpha = opacityLevel;
+      if (j===0){
+          wavesCanvasCtx.strokeStyle = WAVECOLOR1;
+          freqInfoMessage="<span style='color: "+WAVECOLOR1+"'>"+Math.round(frequency[j])+"</span>";
+      } else if (j===1){
+          wavesCanvasCtx.strokeStyle = WAVECOLOR2;
+          freqInfoMessage+=" <span style='color: "+WAVECOLOR2+"'>"+Math.round(frequency[j])+"</span>";
+      } else if (j===2){
+          wavesCanvasCtx.strokeStyle = WAVECOLOR3;
+          freqInfoMessage+=" <span style='color: "+WAVECOLOR3+"'>"+Math.round(frequency[j])+"</span>";
+      } else if (j===3){
+          wavesCanvasCtx.strokeStyle = WAVECOLOR4;
+          freqInfoMessage+=" <span style='color: "+WAVECOLOR4+"'>"+Math.round(frequency[j])+"</span>";
+      } else {
+          wavesCanvasCtx.strokeStyle = WAVECOLOR5;
+          freqInfoMessage+=" <span style='color: "+WAVECOLOR5+"'>"+Math.round(frequency[j])+"</span>";
+      }
+      for (let i = 0; i < numberPoints; i++) {
+        let y=0;
+        let wavelength = 100 * wavesCanvasHeight / frequency[j];
+        let v = wavelength/frequency[j];
+        let k = 2*Math.PI/wavelength;
+        if (amplitude[j]<0){
+          y += (0 * 350 * Math.cos(k*(x+v*t)));
+        } else {
+          y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
+        }
+        y *= scaleProportion;
+        y+= wavesCanvasHeight/2;
+        if (i === 0) {
+          wavesCanvasCtx.moveTo(x, y);
+        } else {
+          wavesCanvasCtx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+      wavesCanvasCtx.stroke();
+    }
+    freqInfoMessage+=" <span style='color: rgb(255, 255, 255)'>Hz</span>";
+    setLeyendVisibility ('visible');
     document.getElementById("freq-info").innerHTML=freqInfoMessage;
     drawTimeStamp = Date.now();
 };
 
 // Draw blue point where finger is, sets corresponding volume and frequency
-function renderCanvas() {
+function renderPureWavesCanvas() {
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
   if (mouseDown) {
     let setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
     let setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
-    if (mode==="complex"){
-      if (firstComplexRender){
-        calculateRandomVolumes();
-        referenceComplexAmplitude = amplitude[0];
-        firstComplexRender = false;
-      }
 
-      if(amplitude[0] <= 0){
-        proportion = referenceComplexAmplitude/0.00001;
-      } else {
-        proportion = referenceComplexAmplitude/amplitude[0];
-      }
-      calculateFrequencyMultiplier(frequency[0], 2, 1);
-      calculateFrequencyMultiplier(frequency[0], 3, 2);
-      calculateFrequencyMultiplier(frequency[0], 4, 3);
-      calculateFrequencyMultiplier(frequency[0], 5, 4);
-      for (let w=1; w<WAVESCOMPLEXMODE; w++) {
-        calculateNewVolume(proportion, w);
-        calculateMousePos(controlsCanvas, w);
-      }
-    } else if (mode==="pure"){
-      for (let w=1; w<nFingers; w++){
-        // We set the volume and the frequency
-        let setVw = setVolume(mousePos[w].x / controlsCanvasRect.width, w);
-        let setFw = setFrequency(((mousePos[w].y / controlsCanvasRect.height) - 1) * -1, w);
-        setV = setV || setVw;
-        setF = setF || setFw;
-      }
+    for (let w=1; w<nFingers; w++){
+      // We set the volume and the frequency
+      let setVw = setVolume(mousePos[w].x / controlsCanvasRect.width, w);
+      let setFw = setFrequency(((mousePos[w].y / controlsCanvasRect.height) - 1) * -1, w);
+      setV = setV || setVw;
+      setF = setF || setFw;
     }
+
     if(((setV | setF) && Date.now()-drawTimeStamp>40) || (prevNFingers !== nFingers)){
-      drawWavesCanvas();
+      drawPureWavesCanvas();
       prevNFingers = nFingers;
     }
 
     // We redraw the axes and the point
-    renderAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
-    if (nFingers==0){
-      if (mode==="pure"){
-        drawPoint(controlsCanvasCtx, 0, 10);
-      } else if (mode==="complex"){
-        for (let w=0; w<WAVESCOMPLEXMODE; w++) {
-          drawPoint(controlsCanvasCtx, w, 10);
-        }
+    drawAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
+    if (nFingers===0){
+      drawPoint(controlsCanvasCtx, 0, 10);
+    } else {
+      for (let w=0; w<nFingers; w++){
+        drawPoint(controlsCanvasCtx, w, 40);
+      }
+    }
+  }
+}
+
+function renderComplexWavesCanvas (){
+  let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
+  if (mouseDown) {
+    let setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
+    let setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
+
+    if (firstComplexRender){
+      for (let w=1; w<WAVESCOMPLEXMODE; w++){
+        randomInitialVolumes[w] = Math.random()*amplitude[0];
+      }
+      referenceComplexAmplitude = amplitude[0];
+      firstComplexRender = false;
+    }
+
+    if(amplitude[0] <= 0){
+      proportion = referenceComplexAmplitude/0.00001;
+    } else {
+      proportion = referenceComplexAmplitude/amplitude[0];
+    }
+
+    for (let w=1; w<WAVESCOMPLEXMODE; w++){
+      calculateFrequencyMultiplier(frequency[0], (w+1), w);
+      calculateComplexVolume(proportion, w, randomInitialVolumes);
+      calculateMousePos(controlsCanvas, w);
+    }
+
+    if(((setV | setF) && Date.now()-drawTimeStamp>40) || (prevNFingers !== nFingers)){
+      drawComplexWavesCanvas();
+      prevNFingers = nFingers;
+    }
+
+    // We redraw the axes and the point
+    drawAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
+    if (nFingers===0){
+      for (let w=0; w<WAVESCOMPLEXMODE; w++) {
+        drawPoint(controlsCanvasCtx, w, 10);
       }
     } else {
-      if (mode==="pure"){
-        for (let w=0; w<nFingers; w++){
-          drawPoint(controlsCanvasCtx, w, 40);
-        }
-      } else if (mode==="complex"){
-        drawPoint(controlsCanvasCtx, 0, 40);
-        for (let w=1; w<WAVESCOMPLEXMODE; w++) {
-          drawPoint(controlsCanvasCtx, w, 27);
-        }
+      drawPoint(controlsCanvasCtx, 0, 40);
+      for (let w=1; w<WAVESCOMPLEXMODE; w++) {
+        drawPoint(controlsCanvasCtx, w, 27);
       }
-
     }
-    // What is this for?
-    requestAnimationFrame(renderCanvas);
   }
 }
 
 
 // Function that draws of the axes labels in the left canvas
-function renderAxesLabelsControlsCanvas(canvas, ctx) {
+function drawAxesLabelsControlsCanvas(canvas, ctx) {
   let rect = canvas.getBoundingClientRect();
   // We clear the canvas to make sure we don't leave anything painted
   ctx.clearRect(0, 0, rect.width, rect.height);
 
   let ticks = 4;
-  let yLabelOffset = 13;
+//  let yLabelOffset = 13;
   let x = rect.width;
+
+  let dashSize = {x: 24, y: 7};
+
   // Render the vertical frequency axis.
   for (let i = 0; i <= ticks; i++) {
     let freq = ((i) / (ticks))
@@ -627,17 +624,17 @@ function renderAxesLabelsControlsCanvas(canvas, ctx) {
     ctx.fillStyle = 'black';
 
     //y-axis
-    ctx.fillText(tickFreq + ' Hz', parseInt(x)-29, parseInt(y + yLabelOffset));
-    ctx.fillRect(parseInt(x)-19, parseInt(y), 24, 8);
+    ctx.fillText(tickFreq + ' Hz', parseInt(x)-29, parseInt(y + 13));
+    ctx.fillRect(parseInt(x)-19, parseInt(y), dashSize.x, dashSize.y);
 
     //x-axis
-    ctx.fillText(tickAmp, parseInt(ampX)+45, parseInt(ampY)-10);
-    ctx.fillRect(parseInt(ampX)+8, parseInt(ampY) -20, 7, 24);
+    ctx.fillText(tickAmp, parseInt(ampX)+45, parseInt(ampY)-11);
+    ctx.fillRect(parseInt(ampX)+8, parseInt(ampY) -22, dashSize.y, dashSize.x);
   }
   // 0 mark
 
   ctx.fillText(MINFREQ + ' Hz', parseInt(x) - 7, parseInt(rect.height)-28);
-  ctx.fillRect(parseInt(x) + - 19, parseInt(rect.height)-8, 24, 8);
+  ctx.fillRect(parseInt(x) + - 19, parseInt(rect.height)-11, dashSize.x, dashSize.y);
 }
 
 

@@ -27,6 +27,8 @@ function setTouchListeners (){
           });
           controlsCanvas.dispatchEvent(mouseEvent);
         }
+        renderPureWavesCanvas();
+
       } else if (mode==="complex"){
         for (let j=0; j<1; j++){
           finger = j;
@@ -36,12 +38,7 @@ function setTouchListeners (){
           });
           controlsCanvas.dispatchEvent(mouseEvent);
         }
-      }
-
-      if (!isToneJSSetUp){
-        setUpToneJS();
-      } else {
-        renderCanvas();
+        renderComplexWavesCanvas();
       }
     }
   }, false);
@@ -76,7 +73,7 @@ function setTouchListeners (){
         setToZero();
         releaseSynths();
       } else {
-        drawWavesCanvas();
+        drawPureWavesCanvas();
       }
     } else if (mode==="complex"){
       if(touch[0] && e.changedTouches[0]){
@@ -103,6 +100,7 @@ function setTouchListeners (){
             });
             document.dispatchEvent(mouseEvent);
           }
+          renderPureWavesCanvas();
         } else if (mode==="complex"){
           for (let j=0; j<1; j++){
             finger = j;
@@ -112,8 +110,8 @@ function setTouchListeners (){
             });
             document.dispatchEvent(mouseEvent);
           }
+          renderComplexWavesCanvas();
         }
-        renderCanvas();
     }
   }, false);
 
