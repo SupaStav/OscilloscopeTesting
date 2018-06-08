@@ -4,12 +4,13 @@
     <title>Oscilloscope</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Matthew Rice, Pablo Canas">
+    <meta name="author" content="Pablo Canas, Matthew Rice">
 
     <link rel="stylesheet" href="css/generalStyles.css">
+    <link rel="stylesheet" href="css/startingPageStyles.css">
     <link rel="stylesheet" href="css/controlsCStyles.css">
-    <link rel="stylesheet" href="css/scopesCStyles.css">
-    <link rel="stylesheet" href="css/bottomCStyles.css">
+    <link rel="stylesheet" href="css/representationCStyles.css">
+    <link rel="stylesheet" href="css/leyendCStyles.css">
   </head>
 
   <body>
@@ -21,19 +22,19 @@
 
     <div id="container" style="visibility:hidden">
       <div id="controls-container">
-        <canvas id="draw-canvas"></canvas>
+        <canvas id="controls-canvas"></canvas>
       </div>
       <span id="yAxis-header">Movement of the speaker</span>
-      <div id="scopes-container">
-        <div id="scope-container">
-          <canvas id="scope-1"></canvas>
+      <div id="representation-container">
+        <div id="graph-container">
+          <canvas id="waves-canvas"></canvas>
         </div>
           <span id="header-text">
             Signal Generator
           </span>
           <!--<div id="units-container">25ms</div>-->
         <span id="xAxis-header">Time</span>
-        <div id="bottom-container">
+        <div id="leyend-container">
           <button id="freq-info"></button>
           <span id='pure-tones-text'>Pure tones</span>
           <canvas id ='line-canvas'></canvas>

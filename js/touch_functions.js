@@ -2,19 +2,12 @@
     - Every function related handling a touch event.
 */
 
-document.addEventListener("touchstart", function(e) {
-  //gain.gain.cancelScheduledValues(0);
-  e.preventDefault();
-  if (!firstTouchEver) {
-    setUp();
-    firstTouchEver = true;
-  }
-}, false);
+document.addEventListener("touchstart", setUpFunction, false);
 
 function setTouchListeners (){
 
   // When the user touches the screen, we simulate a mouse click
-  drawCanvas.addEventListener("touchstart", function(e) {
+  controlsCanvas.addEventListener("touchstart", function(e) {
     e.preventDefault();
 
     if (nFingers<MAXFINGERS){
@@ -25,38 +18,36 @@ function setTouchListeners (){
         nFingers = MAXFINGERS;
       }
 
-      if (mode=="pure"){
+      if (mode==="pure"){
         for (let j=0; j<nFingers; j++){
           finger = j;
           mouseEvent = new MouseEvent("mousedown", {
             clientX: touch[j].clientX,
             clientY: touch[j].clientY
           });
-          drawCanvas.dispatchEvent(mouseEvent);
+          controlsCanvas.dispatchEvent(mouseEvent);
         }
-      } else {
+      } else if (mode==="complex"){
         for (let j=0; j<1; j++){
           finger = j;
           mouseEvent = new MouseEvent("mousedown", {
             clientX: touch[j].clientX,
             clientY: touch[j].clientY
           });
-          drawCanvas.dispatchEvent(mouseEvent);
+          controlsCanvas.dispatchEvent(mouseEvent);
         }
       }
 
-      if (!isStarted){
-        isStarted = true;
-        start();
+      if (!isToneJSSetUp){
+        setUpToneJS();
       } else {
         renderCanvas();
       }
-      firstDown = false;
     }
   }, false);
 
   // When the user stops touching the screen, we simulate a mouse unclick
-  drawCanvas.addEventListener("touchend", function(e) {
+  controlsCanvas.addEventListener("touchend", function(e) {
     e.preventDefault();
     if (mode==="pure"){
       let indexFingerUp;
@@ -85,11 +76,11 @@ function setTouchListeners (){
         setToZero();
         releaseSynths();
       } else {
-        draw();
+        drawWavesCanvas();
       }
-    } else {
+    } else if (mode==="complex"){
       if(touch[0] && e.changedTouches[0]){
-        if (touch[0].clientX === e.changedTouches[0].clientX && touch[0].clientY === e.changedTouches[0].clientY && pureOn){
+        if (touch[0].clientX === e.changedTouches[0].clientX && touch[0].clientY === e.changedTouches[0].clientY){
           setToZero();
           releaseSynths();
         }
@@ -98,12 +89,12 @@ function setTouchListeners (){
   }, false);
 
   // When the user moves its fingers in the screen, we simulate a mouse move
-  drawCanvas.addEventListener("touchmove", function(e) {
+  controlsCanvas.addEventListener("touchmove", function(e) {
     e.preventDefault();
     if (nFingers<= MAXFINGERS){
         let mouseEvent;
         touch = e.touches;
-        if (mode=="pure"){
+        if (mode==="pure"){
           for (let j=0; j<touch.length; j++){
             finger = j;
             mouseEvent = new MouseEvent("mousemove", {
@@ -112,7 +103,7 @@ function setTouchListeners (){
             });
             document.dispatchEvent(mouseEvent);
           }
-        } else{
+        } else if (mode==="complex"){
           for (let j=0; j<1; j++){
             finger = j;
             mouseEvent = new MouseEvent("mousemove", {
