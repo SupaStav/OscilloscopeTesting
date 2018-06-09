@@ -2,16 +2,7 @@
     - Every function related handling a mouse event.
 */
 
-var setUpFunction = function (e) {
-  e.preventDefault();
-  if (!firstTapInThePage) {
-    setUp();
-    document.removeEventListener("mousedown", setUpFunction, false);
-    document.removeEventListener("touchstart", setUpFunction, false);
-  }
-}
-
-document.addEventListener("mousedown", setUpFunction, false);
+document.addEventListener("mousedown", setUpCallback, false);
 
 function setMouseListeners (){
 
@@ -26,7 +17,6 @@ function setMouseListeners (){
       } else if (mode==="complex"){
         renderComplexWavesCanvas();
       }
-
     } else {
       mousePos[finger] = getMousePos(controlsCanvas, e);
     }
@@ -49,16 +39,8 @@ function setMouseListeners (){
     }
   }, false);
 
+  document.addEventListener('mouseup', function() {
+      setToZero();
+      releaseSynths();
+  });
 }
-
-
-// Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
-document.addEventListener('DOMContentLoaded', function() {
-  // Alternative to jQuery mouseup function
-  document.onmouseup = function(){
-      if (firstTapInThePage){
-        setToZero();
-        releaseSynths();
-      }
-  }
-});

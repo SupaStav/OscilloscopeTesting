@@ -80,11 +80,13 @@ function fixLeyendPosition () {
   document.getElementById('pure-tones-text').style.left = offsetPureTones+'px';
 
   let leftOffsetLineCanvas = 10;
+  let leftOffsetLeyendText = 5;
+  let bottomOffsetLeyendText = 2;
   document.getElementById('line-canvas').style.height = document.getElementById('freq-info').clientHeight+'px';
   document.getElementById('line-canvas').style.left = document.getElementById('freq-info').clientWidth+leftOffsetLineCanvas+'px';
 
-  document.getElementById('leyend-text').style.bottom = document.getElementById('line-canvas').clientHeight/2-document.getElementById('leyend-text').clientHeight/2+'px';
-  document.getElementById('leyend-text').style.left = document.getElementById('freq-info').clientWidth+leftOffsetLineCanvas+document.getElementById('line-canvas').clientWidth+'px';
+  document.getElementById('leyend-text').style.bottom = document.getElementById('line-canvas').clientHeight/2-document.getElementById('leyend-text').clientHeight/2-bottomOffsetLeyendText+'px';
+  document.getElementById('leyend-text').style.left = document.getElementById('freq-info').clientWidth+leftOffsetLineCanvas+document.getElementById('line-canvas').clientWidth+leftOffsetLeyendText+'px';
 }
 
 function drawLeyendLine(){
@@ -99,8 +101,8 @@ function drawLeyendLine(){
   lineCanvasCtx.strokeStyle = WAVECOLORTOTAL;
   lineCanvasCtx.lineWidth = lineWidth;
   lineCanvasCtx.globalAlpha = 1;
-  lineCanvasCtx.moveTo(lineCanvasId.clientWidth/2, lineHeightCut-2);
-  lineCanvasCtx.lineTo(lineCanvasId.clientWidth/2, lineCanvasId.clientHeight-lineHeightCut);
+  lineCanvasCtx.moveTo(0, lineCanvasId.clientHeight/2);
+  lineCanvasCtx.lineTo(lineCanvasId.clientWidth, lineCanvasId.clientHeight/2);
   lineCanvasCtx.stroke();
   lineCanvasCtx.closePath();
 }
@@ -135,7 +137,6 @@ var createHiDPICanvas = function(w, h, canvasName, ratio) {
     return can;
 }
 
-var firstTapInThePage = false;
 
 var mode = "pure";
 
@@ -205,7 +206,6 @@ function setUpToneJS(){
 function setUp() {
   document.getElementById("startText").style.visibility = "hidden";
   document.getElementById("container").style.visibility = "visible";
-  firstTapInThePage = true;
 
   fixHeaderPosition();
   fixButtonHeaderPosition();
@@ -223,6 +223,14 @@ function setUp() {
 
   setToZero();
   setUpToneJS();
+}
+
+
+var setUpCallback = function (e) {
+  e.preventDefault();
+  setUp();
+  document.removeEventListener("mousedown", setUpCallback, false);
+  document.removeEventListener("touchstart", setUpCallback, false);
 }
 
 // Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)

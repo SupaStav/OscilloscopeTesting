@@ -105,28 +105,6 @@ function getMousePos(canvas, evt) {
   }
 }
 
-function deleteFinger (indexFinger){
-
-  for (let j=indexFinger; j<lengthArrays-1; j++){
-    oscillators[j].frequency.rampTo(oscillators[j+1].frequency.value, 0.05);
-    oscillators[j].volume.rampTo(oscillators[j+1].volume.value, 0.05);
-  }
-  oscillators[lengthArrays-1].frequency.rampTo(1, 0.1);
-  oscillators[lengthArrays-1].volume.rampTo(-Infinity, 0.1);
-
-  auxTouch.splice(indexFinger, 1);
-  mousePos.splice(indexFinger, 1);
-  oldFreq.splice(indexFinger, 1);
-  oldVol.splice(indexFinger, 1);
-  frequency.splice(indexFinger, 1);
-  amplitude.splice(indexFinger, 1);
-  mousePos.push({x: 0, y: 0});
-  oldFreq.push(-1);
-  oldVol.push(-1);
-  frequency.push(1);
-  amplitude.push(0);
-}
-
 /* The closest to a reset function. It reinitializes almost everything.
 Used in the initialization and in the mouse up callback */
 function setToZero(){
