@@ -3,20 +3,19 @@
       * Set the volume and frequency
       * Logspace
       * Get mouse position
-      * Set to zero
+      * Set to zero and release synths
 */
 
+// Used for the logspace calculation.
 const EXPONENTIAL_INC_FACTOR = 2;
+
 // How sensitive is the program with the movement of the mouse/finger
 // If very sensitive, it will be updated at the minimum change. If not sensitive, it will take longer to update.
 const CHANGE_SENSITIVITY_FACTOR = 0.0015;
-// Decrease the value to Increase the volume
-const VOLUMEPOWER = 40;
 
 
-// Function that sets the volume to the value indicated as argument
+// Function that sets the volume to the corresponding index. Returns false if the change is not enough to redraw the graph.
 function setVolume(vol, index) {
-  //let newVolume = -1*((1-vol)*VOLUMEPOWER);
   let newVolume = logspace(MINVOLUME, MAXVOLUME, vol, EXPONENTIAL_INC_FACTOR);
   let redraw = false;
   if (Math.abs(vol - oldVol[index]) > CHANGE_SENSITIVITY_FACTOR) {
@@ -32,21 +31,7 @@ function setVolume(vol, index) {
   return redraw;
 }
 
-/* Function used in the complex mode.
-It calculates a random volume and applies it to the volume with the given index */
-
-function calculateComplexVolume(proportion, index, randomInitialVolumes){
-  let vol = randomInitialVolumes[index]/proportion;
-
-  let newVolume = logspace(MINVOLUME, MAXVOLUME, vol, EXPONENTIAL_INC_FACTOR);
-  //let newVolume = -1*((1-vol)*VOLUMEPOWER);
-
-  oscillators[index].volume.value = newVolume;
-
-  amplitude[index] = vol;
-}
-
-// Function that sets the frequency to the value indicated as argument
+// Function that sets the frequency to the corresponding index. Returns false if the change is not enough to redraw the graph.
 function setFrequency(freq, index) {
   let newFreq = logspace(MINFREQ, MAXFREQ, freq, EXPONENTIAL_INC_FACTOR);
   frequency[index] = newFreq;
@@ -59,26 +44,9 @@ function setFrequency(freq, index) {
   return redraw;
 }
 
-/* Function used in the complex mode.
-It takes a frequency, applies a multiplier and copies it to the frequency with the given index */
-function calculateFrequencyMultiplier (freq, multiplier, index){
-  frequency [index] = freq * multiplier;
-  oscillators[index].frequency.value = frequency [index];
-}
-
-function calculateMousePos(canvas, index) {
-  let rect = canvas.getBoundingClientRect();
-  mousePos[index].y = ((inverseLogsPace(MINFREQ, MAXFREQ, frequency[index], EXPONENTIAL_INC_FACTOR)*(-1))+1)*rect.height;
-  mousePos[index].x = amplitude[index]*rect.width;
-}
-
-// Function used to translate our data into the frequencies and volume ranges we predefined
+// Function used to translate the mouse position into the frequency and volume ranges we predefined
 function logspace(start, stop, n, N) {
   return start * Math.pow(stop / start, n / (N - 1));
-}
-
-function inverseLogsPace(start, stop, freq, N){
-  return (N-1)*Math.log(freq/start)/Math.log(stop/start);
 }
 
 // Get the position of the mouse relative to the canvas
@@ -88,6 +56,7 @@ function getMousePos(canvas, evt) {
     var toReturnX = (evt.clientX - rect.left);
     var toReturnY = (evt.clientY - rect.top);
 
+    // We check if the mouse is outside the canvas and we do not let that happen.
     if (toReturnX < 0){
       toReturnX = 0;
     } else if (toReturnX > rect.width){
@@ -98,15 +67,15 @@ function getMousePos(canvas, evt) {
     } else if (toReturnY > rect.height){
       toReturnY = rect.height;
     }
+
     return {
-      x: toReturnX, // scale mouse coordinates after they have
-      y: toReturnY // been adjusted to be relative to element
+      x: toReturnX,
+      y: toReturnY
     }
   }
 }
 
-/* The closest to a reset function. It reinitializes almost everything.
-Used in the initialization and in the mouse up callback */
+// Resets variables to their default value, and redraws both canvas (to their originals). 
 function setToZero(){
   mouseDown = false;
   nFingers = 0;

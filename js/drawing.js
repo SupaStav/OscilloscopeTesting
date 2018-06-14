@@ -31,11 +31,11 @@ function createGrid(ctx, canvas) {
 
   // Draw the two gray axes
   ctx.beginPath();
+  setStyleWidthOpacity(ctx, "rgb(124, 124, 124)", '5', 1);
   ctx.moveTo(0, midPoint.y);
   ctx.lineTo(canvasWidth, midPoint.y);
   ctx.moveTo(midPoint.x, 0);
   ctx.lineTo(midPoint.x, canvasHeight);
-  setStyleWidthOpacity(ctx, "rgb(124, 124, 124)", '5', 1);
   ctx.globalCompositeOperation = 'source-over';
   ctx.stroke();
   ctx.closePath();

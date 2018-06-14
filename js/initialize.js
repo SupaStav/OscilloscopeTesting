@@ -3,16 +3,20 @@
     - Calls the set up method
 */
 
+/* Tasks:
+    - 'Low pass filter' effect: instead of doing a real low pass filter, we will call one of the rampTo (linear, exponential, etc) functions for the frequency and volume, 
+      and we will keep printing the circle according to the value of the frequency-volume in each moment in time.
+    - Do the bounding in the graphs correctly: instead of the current result (commented in drawing.js), we should map the controls canvas and the drawing canvas so
+      that the maximum in the controls will map to the highest point in the graph.
+*/
 
 /* Things to improve:
     - Making the site fully responsive (in the 1st load its responsive, we need to do so when resizing)
+    - Improve the UI
     - Set a scale for drawing the axis in the right canvas, because now it prints more or less lines depending on the size of the page
     - Very slow on iPad and no sound
     - There is a bug when you touch really quickly with two fingers inside the controlsCanvas aera,
       just in the initial screen.
-
-    - 'Low pass filter' effect
-    - Do the bounding in the graphs correctly
 */
 
 
@@ -30,7 +34,7 @@ const AFFECTTIME = false;
 const MINFREQ = 20;
 const MAXFREQ = 20000;
 
-// Minimum and maximum volumes passed to Tone JS
+// Minimum and maximum volumes passed to Tone JS (dB)
 const MINVOLUME = -50;
 const MAXVOLUME = -1;
 
@@ -89,6 +93,7 @@ function fixLeyendPosition () {
   document.getElementById('leyend-text').style.left = document.getElementById('freq-info').clientWidth+leftOffsetLineCanvas+document.getElementById('line-canvas').clientWidth+leftOffsetLeyendText+'px';
 }
 
+// Function made to draw the leyend line representing the total waveform.
 function drawLeyendLine(){
   let lineCanvasId = document.getElementById('line-canvas');
   let lineCanvas = createHiDPICanvas(lineCanvasId.clientWidth, lineCanvasId.clientHeight, 'line-canvas');
@@ -107,17 +112,17 @@ function drawLeyendLine(){
   lineCanvasCtx.closePath();
 }
 
+// Creates waves canvas with the device resolution and initialize the variables accordingly
 function setUpWavesCanvas (){
   let wavesCanvasName = 'waves-canvas';
-  //Create scope canvas with the device resolution and initialize the variables accordingly
   let wavesCanvasId = document.getElementById(wavesCanvasName);
   wavesCanvas = createHiDPICanvas(wavesCanvasId.clientWidth, wavesCanvasId.clientHeight, wavesCanvasName);
   wavesCanvasCtx = wavesCanvas.getContext('2d');
 }
 
+// Creates controls canvas with the device resolution and initialize the variables accordingly
 function setUpControlsCanvas (){
   let controlsCanvasName = 'controls-canvas';
-  //Create draw canvas with the device resolution.
   let controlsCanvasId = document.getElementById(controlsCanvasName);
   controlsCanvas = createHiDPICanvas(controlsCanvasId.clientWidth, controlsCanvasId.clientHeight, controlsCanvasName);
   controlsCanvasCtx = controlsCanvas.getContext('2d');
@@ -137,25 +142,25 @@ var createHiDPICanvas = function(w, h, canvasName, ratio) {
     return can;
 }
 
-
+// Mode: can be pure or complex
 var mode = "pure";
 
-// Scope canvas context, id of the scope canvas, the element itself
+// Waves canvas context, waves canvas element
 var wavesCanvasCtx, wavesCanvas;
 
-// Draw canvas context, id of the draw canvas, the element itself
+// Controls canvas context, controls canvas element
 var controlsCanvasCtx, controlsCanvas;
 
 // Boolean storing if the mouse is clicked or not
 var mouseDown;
 
-// Variable to keep track of the mouse/finger position (array done for each of the possible fingers)
+// Variable to keep track of the mouse/finger position
 var mousePos = [];
 
-// Variable to keep track of the frequency and volume (array done for each of the possible fingers)
+// Variable to keep track of the frequency and volume
 var frequency=[];
 var amplitude=[];
-// Variable to keep track of the old frequency and old volume (array done for each of the possible fingers)
+// Variable to keep track of the old frequency and old volume
 var oldFreq = [];
 var oldVol = [];
 
@@ -164,21 +169,32 @@ var touch=[];
 // Number of fingers touching the screen
 var nFingers;
 
+// Calculate the length of the previous arrays
 var lengthArrays;
 if (MAXFINGERS>WAVESCOMPLEXMODE){
   lengthArrays = MAXFINGERS;
 } else {
   lengthArrays = WAVESCOMPLEXMODE;
 }
-// Variable to traverse the fingers in different methods
-var finger;
+
 var oscillators = [];
 
-// Complex waves related variables
+/*
+  Variable to keep track of the first time that we are rendering a complex wave:
+    - Used to calculate the reference point in order to draw the complex volumes correctly.
+*/
 var firstComplexRender = false;
 
+// This is used to initialize the Audio Context when the user first interacts with the app. It is done by a third party library and used to match the current Audio Contex specifications.
 StartAudioContext(Tone.context, 'body');
 
+/* 
+    Sets Tone JS:
+      - We create several oscillators, which we attach to a lower volume.
+      - We apply the limiter (compression) to this volume.
+      - We connect these components to a higher volume, as a makeUpGain effect.
+      - Finally, we connect this to the speakers, and we start the oscillators.
+*/
 function setUpToneJS(){
   let masterVolume = new Tone.Volume(-40);
   let makeUpGain = new Tone.Volume(15);
@@ -202,7 +218,7 @@ function setUpToneJS(){
   }
 }
 
-// This function will set up the two canvas that we are using in the application
+// Makes the signal generator layout visible and sets all the different components of the app.
 function setUp() {
   document.getElementById("startText").style.visibility = "hidden";
   document.getElementById("container").style.visibility = "visible";
@@ -225,7 +241,7 @@ function setUp() {
   setUpToneJS();
 }
 
-
+// Function called only once at the beginning of the application, when the user first taps. It will set up the rest of the application.
 var setUpCallback = function (e) {
   e.preventDefault();
   setUp();
@@ -233,9 +249,8 @@ var setUpCallback = function (e) {
   document.removeEventListener("touchstart", setUpCallback, false);
 }
 
-// Alternative to jQuery ready function. Supported everywhere but IE 8 (too old, it should not be a problem)
+// Set to change mode and colors when the user clicks in the 'pure' or 'complex' buttons.
 document.addEventListener('DOMContentLoaded', function() {
-  // Alternative to jQuery click function
   let colorGray = '#c1c5c9';
   let colorYellow = '#FFE900';
 
@@ -258,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+// This is set so that a context menu does not appear when the user double clicks.
 document.addEventListener("contextmenu", function(e){
   e.preventDefault();
 });
