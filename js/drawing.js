@@ -14,7 +14,7 @@ var drawTimeStamp;
 var prevNFingers = 0;
 var randomInitialVolumes=[];
 
-// This function creates the grid of the canvas inserted as argument (it will be used for scope)
+// This function creates the grid for the waves canvas
 function createGrid(ctx, canvas) {
   let canvasRect = canvas.getBoundingClientRect();
   let canvasHeight = canvasRect.height;
@@ -110,9 +110,11 @@ function createGrid(ctx, canvas) {
   ctx.stroke();
   ctx.closePath();
 
+  // Draw the scale for the canvas
   drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace);
 }
 
+// Draws the scale information for the waves canvas
 function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace){
   let lengthScale = dashSpace*4;
   let offsetY = 15;
@@ -158,6 +160,11 @@ function setLeyendVisibility (status) {
   document.getElementById("leyend-text").style.visibility=status;
   document.getElementById("line-canvas").style.visibility=status;
 }
+
+/* FUNCTIONALITY FOR THE BOUNDING GRAPHS FEATURE
+Functions to calculate the maximum point in a pure single wave, in a pure multi wave, and in a complex wave
+There are three functions just to make it easier, but they share many characteristics so they probably could be merged in one.
+These are used to later calculate the proportion to apply to the wave in order to bound it.
 
 function calculateMaximumPureSingleWave(myNumberPoints, mySliceWidth){
   let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
@@ -241,7 +248,10 @@ function calculateMaximumComplexWaves(myNumberPoints, mySliceWidth){
   }
   return max;
 }
+*/
 
+/* FUNCTIONALITY FOR THE BOUNDING GRAPHS FEATURE
+Calculates the proportion that we should apply in relation to the height of the waves canvas height
 function calculateProportionWave(max){
   let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
   let wavesCanvasHeight = wavesCanvasRect.height;
@@ -251,8 +261,10 @@ function calculateProportionWave(max){
     return wavesCanvasHeight/max;
   }
 }
+*/
 
-// Scope canvas drawing
+// Waves canvas drawing (pure waves)
+// TO DO: insert the canvas and the context as arguments so that if one changes, we do not have to be changing everything in the function.
 function drawPureWavesCanvas() {
     let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
     let wavesCanvasHeight = wavesCanvasRect.height;
@@ -275,9 +287,10 @@ function drawPureWavesCanvas() {
         // We get the x-distance between each point by dividing the total width by the number of points
         sliceWidth = wavesCanvasWidth / numberPoints;
 
+        /*
         let maxHeight = calculateMaximumPureSingleWave(numberPoints, sliceWidth);
         let scaleProportion = calculateProportionWave(maxHeight*2);
-
+        */
 
         // We draw the blue wave line
         wavesCanvasCtx.beginPath();
@@ -298,7 +311,8 @@ function drawPureWavesCanvas() {
             y += (amplitude[0]* 350 * Math.cos(k*(x+v*t)));
           }
 
-          y *= scaleProportion;
+          // y *= scaleProportion;
+
           y += wavesCanvasHeight/2;
 
           // We draw the point in the canvas
@@ -321,8 +335,10 @@ function drawPureWavesCanvas() {
         numberPoints = 2048*16/(nFingers+1);
         sliceWidth = wavesCanvasWidth / numberPoints;
 
+        /*
         let maxHeight = calculateMaximumPureMultipleWaves(numberPoints, sliceWidth);
         let scaleProportion = calculateProportionWave(maxHeight*2);
+        */
 
         wavesCanvasCtx.beginPath();
         setStyleWidthOpacity(wavesCanvasCtx, WAVECOLORTOTAL, '5', 1);
@@ -340,7 +356,9 @@ function drawPureWavesCanvas() {
               y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
             }
           }
-          y *= scaleProportion;
+
+          // y *= scaleProportion;
+
           y+= wavesCanvasHeight/2;
           if (i === 0) {
             wavesCanvasCtx.moveTo(x, y);
@@ -391,7 +409,9 @@ function drawPureWavesCanvas() {
             } else {
               y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
             }
-            y *= scaleProportion;
+
+            // y *= scaleProportion;
+
             y += wavesCanvasHeight/2;
             if (i === 0) {
               wavesCanvasCtx.moveTo(x, y);
@@ -420,7 +440,7 @@ function drawPureWavesCanvas() {
     drawTimeStamp = Date.now();
 };
 
-// Scope canvas drawing
+// Waves canvas drawing (complex waves)
 function drawComplexWavesCanvas() {
     let wavesCanvasRect = wavesCanvas.getBoundingClientRect();
     let wavesCanvasHeight = wavesCanvasRect.height;
@@ -437,8 +457,11 @@ function drawComplexWavesCanvas() {
       t++;
     }
 
-    let maxHeight = calculateMaximumComplexWaves(numberPoints, sliceWidth);
-    let scaleProportion = calculateProportionWave(maxHeight*2);
+    /*
+      let maxHeight = calculateMaximumComplexWaves(numberPoints, sliceWidth);
+      let scaleProportion = calculateProportionWave(maxHeight*2);
+    */
+
     wavesCanvasCtx.beginPath();
     setStyleWidthOpacity(wavesCanvasCtx, WAVECOLORTOTAL, '5', 1);
     let x = 0;
@@ -455,7 +478,9 @@ function drawComplexWavesCanvas() {
           y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
         }
       }
-      y *= scaleProportion;
+
+      // y *= scaleProportion;
+
       y+= wavesCanvasHeight/2;
       if (i === 0) {
         wavesCanvasCtx.moveTo(x, y);
@@ -497,7 +522,9 @@ function drawComplexWavesCanvas() {
         } else {
           y += (amplitude[j]* 350 * Math.cos(k*(x+v*t)));
         }
-        y *= scaleProportion;
+        
+        // y *= scaleProportion;
+
         y+= wavesCanvasHeight/2;
         if (i === 0) {
           wavesCanvasCtx.moveTo(x, y);
@@ -518,6 +545,7 @@ function drawComplexWavesCanvas() {
 function renderPureWavesCanvas() {
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
   if (mouseDown) {
+    // Set volume and frequency for tap 0
     let setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
     let setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
 
@@ -529,6 +557,12 @@ function renderPureWavesCanvas() {
       setF = setF || setFw;
     }
 
+    /*
+      Check if we are eligible to draw in the canvas:
+        - If the volume or the frequency has changed enough and it has passed at least 40 milliseconds from last draw.
+        OR
+        - The number of fingers has changed
+    */
     if(((setV | setF) && Date.now()-drawTimeStamp>40) || (prevNFingers !== nFingers)){
       drawPureWavesCanvas();
       prevNFingers = nFingers;
@@ -536,6 +570,8 @@ function renderPureWavesCanvas() {
 
     // We redraw the axes and the point
     drawAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
+
+    // Draw the points in the control canvas
     if (nFingers===0){
       drawPoint(controlsCanvasCtx, 0, 10);
     } else {
@@ -549,9 +585,11 @@ function renderPureWavesCanvas() {
 function renderComplexWavesCanvas (){
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
   if (mouseDown) {
+    // Set volume and frequency for tap 0
     let setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
     let setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
 
+    // If it is the first complex render, initialize the random volumes and the reference amplitude (to calculate future proportions)
     if (firstComplexRender){
       for (let w=1; w<WAVESCOMPLEXMODE; w++){
         randomInitialVolumes[w] = Math.random()*amplitude[0];
@@ -560,18 +598,26 @@ function renderComplexWavesCanvas (){
       firstComplexRender = false;
     }
 
+    // Calculate the proportion to apply for the volumes
     if(amplitude[0] <= 0){
       proportion = referenceComplexAmplitude/0.00001;
     } else {
       proportion = referenceComplexAmplitude/amplitude[0];
     }
 
+    // For each of the complex wave, calculate their frequency, volume, and mouse position.
     for (let w=1; w<WAVESCOMPLEXMODE; w++){
       calculateFrequencyMultiplier(frequency[0], (w+1), w);
       calculateComplexVolume(proportion, w, randomInitialVolumes);
       calculateMousePos(controlsCanvas, w);
     }
 
+    /*
+      Check if we are eligible to draw in the canvas:
+        - If the volume or the frequency has changed enough and it has passed at least 40 milliseconds from last draw.
+        OR
+        - The number of fingers has changed
+    */
     if(((setV | setF) && Date.now()-drawTimeStamp>40) || (prevNFingers !== nFingers)){
       drawComplexWavesCanvas();
       prevNFingers = nFingers;
@@ -579,6 +625,8 @@ function renderComplexWavesCanvas (){
 
     // We redraw the axes and the point
     drawAxesLabelsControlsCanvas(controlsCanvas, controlsCanvasCtx);
+
+    // Draw the points in the control canvas
     if (nFingers===0){
       for (let w=0; w<WAVESCOMPLEXMODE; w++) {
         drawPoint(controlsCanvasCtx, w, 10);
@@ -593,51 +641,50 @@ function renderComplexWavesCanvas (){
 }
 
 
-// Function that draws of the axes labels in the left canvas
+// Function that draws of the axes labels in the controls canvas
 function drawAxesLabelsControlsCanvas(canvas, ctx) {
   let rect = canvas.getBoundingClientRect();
   // We clear the canvas to make sure we don't leave anything painted
   ctx.clearRect(0, 0, rect.width, rect.height);
 
   let ticks = 4;
-//  let yLabelOffset = 13;
-  let x = rect.width;
+  let freqX = rect.width;
+  let volY = rect.height;
 
   let dashSize = {x: 24, y: 7};
 
-  // Render the vertical frequency axis.
   for (let i = 0; i <= ticks; i++) {
     let freq = ((i) / (ticks))
     let tickFreq = Math.round(logspace(MINFREQ, MAXFREQ, freq, 2));
-    let switchAmp = ((freq / ticks - 1) * -1);
-    let tickAmp = Math.round(logspace(0.001, 0.5, switchAmp, 2) * 100) / 10 * 2;
-    let percent = i / (ticks);
-    let y = (1 - percent) * rect.height;
-    // Get the value for the current y coordinate.
 
-    let ampX = (1 - percent) * rect.width;
-    let ampY = rect.height - 0;
+    let vol = ((freq / ticks - 1) * -1);
+    let tickVol = Math.round(logspace(0.001, 0.5, vol, 2) * 100) / 10 * 2;
+
+    let percent = i / (ticks);
+
+    let freqY = (1 - percent) * rect.height;
+    let volX = (1 - percent) * rect.width;
+    
     ctx.beginPath();
     ctx.font = '16px Verdana ';
-    // Draw the value.
     ctx.textAlign = 'right';
     ctx.fillStyle = 'black';
 
-    //y-axis
-    ctx.fillText(tickFreq + ' Hz', parseInt(x)-29, parseInt(y + 13));
-    ctx.fillRect(parseInt(x)-19, parseInt(y), dashSize.x, dashSize.y);
+    // Draw in the frequency y axis
+    ctx.fillText(tickFreq + ' Hz', parseInt(freqX)-29, parseInt(freqY + 13));
+    ctx.fillRect(parseInt(freqX)-19, parseInt(freqY), dashSize.x, dashSize.y);
 
-    //x-axis
-    ctx.fillText(tickAmp, parseInt(ampX)+45, parseInt(ampY)-11);
-    ctx.fillRect(parseInt(ampX)+8, parseInt(ampY) -22, dashSize.y, dashSize.x);
+    // Draw in the volume x axis
+    ctx.fillText(tickVol, parseInt(volX)+45, parseInt(volY)-11);
+    ctx.fillRect(parseInt(volX)+8, parseInt(volY)-22, dashSize.y, dashSize.x);
   }
-  // 0 mark
 
-  ctx.fillText(MINFREQ + ' Hz', parseInt(x) - 7, parseInt(rect.height)-28);
-  ctx.fillRect(parseInt(x) + - 19, parseInt(rect.height)-11, dashSize.x, dashSize.y);
+  // 0 mark
+  ctx.fillText(MINFREQ + ' Hz', parseInt(freqX) - 7, parseInt(volY)-28);
+  ctx.fillRect(parseInt(freqX) + - 19, parseInt(volY)-11, dashSize.x, dashSize.y);
 }
 
-
+// Draws a point in relation to the the mouse position of the taps
 function drawPoint(ctx, index, radius) {
   let myRadius = radius;
   let startingAngle = 0;

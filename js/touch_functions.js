@@ -10,27 +10,12 @@ document.addEventListener("touchstart", setUpCallback, false);
 function setTouchListeners (){
 
   // We copy the e.touches object (contains info of each touch) into 'touch'. Later, we store the mouse positions for each of the fingers, and render canvas.
+  // If we are in complex mode, we only take care
   controlsCanvas.addEventListener("touchstart", function(e) {
     e.preventDefault();
     if (nFingers<MAXFINGERS){
       mouseDown = true;
-      touch = e.touches;
-      nFingers = touch.length;
-      if (mode==="pure"){
-        for (let j=0; j<touch.length; j++){
-	  mousePos[j] = getMousePos(controlsCanvas, {
-            clientX: touch[j].clientX,
-            clientY: touch[j].clientY
-          });
-	}
-	renderPureWavesCanvas();
-      } else if (mode==="complex"){
-        mousePos[0] = getMousePos(controlsCanvas, {
-          clientX: touch[0].clientX,
-          clientY: touch[0].clientY
-        });
-	renderComplexWavesCanvas();
-      }
+      processTouchAction(e);
     }
   }, false);
 
@@ -39,25 +24,29 @@ function setTouchListeners (){
   controlsCanvas.addEventListener("touchmove", function(e) {
     e.preventDefault();
     if (nFingers<= MAXFINGERS){
-        touch = e.touches;
-        if (mode==="pure"){
-	  for (let j=0; j<touch.length; j++){
-	    mousePos[j] = getMousePos(controlsCanvas, {
-              clientX: touch[j].clientX,
-              clientY: touch[j].clientY
-            });
-	  }
-	  renderPureWavesCanvas();
-        } else if (mode==="complex"){
-          mousePos[0] = getMousePos(controlsCanvas, {
-            clientX: touch[0].clientX,
-            clientY: touch[0].clientY
-          });
-	  renderComplexWavesCanvas();
-        }
+      processTouchAction(e);
     }
   }, false);
 
+  function processTouchAction(e) {
+    touch = e.touches;
+    nFingers = touch.length;
+    if (mode==="pure"){
+      for (let j=0; j<touch.length; j++){
+        mousePos[j] = getMousePos(controlsCanvas, {
+          clientX: touch[j].clientX,
+          clientY: touch[j].clientY
+        });
+      }
+      renderPureWavesCanvas();
+    } else if (mode==="complex"){
+      mousePos[0] = getMousePos(controlsCanvas, {
+        clientX: touch[0].clientX,
+        clientY: touch[0].clientY
+      });
+      renderComplexWavesCanvas();
+    }
+  }
 
   // NOTE: I believe that this function can be refactored, but you have to be careful as a subtle change can break this.
   // Basic idea: traverse the list of fingers up, and eliminate those from our 'touch' object.
