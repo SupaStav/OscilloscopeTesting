@@ -34,6 +34,9 @@ function setVolume(vol, index) {
 // Function that sets the frequency to the corresponding index. Returns false if the change is not enough to redraw the graph.
 function setFrequency(freq, index) {
   let newFreq = logspace(MINFREQ, MAXFREQ, freq, EXPONENTIAL_INC_FACTOR);
+  // console log the deploy 
+  console.log('deploy works', newFreq);
+  
   frequency[index] = newFreq;
   let redraw = false;
   if (Math.abs(freq - oldFreq[index]) > CHANGE_SENSITIVITY_FACTOR) {
