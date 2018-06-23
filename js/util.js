@@ -22,7 +22,7 @@ function setVolume(vol, index) {
     if (newVolume>0){
       oscillators[index].volume.value = 0;
     } else {
-      oscillators[index].volume.exponentialRampToValueAtTime(newVolume, Tone.context._context.currentTime + 0.01);
+      oscillators[index].volume.linearRampToValueAtTime(newVolume, Tone.context._context.currentTime + 0.5);
     }
     oldVol[index] = vol;
     redraw = true;
@@ -40,7 +40,7 @@ function setFrequency(freq, index) {
   frequency[index] = newFreq;
   let redraw = false;
   if (Math.abs(freq - oldFreq[index]) > CHANGE_SENSITIVITY_FACTOR) {
-    oscillators[index].frequency.exponentialRampToValueAtTime(newFreq,Tone.context._context.currentTime + 0.01 );
+    oscillators[index].frequency.linearRampToValueAtTime(newFreq,Tone.context._context.currentTime + 0.5 );
     oldFreq[index] = freq;
     redraw = true;
   }
