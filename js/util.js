@@ -22,7 +22,19 @@ function setVolume(vol, index) {
     if (newVolume>0){
       oscillators[index].volume.value = 0;
     } else {
-      oscillators[index].volume.linearRampToValueAtTime(newVolume, Tone.context._context.currentTime + 0.5);
+        document.addEventListener("mousemove", function(e) {
+          if (mouseDown) {
+            oscillators[index].volume.linearRampToValueAtTime(newVolume, Tone.context._context.currentTime + 0.5);
+            oldVol[index] = vol;
+            redraw = true;
+            amplitude[index] = vol;
+            return redraw;
+          }  
+        });
+        
+        if (mouseDown) {
+          oscillators[index].volume.value = newVolume;
+        }
     }
     oldVol[index] = vol;
     redraw = true;
@@ -40,9 +52,20 @@ function setFrequency(freq, index) {
   frequency[index] = newFreq;
   let redraw = false;
   if (Math.abs(freq - oldFreq[index]) > CHANGE_SENSITIVITY_FACTOR) {
-    oscillators[index].frequency.linearRampToValueAtTime(newFreq,Tone.context._context.currentTime + 0.5 );
-    oldFreq[index] = freq;
-    redraw = true;
+        document.addEventListener("mousemove", function(e) {
+          if (mouseDown) {
+            oscillators[index].frequency.linearRampToValueAtTime(newFreq, Tone.context._context.currentTime + 0.5);
+            oldFreq[index] = freq;
+            redraw = true;
+            return redraw;
+          }  
+        });
+        
+        if (mouseDown) {
+          oscillators[index].frequency.value = newFreq;
+          oldFreq[index] = freq;
+          redraw = true; 
+        }
   }
   return redraw;
 }

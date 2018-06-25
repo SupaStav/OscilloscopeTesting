@@ -154,6 +154,9 @@ var controlsCanvasCtx, controlsCanvas;
 // Boolean storing if the mouse is clicked or not
 var mouseDown;
 
+// Boolean to store if the mouse is moving or not
+var mouseMove;
+
 // Variable to keep track of the mouse/finger position
 var mousePos = [];
 
