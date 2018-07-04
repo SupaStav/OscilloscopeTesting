@@ -17,6 +17,7 @@ function setMouseListeners (){
   // Gets mouse position and calls to render canvas
   document.addEventListener("mousemove", function(e) {
     e.preventDefault();
+    mouseMove = true;
     if (mouseDown){
       processMouseAction(e, "mousemove");
     }
