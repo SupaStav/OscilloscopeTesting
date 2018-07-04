@@ -13,21 +13,50 @@ const EXPONENTIAL_INC_FACTOR = 2;
 // If very sensitive, it will be updated at the minimum change. If not sensitive, it will take longer to update.
 const CHANGE_SENSITIVITY_FACTOR = 0.0015;
 
+// Function that ramps up the volume to the corresponding index 
+function rampVolume(vol, index) {
+  let newVolume = logspace(MINVOLUME, MAXVOLUME, vol, EXPONENTIAL_INC_FACTOR);
+  let redraw = false;
+  if (Math.abs(vol - oldVol[index]) > CHANGE_SENSITIVITY_FACTOR) {
+    if (newVolume > 0) {
+      oscillators[index].volume.value = 0;
+    } else {
+      oscillators[index].volume.exponentialRampToValueAtTime(newVolume, Tone.context._context.currentTime + 0.5);
+    }
+    oldVol[index] = vol;
+    redraw = true;
+  }
+  amplitude[index] = vol;
+  return redraw;
+}
 
 // Function that sets the volume to the corresponding index. Returns false if the change is not enough to redraw the graph.
 function setVolume(vol, index) {
   let newVolume = logspace(MINVOLUME, MAXVOLUME, vol, EXPONENTIAL_INC_FACTOR);
   let redraw = false;
   if (Math.abs(vol - oldVol[index]) > CHANGE_SENSITIVITY_FACTOR) {
-    if (newVolume>0){
+    if (newVolume > 0) {
       oscillators[index].volume.value = 0;
     } else {
-      oscillators[index].volume.exponentialRampToValueAtTime(newVolume, Tone.context._context.currentTime + 0.01);
+      oscillators[index].volume.value = newVolume;
     }
     oldVol[index] = vol;
     redraw = true;
   }
   amplitude[index] = vol;
+  return redraw;
+}
+
+// Function that ramps up the frequency to the corresponding index
+function rampFrequency(freq, index) {
+  let newFreq = logspace(MINFREQ, MAXFREQ, freq, EXPONENTIAL_INC_FACTOR);
+  frequency[index] = newFreq;
+  let redraw = false;
+  if (Math.abs(freq - oldFreq[index]) > CHANGE_SENSITIVITY_FACTOR) {
+    oscillators[index].frequency.exponentialRampToValueAtTime(newFreq, Tone.context._context.currentTime + 0.5);
+    oldFreq[index] = freq;
+    redraw = true;
+  }
   return redraw;
 }
 
@@ -37,7 +66,7 @@ function setFrequency(freq, index) {
   frequency[index] = newFreq;
   let redraw = false;
   if (Math.abs(freq - oldFreq[index]) > CHANGE_SENSITIVITY_FACTOR) {
-    oscillators[index].frequency.exponentialRampToValueAtTime(newFreq,Tone.context._context.currentTime + 0.01 );
+    oscillators[index].frequency.value = newFreq;
     oldFreq[index] = freq;
     redraw = true;
   }
@@ -51,20 +80,20 @@ function logspace(start, stop, n, N) {
 
 // Get the position of the mouse relative to the canvas
 function getMousePos(canvas, evt) {
-  if (mouseDown){
+  if (mouseDown) {
     let rect = canvas.getBoundingClientRect(); // abs. size of element
     var toReturnX = (evt.clientX - rect.left);
     var toReturnY = (evt.clientY - rect.top);
 
     // We check if the mouse is outside the canvas and we do not let that happen.
-    if (toReturnX < 0){
+    if (toReturnX < 0) {
       toReturnX = 0;
-    } else if (toReturnX > rect.width){
+    } else if (toReturnX > rect.width) {
       toReturnX = rect.width;
     }
-    if (toReturnY < 0){
+    if (toReturnY < 0) {
       toReturnY = 0;
-    } else if (toReturnY > rect.height){
+    } else if (toReturnY > rect.height) {
       toReturnY = rect.height;
     }
 
@@ -76,11 +105,11 @@ function getMousePos(canvas, evt) {
 }
 
 // Resets variables to their default value, and redraws both canvas (to their originals). 
-function setToZero(){
+function setToZero() {
   mouseDown = false;
   nFingers = 0;
   touch = [];
-  for (let j=0; j<lengthArrays; j++){
+  for (let j = 0; j < lengthArrays; j++) {
     mousePos[j] = {
       x: 0,
       y: 0
@@ -95,8 +124,8 @@ function setToZero(){
 }
 
 // Function used to release all the synths for our sound.
-function releaseSynths(){
-  for (let j=0; j<lengthArrays; j++){
+function releaseSynths() {
+  for (let j = 0; j < lengthArrays; j++) {
     oscillators[j].frequency.rampTo(1, 0.1);
     oscillators[j].volume.rampTo(-Infinity, 0.1);
   }

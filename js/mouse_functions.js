@@ -11,22 +11,22 @@ function setMouseListeners (){
   controlsCanvas.addEventListener("mousedown", function(e) {
     e.preventDefault();
     mouseDown = true;
-    processMouseAction(e);
+    processMouseAction(e, "mousedown");
   }, false);
 
   // Gets mouse position and calls to render canvas
   document.addEventListener("mousemove", function(e) {
     e.preventDefault();
     if (mouseDown){
-      processMouseAction(e);
+      processMouseAction(e, "mousemove");
     }
   }, false);
 
-  function processMouseAction(e) {
+  function processMouseAction(e, callFrom) {
     if (nFingers === 0){
       mousePos[0] = getMousePos(controlsCanvas, e);
       if (mode==="pure"){
-        renderPureWavesCanvas();
+        renderPureWavesCanvas(callFrom);
       } else if (mode==="complex"){
         renderComplexWavesCanvas();
       }
