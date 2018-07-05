@@ -548,7 +548,7 @@ function renderPureWavesCanvas(callFrom) {
 
   if (mouseDown) {
     // Set volume and frequency for tap 0
-    if (callFrom == "mousedown") {
+    if (callFrom == "mousedown" || callFrom == "touchstart") {
       setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
       setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
 
@@ -559,7 +559,7 @@ function renderPureWavesCanvas(callFrom) {
         setV = setV || setVw;
         setF = setF || setFw;
       }
-    } else if (callFrom == "mousemove") {
+    } else if (callFrom == "mousemove" || callFrom == "touchmove") {
       setF = rampFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
       setV = rampVolume(mousePos[0].x / controlsCanvasRect.width, 0);
 
@@ -602,11 +602,11 @@ function renderComplexWavesCanvas(callFrom) {
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
   let setF, setV;
   if (mouseDown) {
-    if (callFrom == "mousedown") {
+    if (callFrom == "mousedown" || callFrom == "touchstart") {
       // Set volume and frequency for tap 0
       setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
       setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
-    } else if (callFrom == "mousemove") {
+    } else if (callFrom == "mousemove" || callFrom == "touchmove") {
       // Set volume and frequency for tap 0
       setF = rampFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
       setV = rampVolume(mousePos[0].x / controlsCanvasRect.width, 0);

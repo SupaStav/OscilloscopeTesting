@@ -15,7 +15,7 @@ function setTouchListeners (){
     e.preventDefault();
     if (nFingers<MAXFINGERS){
       mouseDown = true;
-      processTouchAction(e);
+      processTouchAction(e, "touchstart");      // Send in that this event is for touch start
     }
   }, false);
 
@@ -24,11 +24,11 @@ function setTouchListeners (){
   controlsCanvas.addEventListener("touchmove", function(e) {
     e.preventDefault();
     if (nFingers<= MAXFINGERS){
-      processTouchAction(e);
+      processTouchAction(e, "touchmove");
     }
   }, false);
 
-  function processTouchAction(e) {
+  function processTouchAction(e, callFrom) {
     touch = e.touches;
     nFingers = touch.length;
     if (mode==="pure"){
@@ -38,13 +38,13 @@ function setTouchListeners (){
           clientY: touch[j].clientY
         });
       }
-      renderPureWavesCanvas();
+      renderPureWavesCanvas(callFrom);
     } else if (mode==="complex"){
       mousePos[0] = getMousePos(controlsCanvas, {
         clientX: touch[0].clientX,
         clientY: touch[0].clientY
       });
-      renderComplexWavesCanvas();
+      renderComplexWavesCanvas(callFrom);
     }
   }
 
