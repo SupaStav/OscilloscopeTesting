@@ -512,28 +512,32 @@ function drawComplexWavesCanvas() {
       wavesCanvasCtx.strokeStyle = WAVECOLOR5;
       freqInfoMessage += " <span style='color: " + WAVECOLOR5 + "'>" + Math.round(frequency[j]) + "</span>";
     }
-    for (let i = 0; i < numberPoints; i++) {
-      let y = 0;
-      let wavelength = 100 * wavesCanvasHeight / frequency[j];
-      let v = wavelength / frequency[j];
-      let k = 2 * Math.PI / wavelength;
-      if (amplitude[j] < 0) {
-        y += (0 * 350 * Math.cos(k * (x + v * t)));
-      } else {
-        y += (amplitude[j] * 350 * Math.cos(k * (x + v * t)));
-      }
 
-      // y *= scaleProportion;
+    // if it's a mouse click, only total waveform should be displayed. For multi-touch, keep all the corrsponding waves too
+    if (nFingers > 0) {      // It's a multi-touch
+      for (let i = 0; i < numberPoints; i++) {
+        let y = 0;
+        let wavelength = 100 * wavesCanvasHeight / frequency[j];
+        let v = wavelength / frequency[j];
+        let k = 2 * Math.PI / wavelength;
+        if (amplitude[j] < 0) {
+          y += (0 * 350 * Math.cos(k * (x + v * t)));
+        } else {
+          y += (amplitude[j] * 350 * Math.cos(k * (x + v * t)));
+        }
 
-      y += wavesCanvasHeight / 2;
-      if (i === 0) {
-        wavesCanvasCtx.moveTo(x, y);
-      } else {
-        wavesCanvasCtx.lineTo(x, y);
+        // y *= scaleProportion;
+
+        y += wavesCanvasHeight / 2;
+        if (i === 0) {
+          wavesCanvasCtx.moveTo(x, y);
+        } else {
+          wavesCanvasCtx.lineTo(x, y);
+        }
+        x += sliceWidth;
       }
-      x += sliceWidth;
+      wavesCanvasCtx.stroke();
     }
-    wavesCanvasCtx.stroke();
   }
   freqInfoMessage += " <span style='color: rgb(255, 255, 255)'>Hz</span>";
   setLeyendVisibility('visible');
