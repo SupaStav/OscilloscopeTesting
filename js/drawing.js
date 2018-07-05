@@ -606,33 +606,57 @@ function renderComplexWavesCanvas(callFrom) {
       // Set volume and frequency for tap 0
       setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
       setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
+      // If it is the first complex render, initialize the random volumes and the reference amplitude (to calculate future proportions)
+      if (firstComplexRender) {
+        for (let w = 1; w < WAVESCOMPLEXMODE; w++) {
+          randomInitialVolumes[w] = Math.random() * amplitude[0];
+        }
+        referenceComplexAmplitude = amplitude[0];
+        firstComplexRender = false;
+      }
+
+      // Calculate the proportion to apply for the volumes
+      if (amplitude[0] <= 0) {
+        proportion = referenceComplexAmplitude / 0.00001;
+      } else {
+        proportion = referenceComplexAmplitude / amplitude[0];
+      }
+
+      // For each of the complex wave, calculate their frequency, volume, and mouse position.
+      for (let w = 1; w < WAVESCOMPLEXMODE; w++) {
+        calculateFrequencyMultiplier(frequency[0], (w + 1), w);
+        calculateComplexVolume(proportion, w, randomInitialVolumes);
+        calculateMousePos(controlsCanvas, w);
+      }
+
+
     } else if (callFrom == "mousemove" || callFrom == "touchmove") {
       // Set volume and frequency for tap 0
       setF = rampFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
       setV = rampVolume(mousePos[0].x / controlsCanvasRect.width, 0);
-    }
-    
-    // If it is the first complex render, initialize the random volumes and the reference amplitude (to calculate future proportions)
-    if (firstComplexRender) {
-      for (let w = 1; w < WAVESCOMPLEXMODE; w++) {
-        randomInitialVolumes[w] = Math.random() * amplitude[0];
+      // If it is the first complex render, initialize the random volumes and the reference amplitude (to calculate future proportions)
+      if (firstComplexRender) {
+        for (let w = 1; w < WAVESCOMPLEXMODE; w++) {
+          randomInitialVolumes[w] = Math.random() * amplitude[0];
+        }
+        referenceComplexAmplitude = amplitude[0];
+        firstComplexRender = false;
       }
-      referenceComplexAmplitude = amplitude[0];
-      firstComplexRender = false;
-    }
 
-    // Calculate the proportion to apply for the volumes
-    if (amplitude[0] <= 0) {
-      proportion = referenceComplexAmplitude / 0.00001;
-    } else {
-      proportion = referenceComplexAmplitude / amplitude[0];
-    }
+      // Calculate the proportion to apply for the volumes
+      if (amplitude[0] <= 0) {
+        proportion = referenceComplexAmplitude / 0.00001;
+      } else {
+        proportion = referenceComplexAmplitude / amplitude[0];
+      }
 
-    // For each of the complex wave, calculate their frequency, volume, and mouse position.
-    for (let w = 1; w < WAVESCOMPLEXMODE; w++) {
-      calculateFrequencyMultiplier(frequency[0], (w + 1), w);
-      calculateComplexVolume(proportion, w, randomInitialVolumes);
-      calculateMousePos(controlsCanvas, w);
+      // For each of the complex wave, calculate their frequency, volume, and mouse position.
+      for (let w = 1; w < WAVESCOMPLEXMODE; w++) {
+        calculateRampedFrequency(frequency[0], (w + 1), w);
+        calculateRampedVolume(proportion, w, randomInitialVolumes);
+        calculateMousePos(controlsCanvas, w);
+      }
+
     }
 
     /*
