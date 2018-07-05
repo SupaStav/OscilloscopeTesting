@@ -596,13 +596,22 @@ function renderPureWavesCanvas(callFrom) {
   }
 }
 
-function renderComplexWavesCanvas() {
+// Function that renders in the complex wave. 
+// Takes in 'callFrom' parameter that determines if the freq. is set or ramped
+function renderComplexWavesCanvas(callFrom) {
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
+  let setF, setV;
   if (mouseDown) {
-    // Set volume and frequency for tap 0
-    let setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
-    let setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
-
+    if (callFrom == "mousedown") {
+      // Set volume and frequency for tap 0
+      setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
+      setV = setVolume(mousePos[0].x / controlsCanvasRect.width, 0);
+    } else if (callFrom == "mousemove") {
+      // Set volume and frequency for tap 0
+      setF = rampFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
+      setV = rampVolume(mousePos[0].x / controlsCanvasRect.width, 0);
+    }
+    
     // If it is the first complex render, initialize the random volumes and the reference amplitude (to calculate future proportions)
     if (firstComplexRender) {
       for (let w = 1; w < WAVESCOMPLEXMODE; w++) {

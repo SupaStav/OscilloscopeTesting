@@ -29,7 +29,7 @@ function setMouseListeners (){
       if (mode==="pure"){
         renderPureWavesCanvas(callFrom);
       } else if (mode==="complex"){
-        renderComplexWavesCanvas();
+        renderComplexWavesCanvas(callFrom);
       }
     }
   }
