@@ -36,7 +36,11 @@ function setMouseListeners (){
   
   // We reset everything to their initial values
   document.addEventListener('mouseup', function() {
+    if (isSustained) {
+      setToZero();
+    } else {
       setToZero();
       releaseSynths();
+    }
   });
 }

@@ -157,6 +157,9 @@ var mouseDown;
 // Boolean to store if the mouse is moving or not
 var mouseMove;
 
+// Boolean to enable/disable the sustain audio mode
+var isSustained = false;
+
 // Variable to keep track of the mouse/finger position
 var mousePos = [];
 
@@ -272,6 +275,16 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('pure-button').style.backgroundColor = colorGray;
     }
     firstComplexRender = true;
+  }
+
+  let sustainNode = document.getElementById('sustain-checkbox');
+  sustainNode.onclick = function() {
+    if (sustainNode.checked) {
+      isSustained = true;
+    } else {
+      isSustained = false;
+      releaseSynths();
+    }
   }
 
 });

@@ -1,61 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Oscilloscope</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Pablo Canas, Matthew Rice">
 
-    <link rel="stylesheet" href="css/generalStyles.css">
-    <link rel="stylesheet" href="css/startingPageStyles.css">
-    <link rel="stylesheet" href="css/controlsCStyles.css">
-    <link rel="stylesheet" href="css/representationCStyles.css">
-    <link rel="stylesheet" href="css/leyendCStyles.css">
-  </head>
+<head>
+  <title>Oscilloscope</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Pablo Canas, Matthew Rice">
 
-  <body>
+  <link rel="stylesheet" href="css/generalStyles.css">
+  <link rel="stylesheet" href="css/startingPageStyles.css">
+  <link rel="stylesheet" href="css/controlsCStyles.css">
+  <link rel="stylesheet" href="css/representationCStyles.css">
+  <link rel="stylesheet" href="css/leyendCStyles.css">
+  <link rel="stylesheet" href="css/sustainButtonCss.css">
+</head>
 
-    <div id="startText">
-      <p id="introText"> Welcome to Signal Generator! </p>
-      <p id="tapText"> Click or tap anywhere to start the application </p>
+<body>
+
+  <div id="startText">
+    <p id="introText"> Welcome to Signal Generator! </p>
+    <p id="tapText"> Click or tap anywhere to start the application </p>
+  </div>
+
+  <div id="container" style="visibility:hidden">
+    <div id="controls-container">
+      <canvas id="controls-canvas"></canvas>
     </div>
-
-    <div id="container" style="visibility:hidden">
-      <div id="controls-container">
-        <canvas id="controls-canvas"></canvas>
+    <span id="yAxis-header">Movement of the speaker</span>
+    <div id="representation-container">
+      <div id="graph-container">
+        <canvas id="waves-canvas"></canvas>
       </div>
-      <span id="yAxis-header">Movement of the speaker</span>
-      <div id="representation-container">
-        <div id="graph-container">
-          <canvas id="waves-canvas"></canvas>
+      <span id="header-text">
+        Signal Generator
+      </span>
+      <!--<div id="units-container">25ms</div>-->
+      <span id="xAxis-header">Time</span>
+      <div id="leyend-container">
+        <button id="freq-info"></button>
+        <span id='pure-tones-text'>Pure tones</span>
+        <canvas id='line-canvas'></canvas>
+        <span id='leyend-text'>Total Waveform</span>
+        <label class="switch">
+          <input type="checkbox" id="sustain-checkbox">
+          <span class="slider round"></span>
+        </label>
+        <div id="button-container">
+          <button id="pure-button">
+            <img src="./resources/sine.png" style="height: 25px; width: 30px"></img>
+          </button>
+          <button id="complex-button">
+            <img src="./resources/sine.png" style="height: 25px; width: 30px"></img>
+          </button>
         </div>
-          <span id="header-text">
-            Signal Generator
-          </span>
-          <!--<div id="units-container">25ms</div>-->
-        <span id="xAxis-header">Time</span>
-        <div id="leyend-container">
-          <button id="freq-info"></button>
-          <span id='pure-tones-text'>Pure tones</span>
-          <canvas id ='line-canvas'></canvas>
-          <span id='leyend-text'>Total Waveform</span>
-          <div id="button-container">
-            <button id="pure-button"><img src="./resources/sine.png" style="height: 25px; width: 30px"></img></button>
-            <button id="complex-button"><img src="./resources/sine.png" style="height: 25px; width: 30px"></img></button>
-          </div>
-          <p class="button-header" id="pure-header">Pure<br>tone</p>
-          <p class="button-header" id="complex-header">Complex<br>tone</p>
-        </div>
+        <p class="button-header" id="pure-header">Pure
+          <br>tone</p>
+        <p class="button-header" id="complex-header">Complex
+          <br>tone</p>
       </div>
     </div>
+  </div>
 
-    <script src="./js/StartAudioContext.js"></script>
-    <script src="./js/Tone.js"></script>
-    <script src="./js/util.js"></script>
-    <script src="./js/complex.js"></script>
-    <script src="./js/drawing.js"></script>
-    <script src="./js/initialize.js"></script>
-    <script src="./js/mouse_functions.js"></script>
-    <script src="./js/touch_functions.js"></script>
-  </body>
+  <script src="./js/StartAudioContext.js"></script>
+  <script src="./js/Tone.js"></script>
+  <script src="./js/util.js"></script>
+  <script src="./js/complex.js"></script>
+  <script src="./js/drawing.js"></script>
+  <script src="./js/initialize.js"></script>
+  <script src="./js/mouse_functions.js"></script>
+  <script src="./js/touch_functions.js"></script>
+</body>
+
 </html>
