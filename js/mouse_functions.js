@@ -30,6 +30,9 @@ function setMouseListeners() {
       if (mode === "pure") {
         renderPureWavesCanvas(callFrom);
       } else if (mode === "complex") {
+        if (isSustained) {                                
+          mousePos[0] = mostRecent.pure.mousePos[0];
+        }
         renderComplexWavesCanvas(callFrom);
       }
     }

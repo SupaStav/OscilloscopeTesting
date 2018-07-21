@@ -587,7 +587,7 @@ function renderPureWavesCanvas(callFrom) {
     if (isSustained && callFrom == "mousedown") {
       drawPureWavesCanvas();
     }
-    
+
     /*
       Check if we are eligible to draw in the canvas:
         - If the volume or the frequency has changed enough and it has passed at least 40 milliseconds from last draw.
@@ -618,7 +618,7 @@ function renderPureWavesCanvas(callFrom) {
 function renderComplexWavesCanvas(callFrom) {
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
   let setF, setV;
-  if (mouseDown) {
+  if (mouseDown || isSustained) {
     if (callFrom == "mousedown" || callFrom == "touchstart") {
       // Set volume and frequency for tap 0
       setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
@@ -674,6 +674,10 @@ function renderComplexWavesCanvas(callFrom) {
         calculateMousePos(controlsCanvas, w);
       }
 
+    }
+
+    if (isSustained && callFrom == "mousedown") {
+      drawComplexWavesCanvas();
     }
 
     /*
