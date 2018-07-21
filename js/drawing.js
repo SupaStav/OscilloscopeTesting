@@ -295,6 +295,12 @@ function drawPureWavesCanvas() {
     // We draw the blue wave line
     wavesCanvasCtx.beginPath();
     setStyleWidthOpacity(wavesCanvasCtx, WAVECOLORTOTAL, '5', 1);
+    
+    // Store in the most recent frequency and amplitude before drawing it out 
+    if (frequency[0] != 1 && amplitude [0] != 0) {
+      mostRecent.pure.freq = frequency[0];
+      mostRecent.pure.amplitude = amplitude[0]; 
+    }
 
     // x starts at 0 (first point is at 0)
     let x = 0;
@@ -550,7 +556,8 @@ function renderPureWavesCanvas(callFrom) {
   let controlsCanvasRect = controlsCanvas.getBoundingClientRect();
   let setF, setV;
 
-  if (mouseDown) {
+  // If it's sustained only calculate the frequency, amplitude and show it on the screen
+  if (mouseDown || isSustained) {
     // Set volume and frequency for tap 0
     if (callFrom == "mousedown" || callFrom == "touchstart") {
       setF = setFrequency(((mousePos[0].y / controlsCanvasRect.height) - 1) * -1, 0);
@@ -575,6 +582,12 @@ function renderPureWavesCanvas(callFrom) {
         setF = setF || setFw;
       }
     }
+
+    /* If it is sustained mode, just draw the canvas with the last known values w/o any tampering */
+    if (isSustained && callFrom == "mousedown") {
+      drawPureWavesCanvas();
+    }
+    
     /*
       Check if we are eligible to draw in the canvas:
         - If the volume or the frequency has changed enough and it has passed at least 40 milliseconds from last draw.

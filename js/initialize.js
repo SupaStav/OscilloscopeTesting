@@ -160,6 +160,16 @@ var mouseMove;
 // Boolean to enable/disable the sustain audio mode
 var isSustained = false;
 
+// Object to store in the most recent frequency and amplitude and mousePos
+var mostRecent = {
+  pure: {
+    mousePos: []
+  },
+  complex: {
+    
+  },
+};
+
 // Variable to keep track of the mouse/finger position
 var mousePos = [];
 
@@ -283,7 +293,8 @@ document.addEventListener('DOMContentLoaded', function() {
       isSustained = true;
     } else {
       isSustained = false;
-      releaseSynths();
+      setToZero();              // Reset the picture to be drawn
+      releaseSynths();          // release the synths used too
     }
   }
 
