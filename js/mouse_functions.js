@@ -26,11 +26,14 @@ function setMouseListeners() {
   function processMouseAction(e, callFrom) {
     if (nFingers === 0) {
       mousePos[0] = getMousePos(controlsCanvas, e);
+      
       mostRecent.pure.mousePos[0] = mousePos[0];          // Store in the most recent mouse position
+      mostRecent.complex.mousePos[0] = mousePos[0];       // Complex mode. Save the values for pure/complex separately
+      
       if (mode === "pure") {
         renderPureWavesCanvas(callFrom);
       } else if (mode === "complex") {
-        if (isSustained) {                                
+        if (isSustained) {
           mousePos[0] = mostRecent.pure.mousePos[0];
         }
         renderComplexWavesCanvas(callFrom);
@@ -39,16 +42,25 @@ function setMouseListeners() {
   }
 
   // We reset everything to their initial values
-  document.addEventListener('mouseup', function () {
+  controlsCanvas.addEventListener('mouseup', function () {
     // Log in the most recent frequency and amplitude
     console.log('Latest val: ', mostRecent);
     setToZero();
     releaseSynths();
 
     if (isSustained) {
-      // Call in drawPureCanvas method with the most recent frequency and amplitude
-      mousePos[0] = mostRecent.pure.mousePos[0];
-      renderPureWavesCanvas("mousedown");
+      if (mode == "pure") {
+        // Call in drawPureCanvas method with the most recent frequency and amplitude
+        mousePos[0] = mostRecent.pure.mousePos[0];
+        renderPureWavesCanvas("mousedown");
+      } else if(mode == "complex") {
+        // Call in the renderComplexCanvas method with the most recent frequency and amplitude
+        mousePos[0] = mostRecent.complex.mousePos[0];
+        renderComplexWavesCanvas("mousedown");
+      }
+
+      // Log which mode it is currently
+      console.log('Current Mode: ', mode);
     }
   });
 }

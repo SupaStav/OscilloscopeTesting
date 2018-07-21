@@ -696,8 +696,14 @@ function renderComplexWavesCanvas(callFrom) {
 
     // Draw the points in the control canvas
     if (nFingers === 0) {
-      for (let w = 0; w < WAVESCOMPLEXMODE; w++) {
-        drawPoint(controlsCanvasCtx, w, 10);
+      if (callFrom == "mousedown" || callFrom == "mousemove") {
+        for (let w = 0; w < 1; w++) {
+          drawPoint(controlsCanvasCtx, w, 10);
+        }
+      } else {
+        for (let w = 0; w < WAVESCOMPLEXMODE; w++) {
+          drawPoint(controlsCanvasCtx, w, 10);
+        }
       }
     } else {
       drawPoint(controlsCanvasCtx, 0, 40);

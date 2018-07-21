@@ -166,7 +166,7 @@ var mostRecent = {
     mousePos: []
   },
   complex: {
-
+    mousePos: []
   },
 };
 
@@ -276,6 +276,17 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('pure-button').style.backgroundColor = colorYellow;
       document.getElementById('complex-button').style.backgroundColor = colorGray;
     }
+
+    // If it is sustained, create a new pure wave with the most recent freq and amplitude of complex mode
+    if (isSustained) {
+      // First reset the amplitudes and frequency and the screen to clear out the current sound
+      setToZero();
+      releaseSynths(); 
+
+      // Then take the frequency of the complex mode and generate a pure wave with it
+      mousePos[0] = mostRecent.complex.mousePos[0];
+      renderPureWavesCanvas("mousedown");
+    }
   }
 
   document.getElementById("complex-button").onclick = function () {
@@ -288,6 +299,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // If it is sustained, create a new complex wave with most recent freq and amplitude of pure mode
     if (isSustained) {
+      // First reset the amplitudes and frequency and the screen to clear out the current sound
+      setToZero();
+      releaseSynths();
+
+      // Then take the frequency of the pure mode and generate a complex wave with it
       mousePos[0] = mostRecent.pure.mousePos[0];
       renderComplexWavesCanvas("mousedown");
     }
