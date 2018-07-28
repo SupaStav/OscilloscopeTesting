@@ -61,6 +61,17 @@ function setMouseListeners() {
 
       // Log which mode it is currently
       console.log('Current Mode: ', mode);
+    } else {
+      setToZero();                            // Clear all the values
+      mostRecent.pure.mousePos[0] = {
+        x: 0, 
+        y: 0,
+      };
+
+      mostRecent.complex.mousePos[0] = {
+        x: 0,
+        y: 0,
+      }
     }
   });
 }
