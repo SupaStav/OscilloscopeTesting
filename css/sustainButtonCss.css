@@ -57,3 +57,12 @@ input:checked + .slider:before {
   border-style: solid;
   border-width: thin;
 }
+
+
+/* Styles for the sustian button label */
+
+#sustain-header {
+  width: 45px; 
+  right: 222px; 
+  bottom: -25.714px;
+}
