@@ -294,7 +294,12 @@ document.addEventListener('DOMContentLoaded', function () {
       mode = "complex";
       document.getElementById('complex-button').style.backgroundColor = colorYellow;
       document.getElementById('pure-button').style.backgroundColor = colorGray;
-    }
+    } else {
+      document.getElementById('complex-button').style.backgroundColor = colorGray;
+      setTimeout(() => {
+        document.getElementById('complex-button').style.backgroundColor = colorYellow;
+      }, 500);
+    } 
     firstComplexRender = true;
 
     // If it is sustained, create a new complex wave with most recent freq and amplitude of pure mode
