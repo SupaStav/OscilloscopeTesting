@@ -43,6 +43,9 @@ function setMouseListeners() {
 
   // We reset everything to their initial values
   controlsCanvas.addEventListener('mouseup', function () {
+    // Set the text back to "Waveform" for leyend-text
+    document.getElementById('leyend-text').innerHTML = "Waveform";
+    
     // Log in the most recent frequency and amplitude
     console.log('Latest val: ', mostRecent);
     setToZero();

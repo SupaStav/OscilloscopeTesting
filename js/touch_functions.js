@@ -52,6 +52,8 @@ function setTouchListeners() {
   // Basic idea: traverse the list of fingers up, and eliminate those from our 'touch' object.
   controlsCanvas.addEventListener("touchend", function (e) {
     e.preventDefault();
+
+    document.getElementById('leyend-text').innerHTML = "Waveform";
     if (mode === "pure") {
       let indexFingerUp;
       // We create this auxTouch array and equal it to the touch TouchList object. Now we can perform the operations in the array as usual.

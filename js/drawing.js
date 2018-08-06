@@ -335,6 +335,8 @@ function drawPureWavesCanvas() {
     }
     wavesCanvasCtx.stroke();
   } else {
+    document.getElementById('leyend-text').innerHTML = "Total Waveform";
+    
     // In case we are in touch mode
     /* If there is more than 1 finger pressed, we will draw a thick yellow line
     which will be the result of adding all the other waves */
@@ -502,6 +504,12 @@ function drawComplexWavesCanvas() {
     wavesCanvasCtx.beginPath();
     wavesCanvasCtx.lineWidth = '1';
     wavesCanvasCtx.globalAlpha = opacityLevel;
+    
+    // if it's a mouse click, only total waveform should be displayed. For multi-touch, keep all the corrsponding waves too
+    if (nFingers > 0) {      // It's a multi-touch
+    
+    // Convert the text to "total waveform"
+    document.getElementById('leyend-text').innerHTML = "Total Waveform";
     if (j === 0) {
       wavesCanvasCtx.strokeStyle = WAVECOLOR1;
       freqInfoMessage = "<span style='color: " + WAVECOLOR1 + "'>" + Math.round(frequency[j]) + "</span>";
@@ -518,9 +526,7 @@ function drawComplexWavesCanvas() {
       wavesCanvasCtx.strokeStyle = WAVECOLOR5;
       freqInfoMessage += " <span style='color: " + WAVECOLOR5 + "'>" + Math.round(frequency[j]) + "</span>";
     }
-
-    // if it's a mouse click, only total waveform should be displayed. For multi-touch, keep all the corrsponding waves too
-    if (nFingers > 0) {      // It's a multi-touch
+  
       for (let i = 0; i < numberPoints; i++) {
         let y = 0;
         let wavelength = 100 * wavesCanvasHeight / frequency[j];
@@ -543,6 +549,10 @@ function drawComplexWavesCanvas() {
         x += sliceWidth;
       }
       wavesCanvasCtx.stroke();
+    } else {
+      freqInfoMessage = Math.round(frequency[0]) + " Hz (cycles/second)";
+
+      setLeyendVisibility('visible'); 
     }
   }
   freqInfoMessage += " <span style='color: rgb(255, 255, 255)'>Hz</span>";
