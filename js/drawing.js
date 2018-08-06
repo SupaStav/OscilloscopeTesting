@@ -143,7 +143,7 @@ function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace) {
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
 
-  ctx.fillText('25 ms', midPoint.x + lengthScale / 2 - offsetX / 2, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.fillText('20 ms', midPoint.x + lengthScale / 2 - offsetX / 2, canvasHeight - offsetY - lengthLittleLines / 2);
 
   ctx.stroke();
   ctx.closePath();
@@ -308,7 +308,7 @@ function drawPureWavesCanvas() {
     for (let i = 0; i < numberPoints; i++) {
       let y = 0;
       // Calculate the location of the point using the equation of the wave.
-      let wavelength = 100 * wavesCanvasHeight / frequency[0];
+      let wavelength = 75 * wavesCanvasHeight / frequency[0];
       let v = wavelength / frequency[0];
       let k = 2 * Math.PI / wavelength;
       if (amplitude[0] < 0) {
