@@ -483,7 +483,7 @@ function drawComplexWavesCanvas() {
       if (amplitude[j] < 0) {
         y += (0 * 350 * Math.cos(k * (x + v * t)));
       } else {
-        y += (amplitude[j] * 350 * Math.cos(k * (x + v * t)));
+        y += (amplitude[j] * (350/3.5) * Math.cos(k * (x + v * t))); // NOTE: the 3.5 is a hack around to fake-normalize
       }
     }
 
