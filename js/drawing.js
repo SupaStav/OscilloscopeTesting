@@ -120,18 +120,19 @@ function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace) {
   let offsetY = 15;
   let offsetX = 3;
   let lengthLittleLines = 10;
+  let curveOfCanvasFactor = 5;        // The canvas is curved in the lower left corner
 
   // Draw yellow scale
   ctx.beginPath();
   setStyleWidthOpacity(ctx, "rgb(255, 233, 0)", '3', 1);
-  ctx.moveTo(midPoint.x + offsetX, canvasHeight - offsetY);
-  ctx.lineTo(midPoint.x + lengthScale - offsetX, canvasHeight - offsetY);
+  ctx.moveTo(0 + offsetX + curveOfCanvasFactor, canvasHeight - offsetY);
+  ctx.lineTo(0 + (dashSpace + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY);
 
-  ctx.moveTo(midPoint.x + offsetX, canvasHeight - offsetY - lengthLittleLines / 2);
-  ctx.lineTo(midPoint.x + offsetX, canvasHeight - offsetY + lengthLittleLines / 2);
+  ctx.moveTo(0 + offsetX + curveOfCanvasFactor, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.lineTo(0 + offsetX + curveOfCanvasFactor, canvasHeight - offsetY + lengthLittleLines / 2);
 
-  ctx.moveTo(midPoint.x + lengthScale - offsetX, canvasHeight - offsetY - lengthLittleLines / 2);
-  ctx.lineTo(midPoint.x + lengthScale - offsetX, canvasHeight - offsetY + lengthLittleLines / 2);
+  ctx.moveTo(0 + (dashSpace + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.lineTo(0 + (dashSpace + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY + lengthLittleLines / 2);
 
   ctx.stroke();
   ctx.closePath();
@@ -139,11 +140,11 @@ function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace) {
   ctx.beginPath();
 
   ctx.globalAlpha = 1;
-  ctx.font = '16px Verdana';
+  ctx.font = '13px Verdana';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
 
-  ctx.fillText('20 ms', midPoint.x + lengthScale / 2 - offsetX / 2, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.fillText('1 ms', 0 + (dashSpace/2 + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY - lengthLittleLines / 2);
 
   ctx.stroke();
   ctx.closePath();
