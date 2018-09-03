@@ -125,14 +125,14 @@ function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace) {
   // Draw yellow scale
   ctx.beginPath();
   setStyleWidthOpacity(ctx, "rgb(255, 233, 0)", '3', 1);
-  ctx.moveTo(0 + offsetX + curveOfCanvasFactor, canvasHeight - offsetY);
-  ctx.lineTo(0 + (dashSpace + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY);
+  ctx.moveTo(dashSpace*4 + offsetX, canvasHeight - offsetY);
+  ctx.lineTo(dashSpace*4 + (dashSpace + 2) + offsetX, canvasHeight - offsetY);
 
-  ctx.moveTo(0 + offsetX + curveOfCanvasFactor, canvasHeight - offsetY - lengthLittleLines / 2);
-  ctx.lineTo(0 + offsetX + curveOfCanvasFactor, canvasHeight - offsetY + lengthLittleLines / 2);
+  ctx.moveTo(dashSpace*4 + offsetX, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.lineTo(dashSpace*4 + offsetX, canvasHeight - offsetY + lengthLittleLines / 2);
 
-  ctx.moveTo(0 + (dashSpace + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY - lengthLittleLines / 2);
-  ctx.lineTo(0 + (dashSpace + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY + lengthLittleLines / 2);
+  ctx.moveTo(dashSpace*4 + (dashSpace + 2) + offsetX, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.lineTo(dashSpace*4 + (dashSpace + 2) + offsetX, canvasHeight - offsetY + lengthLittleLines / 2);
 
   ctx.stroke();
   ctx.closePath();
@@ -144,7 +144,7 @@ function drawScaleInfo(ctx, midPoint, canvasHeight, dashSpace) {
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
 
-  ctx.fillText('1 ms', 0 + (dashSpace/2 + 2) + offsetX + curveOfCanvasFactor, canvasHeight - offsetY - lengthLittleLines / 2);
+  ctx.fillText('1 ms', dashSpace*4 + (dashSpace/2 + 2) + offsetX, canvasHeight - offsetY - lengthLittleLines / 2);
 
   ctx.stroke();
   ctx.closePath();
